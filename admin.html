@@ -1,0 +1,1589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FCC Admin | Content Management</title>
+    <link rel="icon" type="image/png" href="FCC-tree-gold-favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --green-dark: #1e3a2f;
+            --green-mid: #2d4a3e;
+            --green-accent: #3d6b56;
+            --green-light: #e8f0eb;
+            --gold: #b8956c;
+            --gold-light: #d4be82;
+            --gold-pale: #f5efe8;
+            --white: #ffffff;
+            --gray-50: #fafaf9;
+            --gray-100: #f5f5f4;
+            --gray-200: #e7e5e4;
+            --gray-300: #d6d3d1;
+            --gray-400: #a8a29e;
+            --gray-600: #57534e;
+            --gray-800: #292524;
+            --danger: #dc2626;
+            --danger-light: #fef2f2;
+            --success: #16a34a;
+            --success-light: #f0fdf4;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--gray-100);
+            color: var(--gray-800);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Login Screen */
+        .login-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--green-dark) 0%, var(--green-mid) 100%);
+        }
+
+        .login-box {
+            background: var(--white);
+            padding: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-logo {
+            width: 80px;
+            margin-bottom: 1.5rem;
+        }
+
+        .login-title {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.5rem;
+            color: var(--green-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .login-subtitle {
+            color: var(--gray-600);
+            margin-bottom: 2rem;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .login-input:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 0.875rem;
+            background: var(--green-dark);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .login-btn:hover {
+            background: var(--green-mid);
+        }
+
+        .login-error {
+            background: var(--danger-light);
+            color: var(--danger);
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        /* Admin Layout */
+        .admin-container {
+            display: none;
+        }
+
+        .admin-header {
+            background: var(--green-dark);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .admin-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--white);
+            text-decoration: none;
+        }
+
+        .admin-logo img {
+            height: 36px;
+        }
+
+        .admin-logo-text {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.1rem;
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .admin-actions a {
+            color: var(--gold);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .admin-actions a:hover {
+            text-decoration: underline;
+        }
+
+        .logout-btn {
+            background: var(--gold);
+            color: var(--green-dark);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .admin-body {
+            display: flex;
+            min-height: calc(100vh - 68px);
+        }
+
+        /* Sidebar Navigation */
+        .admin-sidebar {
+            width: 240px;
+            background: var(--white);
+            border-right: 1px solid var(--gray-200);
+            padding: 1.5rem 0;
+            flex-shrink: 0;
+        }
+
+        .nav-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-section-title {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--gray-400);
+            padding: 0 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 0.625rem 1.5rem;
+            color: var(--gray-600);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .nav-item:hover {
+            background: var(--gray-100);
+            color: var(--gray-800);
+        }
+
+        .nav-item.active {
+            background: var(--green-light);
+            color: var(--green-dark);
+            border-right: 3px solid var(--green-dark);
+        }
+
+        /* Main Content */
+        .admin-main {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .content-section {
+            display: none;
+            max-width: 900px;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .section-title {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.5rem;
+            color: var(--green-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .section-description {
+            color: var(--gray-600);
+            margin-bottom: 2rem;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+
+        .card-title {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--gray-800);
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.375rem;
+            color: var(--gray-800);
+            font-size: 0.9rem;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 0.625rem 0.875rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(184, 149, 108, 0.15);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .form-check {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-check input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--green-dark);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.625rem 1.25rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--green-dark);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--green-mid);
+        }
+
+        .btn-secondary {
+            background: var(--gray-200);
+            color: var(--gray-800);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-300);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: var(--white);
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+        .btn-gold {
+            background: var(--gold);
+            color: var(--green-dark);
+        }
+
+        .btn-gold:hover {
+            background: var(--gold-light);
+        }
+
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.8rem;
+        }
+
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .data-table th, .data-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .data-table th {
+            background: var(--gray-50);
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--gray-600);
+        }
+
+        .data-table input {
+            padding: 0.375rem 0.5rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 4px;
+            width: 100%;
+            font-size: 0.9rem;
+        }
+
+        .data-table input:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+
+        /* Scorecard Table */
+        .scorecard-edit {
+            overflow-x: auto;
+        }
+
+        .scorecard-edit table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .scorecard-edit th, .scorecard-edit td {
+            padding: 0.5rem;
+            text-align: center;
+            border: 1px solid var(--gray-200);
+        }
+
+        .scorecard-edit th {
+            background: var(--green-dark);
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        .scorecard-edit .row-label {
+            background: var(--gray-100);
+            font-weight: 600;
+            text-align: left;
+            padding-left: 0.75rem;
+        }
+
+        .scorecard-edit input {
+            width: 50px;
+            padding: 0.25rem;
+            text-align: center;
+            border: 1px solid var(--gray-300);
+            border-radius: 4px;
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-success {
+            background: var(--success-light);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .alert-error {
+            background: var(--danger-light);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
+        /* List Items */
+        .list-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem;
+            background: var(--gray-50);
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+        }
+
+        .list-item-content {
+            flex: 1;
+        }
+
+        .list-item-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--gray-400);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .admin-sidebar {
+                display: none;
+            }
+            
+            .admin-main {
+                padding: 1rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Login Screen -->
+    <div class="login-screen" id="login-screen">
+        <div class="login-box">
+            <img src="FCC-tree-gold.png" alt="FCC Logo" class="login-logo">
+            <h1 class="login-title">FCC Admin</h1>
+            <p class="login-subtitle">Content Management System</p>
+            <div class="login-error" id="login-error">Incorrect password. Please try again.</div>
+            <input type="password" class="login-input" id="password-input" placeholder="Enter password" autocomplete="current-password">
+            <button class="login-btn" onclick="attemptLogin()">Sign In</button>
+        </div>
+    </div>
+
+    <!-- Admin Container -->
+    <div class="admin-container" id="admin-container">
+        <header class="admin-header">
+            <a href="/" class="admin-logo">
+                <img src="FCC-tree-gold.png" alt="FCC">
+                <span class="admin-logo-text">FCC Admin</span>
+            </a>
+            <div class="admin-actions">
+                <a href="/" target="_blank">View Site →</a>
+                <button class="logout-btn" onclick="logout()">Log Out</button>
+            </div>
+        </header>
+
+        <div class="admin-body">
+            <nav class="admin-sidebar">
+                <div class="nav-section">
+                    <div class="nav-section-title">Content</div>
+                    <a class="nav-item active" data-section="announcements">Announcements</a>
+                    <a class="nav-item" data-section="settings">General Settings</a>
+                    <a class="nav-item" data-section="about">About & Contact</a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Course</div>
+                    <a class="nav-item" data-section="course-info">Course Info Cards</a>
+                    <a class="nav-item" data-section="ratings">Course Ratings</a>
+                    <a class="nav-item" data-section="scorecard">Scorecard</a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Membership</div>
+                    <a class="nav-item" data-section="rates">Rates & Pricing</a>
+                    <a class="nav-item" data-section="leagues">Leagues</a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Shop</div>
+                    <a class="nav-item" data-section="proshop">Pro Shop</a>
+                </div>
+            </nav>
+
+            <main class="admin-main">
+                <!-- Announcements Section -->
+                <div class="content-section active" id="section-announcements">
+                    <h1 class="section-title">Announcements</h1>
+                    <p class="section-description">Manage the banner message that appears at the top of the site.</p>
+                    
+                    <div id="alert-announcements" class="alert"></div>
+                    
+                    <div class="card">
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input type="checkbox" id="announcement-active">
+                                <label for="announcement-active">Show announcement banner</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Message</label>
+                            <textarea class="form-textarea" id="announcement-message" placeholder="Enter announcement message..."></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Link Text (optional)</label>
+                                <input type="text" class="form-input" id="announcement-link-text" placeholder="e.g. Learn More">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Link URL (optional)</label>
+                                <input type="text" class="form-input" id="announcement-link-url" placeholder="https://...">
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="saveAnnouncement()">Save Changes</button>
+                    </div>
+                </div>
+
+                <!-- General Settings Section -->
+                <div class="content-section" id="section-settings">
+                    <h1 class="section-title">General Settings</h1>
+                    <p class="section-description">Season status and membership settings.</p>
+                    
+                    <div id="alert-settings" class="alert"></div>
+                    
+                    <div class="card">
+                        <h3 class="card-title">Season & Membership</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Season Status</label>
+                                <select class="form-select" id="setting-season-status">
+                                    <option value="open">Open</option>
+                                    <option value="closed">Closed</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Clubhouse Opens</label>
+                                <input type="text" class="form-input" id="setting-clubhouse-opens" placeholder="e.g. April 1st">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Rates Year</label>
+                                <input type="text" class="form-input" id="setting-rates-year" placeholder="e.g. 2025">
+                            </div>
+                            <div class="form-group">
+                                <div class="form-check" style="margin-top: 1.75rem;">
+                                    <input type="checkbox" id="setting-membership-open">
+                                    <label for="setting-membership-open">Membership applications open</label>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="saveSettings()">Save Changes</button>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="card-title">Tee Time Booking</h3>
+                        <div class="form-group">
+                            <label class="form-label">Tee Time Booking URL</label>
+                            <input type="text" class="form-input" id="setting-tee-time-url" placeholder="https://...">
+                        </div>
+                        <button class="btn btn-primary" onclick="saveSettings()">Save Changes</button>
+                    </div>
+                </div>
+
+                <!-- About & Contact Section -->
+                <div class="content-section" id="section-about">
+                    <h1 class="section-title">About & Contact</h1>
+                    <p class="section-description">Edit the about section and contact information.</p>
+                    
+                    <div id="alert-about" class="alert"></div>
+                    
+                    <div class="card">
+                        <h3 class="card-title">About Section</h3>
+                        <div class="form-group">
+                            <label class="form-label">Heading</label>
+                            <input type="text" class="form-input" id="about-heading" placeholder="e.g. Welcome to FCC">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Paragraph 1</label>
+                            <textarea class="form-textarea" id="about-text-1"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Paragraph 2</label>
+                            <textarea class="form-textarea" id="about-text-2"></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Hero Tagline</label>
+                                <input type="text" class="form-input" id="about-tagline" placeholder="e.g. A nine-hole hidden gem...">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Established Year</label>
+                                <input type="text" class="form-input" id="stat-established">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Number of Holes</label>
+                                <input type="text" class="form-input" id="stat-holes">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Par</label>
+                                <input type="text" class="form-input" id="stat-par">
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="saveAbout()">Save Changes</button>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="card-title">Contact Information</h3>
+                        <div class="form-group">
+                            <label class="form-label">Address Line 1</label>
+                            <input type="text" class="form-input" id="contact-address1" placeholder="181 Main Street">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Address Line 2</label>
+                            <input type="text" class="form-input" id="contact-address2" placeholder="Farmington, NH 03835">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Phone</label>
+                                <input type="text" class="form-input" id="contact-phone" placeholder="(603) 755-2412">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-input" id="contact-email" placeholder="fcc@metrocast.net">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Facebook URL</label>
+                                <input type="text" class="form-input" id="contact-facebook" placeholder="https://facebook.com/...">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Instagram URL</label>
+                                <input type="text" class="form-input" id="contact-instagram" placeholder="https://instagram.com/...">
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="saveContact()">Save Changes</button>
+                    </div>
+                </div>
+
+                <!-- Course Info Cards Section -->
+                <div class="content-section" id="section-course-info">
+                    <h1 class="section-title">Course Info Cards</h1>
+                    <p class="section-description">Edit the six information cards displayed on the course section.</p>
+                    
+                    <div id="alert-course-info" class="alert"></div>
+                    
+                    <div id="course-info-cards"></div>
+                </div>
+
+                <!-- Course Ratings Section -->
+                <div class="content-section" id="section-ratings">
+                    <h1 class="section-title">Course Ratings</h1>
+                    <p class="section-description">Edit the course rating and slope for each tee box.</p>
+                    
+                    <div id="alert-ratings" class="alert"></div>
+                    
+                    <div class="card">
+                        <h3 class="card-title">Male Ratings</h3>
+                        <table class="data-table" id="male-ratings-table">
+                            <thead>
+                                <tr>
+                                    <th>Tee</th>
+                                    <th>Rating</th>
+                                    <th>Slope</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="card">
+                        <h3 class="card-title">Female Ratings</h3>
+                        <table class="data-table" id="female-ratings-table">
+                            <thead>
+                                <tr>
+                                    <th>Tee</th>
+                                    <th>Rating</th>
+                                    <th>Slope</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="saveRatings()">Save All Ratings</button>
+                </div>
+
+                <!-- Scorecard Section -->
+                <div class="content-section" id="section-scorecard">
+                    <h1 class="section-title">Scorecard</h1>
+                    <p class="section-description">Edit hole-by-hole yardages, pars, and handicaps.</p>
+                    
+                    <div id="alert-scorecard" class="alert"></div>
+                    
+                    <div class="card">
+                        <div class="scorecard-edit">
+                            <table id="scorecard-table">
+                                <thead>
+                                    <tr>
+                                        <th>Row</th>
+                                        <th>1</th>
+                                        <th>2</th>
+                                        <th>3</th>
+                                        <th>4</th>
+                                        <th>5</th>
+                                        <th>6</th>
+                                        <th>7</th>
+                                        <th>8</th>
+                                        <th>9</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="saveScorecard()">Save Scorecard</button>
+                </div>
+
+                <!-- Rates Section -->
+                <div class="content-section" id="section-rates">
+                    <h1 class="section-title">Rates & Pricing</h1>
+                    <p class="section-description">Manage membership rates, greens fees, and cart rentals.</p>
+                    
+                    <div id="alert-rates" class="alert"></div>
+                    
+                    <div class="card">
+                        <h3 class="card-title">Membership Rates</h3>
+                        <div id="membership-rates-list"></div>
+                        <button class="btn btn-secondary btn-sm" onclick="addRate('membership')" style="margin-top: 1rem;">+ Add Membership Rate</button>
+                    </div>
+                    
+                    <div class="card">
+                        <h3 class="card-title">Greens Fees</h3>
+                        <div id="greens-rates-list"></div>
+                        <button class="btn btn-secondary btn-sm" onclick="addRate('greens')" style="margin-top: 1rem;">+ Add Greens Fee</button>
+                    </div>
+                    
+                    <div class="card">
+                        <h3 class="card-title">Cart Rentals</h3>
+                        <div id="cart-rates-list"></div>
+                        <button class="btn btn-secondary btn-sm" onclick="addRate('cart')" style="margin-top: 1rem;">+ Add Cart Rate</button>
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="saveRates()">Save All Rates</button>
+                </div>
+
+                <!-- Leagues Section -->
+                <div class="content-section" id="section-leagues">
+                    <h1 class="section-title">Leagues</h1>
+                    <p class="section-description">Manage league information displayed on the site.</p>
+                    
+                    <div id="alert-leagues" class="alert"></div>
+                    
+                    <div id="leagues-list"></div>
+                    
+                    <button class="btn btn-gold" onclick="addLeague()" style="margin-top: 1rem;">+ Add New League</button>
+                </div>
+
+                <!-- Pro Shop Section -->
+                <div class="content-section" id="section-proshop">
+                    <h1 class="section-title">Pro Shop</h1>
+                    <p class="section-description">Edit pro shop information and services.</p>
+                    
+                    <div id="alert-proshop" class="alert"></div>
+                    
+                    <div class="card">
+                        <h3 class="card-title">Pro Shop Content</h3>
+                        <div class="form-group">
+                            <label class="form-label">Heading</label>
+                            <input type="text" class="form-input" id="proshop-heading">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Paragraph 1</label>
+                            <textarea class="form-textarea" id="proshop-text-1"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Paragraph 2</label>
+                            <textarea class="form-textarea" id="proshop-text-2"></textarea>
+                        </div>
+                        <button class="btn btn-primary" onclick="saveProshopContent()">Save Content</button>
+                    </div>
+                    
+                    <div class="card">
+                        <h3 class="card-title">Services Offered</h3>
+                        <div id="proshop-services-list"></div>
+                        <button class="btn btn-secondary btn-sm" onclick="addProshopService()" style="margin-top: 1rem;">+ Add Service</button>
+                        <button class="btn btn-primary" onclick="saveProshopServices()" style="margin-top: 1rem; margin-left: 0.5rem;">Save Services</button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // =============================================
+        // SUPABASE CONFIGURATION
+        // =============================================
+        const SUPABASE_URL = 'https://bbwmbvspladuneiywqfx.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJid21idnNwbGFkdW5laXl3cWZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzMzI0MzUsImV4cCI6MjA4NjkwODQzNX0.glJqYpFvPvYM0avZNN0jp7E-uprZiILQpKdBSs0WKPU';
+        
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // =============================================
+        // AUTHENTICATION
+        // =============================================
+        let adminPassword = '';
+
+        async function loadAdminPassword() {
+            const { data } = await supabaseClient
+                .from('site_settings')
+                .select('value')
+                .eq('key', 'admin_password')
+                .single();
+            
+            if (data) adminPassword = data.value;
+        }
+
+        function attemptLogin() {
+            const input = document.getElementById('password-input').value;
+            if (input === adminPassword) {
+                sessionStorage.setItem('fcc_admin', 'true');
+                showAdmin();
+            } else {
+                document.getElementById('login-error').style.display = 'block';
+            }
+        }
+
+        function logout() {
+            sessionStorage.removeItem('fcc_admin');
+            location.reload();
+        }
+
+        function showAdmin() {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('admin-container').style.display = 'block';
+            loadAllData();
+        }
+
+        // Enter key on password
+        document.getElementById('password-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') attemptLogin();
+        });
+
+        // =============================================
+        // NAVIGATION
+        // =============================================
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                
+                document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+                document.getElementById('section-' + item.dataset.section).classList.add('active');
+            });
+        });
+
+        // =============================================
+        // ALERT HELPER
+        // =============================================
+        function showAlert(section, message, type = 'success') {
+            const alert = document.getElementById('alert-' + section);
+            alert.className = 'alert show alert-' + type;
+            alert.textContent = message;
+            setTimeout(() => alert.classList.remove('show'), 3000);
+        }
+
+        // =============================================
+        // LOAD ALL DATA
+        // =============================================
+        async function loadAllData() {
+            await Promise.all([
+                loadAnnouncement(),
+                loadSettings(),
+                loadAboutContact(),
+                loadCourseInfo(),
+                loadRatings(),
+                loadScorecard(),
+                loadRates(),
+                loadLeagues(),
+                loadProshop()
+            ]);
+        }
+
+        // =============================================
+        // ANNOUNCEMENTS
+        // =============================================
+        async function loadAnnouncement() {
+            const { data } = await supabaseClient
+                .from('announcements')
+                .select('*')
+                .limit(1)
+                .single();
+            
+            if (data) {
+                document.getElementById('announcement-active').checked = data.active;
+                document.getElementById('announcement-message').value = data.message || '';
+                document.getElementById('announcement-link-text').value = data.link_text || '';
+                document.getElementById('announcement-link-url').value = data.link_url || '';
+            }
+        }
+
+        async function saveAnnouncement() {
+            const { error } = await supabaseClient
+                .from('announcements')
+                .update({
+                    active: document.getElementById('announcement-active').checked,
+                    message: document.getElementById('announcement-message').value,
+                    link_text: document.getElementById('announcement-link-text').value || null,
+                    link_url: document.getElementById('announcement-link-url').value || null,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', 1);
+            
+            showAlert('announcements', error ? 'Error saving' : 'Announcement saved!', error ? 'error' : 'success');
+        }
+
+        // =============================================
+        // SETTINGS
+        // =============================================
+        let settingsData = {};
+
+        async function loadSettings() {
+            const { data } = await supabaseClient.from('site_settings').select('key, value');
+            if (data) {
+                data.forEach(row => settingsData[row.key] = row.value);
+                
+                document.getElementById('setting-season-status').value = settingsData.season_status || 'open';
+                document.getElementById('setting-clubhouse-opens').value = settingsData.clubhouse_opens || '';
+                document.getElementById('setting-rates-year').value = settingsData.rates_year || '';
+                document.getElementById('setting-membership-open').checked = settingsData.membership_open === 'true';
+                document.getElementById('setting-tee-time-url').value = settingsData.tee_time_url || '';
+            }
+        }
+
+        async function saveSettings() {
+            const updates = [
+                { key: 'season_status', value: document.getElementById('setting-season-status').value },
+                { key: 'clubhouse_opens', value: document.getElementById('setting-clubhouse-opens').value },
+                { key: 'rates_year', value: document.getElementById('setting-rates-year').value },
+                { key: 'membership_open', value: document.getElementById('setting-membership-open').checked ? 'true' : 'false' },
+                { key: 'tee_time_url', value: document.getElementById('setting-tee-time-url').value }
+            ];
+            
+            for (const u of updates) {
+                await supabaseClient.from('site_settings').upsert({ key: u.key, value: u.value, updated_at: new Date().toISOString() }, { onConflict: 'key' });
+            }
+            
+            showAlert('settings', 'Settings saved!');
+        }
+
+        // =============================================
+        // ABOUT & CONTACT
+        // =============================================
+        async function loadAboutContact() {
+            const { data } = await supabaseClient.from('site_settings').select('key, value');
+            if (data) {
+                const s = {};
+                data.forEach(row => s[row.key] = row.value);
+                
+                document.getElementById('about-heading').value = s.about_heading || '';
+                document.getElementById('about-text-1').value = s.about_text_1 || '';
+                document.getElementById('about-text-2').value = s.about_text_2 || '';
+                document.getElementById('about-tagline').value = s.hero_tagline || '';
+                document.getElementById('stat-established').value = s.stat_established || '';
+                document.getElementById('stat-holes').value = s.stat_holes || '';
+                document.getElementById('stat-par').value = s.stat_par || '';
+                document.getElementById('contact-address1').value = s.contact_address_line1 || '';
+                document.getElementById('contact-address2').value = s.contact_address_line2 || '';
+                document.getElementById('contact-phone').value = s.contact_phone || '';
+                document.getElementById('contact-email').value = s.contact_email || '';
+                document.getElementById('contact-facebook').value = s.facebook_url || '';
+                document.getElementById('contact-instagram').value = s.instagram_url || '';
+            }
+        }
+
+        async function saveAbout() {
+            const updates = [
+                { key: 'about_heading', value: document.getElementById('about-heading').value },
+                { key: 'about_text_1', value: document.getElementById('about-text-1').value },
+                { key: 'about_text_2', value: document.getElementById('about-text-2').value },
+                { key: 'hero_tagline', value: document.getElementById('about-tagline').value },
+                { key: 'stat_established', value: document.getElementById('stat-established').value },
+                { key: 'stat_holes', value: document.getElementById('stat-holes').value },
+                { key: 'stat_par', value: document.getElementById('stat-par').value }
+            ];
+            
+            for (const u of updates) {
+                await supabaseClient.from('site_settings').upsert({ key: u.key, value: u.value, updated_at: new Date().toISOString() }, { onConflict: 'key' });
+            }
+            
+            showAlert('about', 'About section saved!');
+        }
+
+        async function saveContact() {
+            const updates = [
+                { key: 'contact_address_line1', value: document.getElementById('contact-address1').value },
+                { key: 'contact_address_line2', value: document.getElementById('contact-address2').value },
+                { key: 'contact_phone', value: document.getElementById('contact-phone').value },
+                { key: 'contact_email', value: document.getElementById('contact-email').value },
+                { key: 'facebook_url', value: document.getElementById('contact-facebook').value },
+                { key: 'instagram_url', value: document.getElementById('contact-instagram').value }
+            ];
+            
+            for (const u of updates) {
+                await supabaseClient.from('site_settings').upsert({ key: u.key, value: u.value, updated_at: new Date().toISOString() }, { onConflict: 'key' });
+            }
+            
+            showAlert('about', 'Contact info saved!');
+        }
+
+        // =============================================
+        // COURSE INFO CARDS
+        // =============================================
+        let courseInfoData = [];
+
+        async function loadCourseInfo() {
+            const { data } = await supabaseClient.from('course_info').select('*').order('sort_order');
+            if (data) {
+                courseInfoData = data;
+                renderCourseInfoCards();
+            }
+        }
+
+        function renderCourseInfoCards() {
+            const container = document.getElementById('course-info-cards');
+            container.innerHTML = courseInfoData.map((card, idx) => `
+                <div class="card">
+                    <h3 class="card-title">${card.icon} ${card.title}</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Icon (emoji)</label>
+                            <input type="text" class="form-input" value="${card.icon}" onchange="updateCourseInfo(${idx}, 'icon', this.value)">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Title</label>
+                            <input type="text" class="form-input" value="${card.title}" onchange="updateCourseInfo(${idx}, 'title', this.value)">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Content</label>
+                        <textarea class="form-textarea" onchange="updateCourseInfo(${idx}, 'content', this.value)">${card.content}</textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input type="checkbox" ${card.has_button ? 'checked' : ''} onchange="updateCourseInfo(${idx}, 'has_button', this.checked)">
+                                <label>Show button</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Button Text</label>
+                            <input type="text" class="form-input" value="${card.button_text || ''}" onchange="updateCourseInfo(${idx}, 'button_text', this.value)">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Button Link</label>
+                            <input type="text" class="form-input" value="${card.button_link || ''}" onchange="updateCourseInfo(${idx}, 'button_link', this.value)">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-sm" onclick="saveCourseInfoCard(${idx})">Save Card</button>
+                </div>
+            `).join('');
+        }
+
+        function updateCourseInfo(idx, field, value) {
+            courseInfoData[idx][field] = value;
+        }
+
+        async function saveCourseInfoCard(idx) {
+            const card = courseInfoData[idx];
+            const { error } = await supabaseClient
+                .from('course_info')
+                .update({
+                    icon: card.icon,
+                    title: card.title,
+                    content: card.content,
+                    has_button: card.has_button,
+                    button_text: card.button_text,
+                    button_link: card.button_link,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', card.id);
+            
+            showAlert('course-info', error ? 'Error saving' : 'Card saved!', error ? 'error' : 'success');
+        }
+
+        // =============================================
+        // COURSE RATINGS
+        // =============================================
+        let ratingsData = [];
+
+        async function loadRatings() {
+            const { data } = await supabaseClient.from('course_ratings').select('*').order('sort_order');
+            if (data) {
+                ratingsData = data;
+                renderRatings();
+            }
+        }
+
+        function renderRatings() {
+            const maleTable = document.querySelector('#male-ratings-table tbody');
+            const femaleTable = document.querySelector('#female-ratings-table tbody');
+            
+            maleTable.innerHTML = ratingsData.filter(r => r.gender === 'male').map((r, idx) => `
+                <tr data-id="${r.id}">
+                    <td>${r.tee_name}</td>
+                    <td><input type="number" step="0.1" value="${r.rating}" class="rating-input"></td>
+                    <td><input type="number" value="${r.slope}" class="slope-input"></td>
+                </tr>
+            `).join('');
+            
+            femaleTable.innerHTML = ratingsData.filter(r => r.gender === 'female').map((r, idx) => `
+                <tr data-id="${r.id}">
+                    <td>${r.tee_name}</td>
+                    <td><input type="number" step="0.1" value="${r.rating}" class="rating-input"></td>
+                    <td><input type="number" value="${r.slope}" class="slope-input"></td>
+                </tr>
+            `).join('');
+        }
+
+        async function saveRatings() {
+            const rows = document.querySelectorAll('#male-ratings-table tbody tr, #female-ratings-table tbody tr');
+            
+            for (const row of rows) {
+                const id = row.dataset.id;
+                const rating = parseFloat(row.querySelector('.rating-input').value);
+                const slope = parseInt(row.querySelector('.slope-input').value);
+                
+                await supabaseClient.from('course_ratings').update({ rating, slope, updated_at: new Date().toISOString() }).eq('id', id);
+            }
+            
+            showAlert('ratings', 'All ratings saved!');
+        }
+
+        // =============================================
+        // SCORECARD
+        // =============================================
+        let scorecardData = [];
+
+        async function loadScorecard() {
+            const { data } = await supabaseClient.from('scorecard').select('*').order('hole');
+            if (data) {
+                scorecardData = data;
+                renderScorecard();
+            }
+        }
+
+        function renderScorecard() {
+            const tbody = document.querySelector('#scorecard-table tbody');
+            const rows = [
+                { label: 'Par', field: 'par' },
+                { label: 'White/Blue', field: 'white_blue' },
+                { label: 'Black Tops', field: 'black_tops' },
+                { label: 'Green Tops', field: 'green_tops' },
+                { label: 'Red/Gold', field: 'red_gold' },
+                { label: 'Back HCP', field: 'back_hcp' },
+                { label: 'Fwd HCP', field: 'fwd_hcp' }
+            ];
+            
+            tbody.innerHTML = rows.map(row => `
+                <tr data-field="${row.field}">
+                    <td class="row-label">${row.label}</td>
+                    ${scorecardData.map((hole, idx) => `
+                        <td><input type="number" value="${hole[row.field] || ''}" data-hole="${idx}"></td>
+                    `).join('')}
+                </tr>
+            `).join('');
+        }
+
+        async function saveScorecard() {
+            const rows = document.querySelectorAll('#scorecard-table tbody tr');
+            
+            // Build update objects for each hole
+            const holeUpdates = scorecardData.map(() => ({}));
+            
+            rows.forEach(row => {
+                const field = row.dataset.field;
+                row.querySelectorAll('input').forEach(input => {
+                    const holeIdx = parseInt(input.dataset.hole);
+                    holeUpdates[holeIdx][field] = parseInt(input.value) || null;
+                });
+            });
+            
+            // Save each hole
+            for (let i = 0; i < scorecardData.length; i++) {
+                await supabaseClient.from('scorecard').update({
+                    ...holeUpdates[i],
+                    updated_at: new Date().toISOString()
+                }).eq('id', scorecardData[i].id);
+            }
+            
+            showAlert('scorecard', 'Scorecard saved!');
+        }
+
+        // =============================================
+        // RATES
+        // =============================================
+        let ratesData = { membership: [], greens: [], cart: [] };
+
+        async function loadRates() {
+            const { data } = await supabaseClient.from('rates').select('*').order('sort_order');
+            if (data) {
+                ratesData = {
+                    membership: data.filter(r => r.category === 'membership'),
+                    greens: data.filter(r => r.category === 'greens'),
+                    cart: data.filter(r => r.category === 'cart')
+                };
+                renderRates();
+            }
+        }
+
+        function renderRates() {
+            ['membership', 'greens', 'cart'].forEach(category => {
+                const container = document.getElementById(category + '-rates-list');
+                container.innerHTML = ratesData[category].map((rate, idx) => `
+                    <div class="list-item" data-id="${rate.id}">
+                        <div class="list-item-content" style="display: flex; gap: 1rem; align-items: center;">
+                            <input type="text" class="form-input" value="${rate.type}" style="flex: 2;" placeholder="Type">
+                            <input type="number" class="form-input" value="${rate.price}" style="flex: 1;" placeholder="Price">
+                        </div>
+                        <div class="list-item-actions">
+                            <button class="btn btn-danger btn-sm" onclick="deleteRate('${category}', ${rate.id})">Delete</button>
+                        </div>
+                    </div>
+                `).join('');
+            });
+        }
+
+        function addRate(category) {
+            ratesData[category].push({ id: 'new-' + Date.now(), category, type: '', price: 0, sort_order: ratesData[category].length });
+            renderRates();
+        }
+
+        async function deleteRate(category, id) {
+            if (String(id).startsWith('new-')) {
+                ratesData[category] = ratesData[category].filter(r => r.id !== id);
+                renderRates();
+            } else {
+                await supabaseClient.from('rates').delete().eq('id', id);
+                ratesData[category] = ratesData[category].filter(r => r.id !== id);
+                renderRates();
+                showAlert('rates', 'Rate deleted');
+            }
+        }
+
+        async function saveRates() {
+            for (const category of ['membership', 'greens', 'cart']) {
+                const items = document.querySelectorAll(`#${category}-rates-list .list-item`);
+                
+                for (let i = 0; i < items.length; i++) {
+                    const item = items[i];
+                    const id = item.dataset.id;
+                    const inputs = item.querySelectorAll('input');
+                    const type = inputs[0].value;
+                    const price = parseInt(inputs[1].value) || 0;
+                    
+                    if (String(id).startsWith('new-')) {
+                        await supabaseClient.from('rates').insert({ category, type, price, sort_order: i });
+                    } else {
+                        await supabaseClient.from('rates').update({ type, price, sort_order: i, updated_at: new Date().toISOString() }).eq('id', id);
+                    }
+                }
+            }
+            
+            await loadRates();
+            showAlert('rates', 'All rates saved!');
+        }
+
+        // =============================================
+        // LEAGUES
+        // =============================================
+        let leaguesData = [];
+
+        async function loadLeagues() {
+            const { data } = await supabaseClient.from('leagues').select('*').order('sort_order');
+            if (data) {
+                leaguesData = data;
+                renderLeagues();
+            }
+        }
+
+        function renderLeagues() {
+            const container = document.getElementById('leagues-list');
+            container.innerHTML = leaguesData.map((league, idx) => `
+                <div class="card" data-id="${league.id}">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3 class="card-title" style="margin: 0;">${league.name || 'New League'}</h3>
+                        <button class="btn btn-danger btn-sm" onclick="deleteLeague(${league.id})">Delete</button>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Name</label>
+                            <input type="text" class="form-input league-name" value="${league.name || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Day</label>
+                            <input type="text" class="form-input league-day" value="${league.day || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Rate</label>
+                            <input type="text" class="form-input league-rate" value="${league.rate || ''}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-textarea league-blurb">${league.blurb || ''}</textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Contact 1 Name</label>
+                            <input type="text" class="form-input league-contact1-name" value="${league.contact1_name || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Contact 1 Email</label>
+                            <input type="email" class="form-input league-contact1-email" value="${league.contact1_email || ''}">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Contact 2 Name</label>
+                            <input type="text" class="form-input league-contact2-name" value="${league.contact2_name || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Contact 2 Email</label>
+                            <input type="email" class="form-input league-contact2-email" value="${league.contact2_email || ''}">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Button Text</label>
+                            <input type="text" class="form-input league-btn-text" value="${league.button_text || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Button Link (optional)</label>
+                            <input type="text" class="form-input league-btn-link" value="${league.button_link || ''}">
+                        </div>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" class="league-active" ${league.active ? 'checked' : ''}>
+                        <label>Active (show on site)</label>
+                    </div>
+                    <button class="btn btn-primary btn-sm" onclick="saveLeague(${league.id})" style="margin-top: 1rem;">Save League</button>
+                </div>
+            `).join('');
+        }
+
+        function addLeague() {
+            leaguesData.push({
+                id: 'new-' + Date.now(),
+                name: '',
+                blurb: '',
+                day: '',
+                rate: '',
+                contact1_name: '',
+                contact1_email: '',
+                contact2_name: '',
+                contact2_email: '',
+                button_text: 'Learn More',
+                button_link: '',
+                button_style: 'secondary',
+                sort_order: leaguesData.length,
+                active: true
+            });
+            renderLeagues();
+        }
+
+        async function saveLeague(id) {
+            const card = document.querySelector(`.card[data-id="${id}"]`);
+            const data = {
+                name: card.querySelector('.league-name').value,
+                blurb: card.querySelector('.league-blurb').value,
+                day: card.querySelector('.league-day').value,
+                rate: card.querySelector('.league-rate').value,
+                contact1_name: card.querySelector('.league-contact1-name').value,
+                contact1_email: card.querySelector('.league-contact1-email').value,
+                contact2_name: card.querySelector('.league-contact2-name').value,
+                contact2_email: card.querySelector('.league-contact2-email').value,
+                button_text: card.querySelector('.league-btn-text').value,
+                button_link: card.querySelector('.league-btn-link').value || null,
+                active: card.querySelector('.league-active').checked,
+                updated_at: new Date().toISOString()
+            };
+            
+            if (String(id).startsWith('new-')) {
+                data.sort_order = leaguesData.length;
+                await supabaseClient.from('leagues').insert(data);
+            } else {
+                await supabaseClient.from('rates').update(data).eq('id', id);
+            }
+            
+            await loadLeagues();
+            showAlert('leagues', 'League saved!');
+        }
+
+        async function deleteLeague(id) {
+            if (confirm('Delete this league?')) {
+                if (!String(id).startsWith('new-')) {
+                    await supabaseClient.from('leagues').delete().eq('id', id);
+                }
+                leaguesData = leaguesData.filter(l => l.id !== id);
+                renderLeagues();
+                showAlert('leagues', 'League deleted');
+            }
+        }
+
+        // =============================================
+        // PRO SHOP
+        // =============================================
+        let proshopServices = [];
+
+        async function loadProshop() {
+            // Load content
+            const { data: settings } = await supabaseClient.from('site_settings').select('key, value');
+            if (settings) {
+                const s = {};
+                settings.forEach(row => s[row.key] = row.value);
+                document.getElementById('proshop-heading').value = s.proshop_heading || '';
+                document.getElementById('proshop-text-1').value = s.proshop_text_1 || '';
+                document.getElementById('proshop-text-2').value = s.proshop_text_2 || '';
+            }
+            
+            // Load services
+            const { data: services } = await supabaseClient.from('pro_shop_services').select('*').order('sort_order');
+            if (services) {
+                proshopServices = services;
+                renderProshopServices();
+            }
+        }
+
+        function renderProshopServices() {
+            const container = document.getElementById('proshop-services-list');
+            container.innerHTML = proshopServices.map((s, idx) => `
+                <div class="list-item" data-id="${s.id}">
+                    <input type="text" class="form-input" value="${s.service_name}" style="flex: 1;">
+                    <button class="btn btn-danger btn-sm" onclick="deleteProshopService(${s.id})" style="margin-left: 0.5rem;">Delete</button>
+                </div>
+            `).join('');
+        }
+
+        function addProshopService() {
+            proshopServices.push({ id: 'new-' + Date.now(), service_name: '', sort_order: proshopServices.length });
+            renderProshopServices();
+        }
+
+        async function deleteProshopService(id) {
+            if (!String(id).startsWith('new-')) {
+                await supabaseClient.from('pro_shop_services').delete().eq('id', id);
+            }
+            proshopServices = proshopServices.filter(s => s.id !== id);
+            renderProshopServices();
+        }
+
+        async function saveProshopContent() {
+            const updates = [
+                { key: 'proshop_heading', value: document.getElementById('proshop-heading').value },
+                { key: 'proshop_text_1', value: document.getElementById('proshop-text-1').value },
+                { key: 'proshop_text_2', value: document.getElementById('proshop-text-2').value }
+            ];
+            
+            for (const u of updates) {
+                await supabaseClient.from('site_settings').upsert({ key: u.key, value: u.value, updated_at: new Date().toISOString() }, { onConflict: 'key' });
+            }
+            
+            showAlert('proshop', 'Pro shop content saved!');
+        }
+
+        async function saveProshopServices() {
+            const items = document.querySelectorAll('#proshop-services-list .list-item');
+            
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                const id = item.dataset.id;
+                const name = item.querySelector('input').value;
+                
+                if (String(id).startsWith('new-')) {
+                    await supabaseClient.from('pro_shop_services').insert({ service_name: name, sort_order: i });
+                } else {
+                    await supabaseClient.from('pro_shop_services').update({ service_name: name, sort_order: i, updated_at: new Date().toISOString() }).eq('id', id);
+                }
+            }
+            
+            await loadProshop();
+            showAlert('proshop', 'Services saved!');
+        }
+
+        // =============================================
+        // INITIALIZATION
+        // =============================================
+        (async function init() {
+            await loadAdminPassword();
+            
+            if (sessionStorage.getItem('fcc_admin') === 'true') {
+                showAdmin();
+            }
+        })();
+    </script>
+</body>
+</html>

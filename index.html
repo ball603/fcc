@@ -1806,7 +1806,7 @@
             </div>
             <div class="hero-badge">Farmington, NH • Established 1924</div>
             <h1>Farmington Country Club</h1>
-            <p class="subtitle">A nine-hole hidden gem on the banks of the Cocheco River</p>
+            <p class="subtitle" id="hero-tagline">A nine-hole hidden gem on the banks of the Cocheco River</p>
             <div class="hero-cta">
                 <a href="https://fox.tenfore.golf/farmington" target="_blank" class="btn btn-primary">Book a Tee Time</a>
             </div>
@@ -1818,20 +1818,20 @@
         <div class="section-inner">
             <div class="about-grid">
                 <div class="about-content">
-                    <h3>Welcome to FCC</h3>
-                    <p>Founded in 1924, Farmington Country Club is a nine-hole par 36 golf course located on the bank of the Cocheco River. We pride ourselves on offering our members excellent playing conditions, a welcoming atmosphere, and competitive tournaments throughout the season.</p>
-                    <p>Whether you're a seasoned golfer or just starting out, FCC offers something for everyone. Our course challenges players of all skill levels while remaining approachable and enjoyable.</p>
+                    <h3 id="about-heading">Welcome to FCC</h3>
+                    <p id="about-text-1">Founded in 1924, Farmington Country Club is a nine-hole par 36 golf course located on the bank of the Cocheco River. We pride ourselves on offering our members excellent playing conditions, a welcoming atmosphere, and competitive tournaments throughout the season.</p>
+                    <p id="about-text-2">Whether you're a seasoned golfer or just starting out, FCC offers something for everyone. Our course challenges players of all skill levels while remaining approachable and enjoyable.</p>
                     <div class="about-stats">
                         <div class="about-stat">
-                            <div class="value">1924</div>
+                            <div class="value" id="stat-established">1924</div>
                             <div class="label">Established</div>
                         </div>
                         <div class="about-stat">
-                            <div class="value">9</div>
+                            <div class="value" id="stat-holes">9</div>
                             <div class="label">Holes</div>
                         </div>
                         <div class="about-stat">
-                            <div class="value">36</div>
+                            <div class="value" id="stat-par">36</div>
                             <div class="label">Par</div>
                         </div>
                     </div>
@@ -1854,46 +1854,11 @@
                 <p>Everything you need to know about playing at FCC</p>
                 <div class="gold-line"></div>
             </div>
-            <div class="course-grid">
+            <div class="course-grid" id="course-info-grid">
+                <!-- Course info cards loaded dynamically from Supabase -->
                 <div class="course-card">
                     <div class="course-card-icon">⛳</div>
-                    <h3>Course Rating/Slope</h3>
-                    <p style="font-size: 0.85rem; line-height: 1.6;">
-                    <strong>Male – White/Blue:</strong> 69.9/127<br>
-                    <strong>Male – Black Tops:</strong> 69.2/125<br>
-                    <strong>Male – Green Tops:</strong> 66.6/117<br>
-                    <strong>Male – Red/Gold:</strong> 65.6/108<br>
-                    <strong>Female – White/Blue:</strong> 76.3/131<br>
-                    <strong>Female – Black Tops:</strong> 75.4/127<br>
-                    <strong>Female – Green Tops:</strong> 72.2/124<br>
-                    <strong>Female – Red/Gold:</strong> 70.3/118</p>
-                    <button class="btn btn-primary" style="margin-top: 1rem; width: 100%;" onclick="openScorecardModal()">View Scorecard</button>
-                </div>
-                <div class="course-card">
-                    <div class="course-card-icon">🏌️</div>
-                    <h3>Tee Times</h3>
-                    <p>Required on weekends and holidays. Members can book up to 1 week in advance. Non-members can book 5 days ahead.</p>
-                    <a href="https://fox.tenfore.golf/farmington" target="_blank" class="btn btn-primary" style="margin-top: 1rem; width: 100%; display: flex; align-items: center; justify-content: center;">Book a Tee Time</a>
-                </div>
-                <div class="course-card">
-                    <div class="course-card-icon">🚗</div>
-                    <h3>Golf Carts</h3>
-                    <p>Power carts available. Must have valid driver's license. Keep carts on paths when possible and 30ft from greens.</p>
-                </div>
-                <div class="course-card">
-                    <div class="course-card-icon">👕</div>
-                    <h3>Dress Code</h3>
-                    <p>Shirts and shoes required. No tank tops, bathing suits, or offensive attire. Pro shop decision is final.</p>
-                </div>
-                <div class="course-card">
-                    <div class="course-card-icon">⏱️</div>
-                    <h3>Pace of Play</h3>
-                    <p>Course should be played in just over 2 hours for 9 holes. Play ready golf and stay behind the group ahead.</p>
-                </div>
-                <div class="course-card">
-                    <div class="course-card-icon">📋</div>
-                    <h3>Local Rules</h3>
-                    <p>USGA rules govern play. Preferred lies in fairways (1 club length). All staked trees are mandatory free lift.</p>
+                    <h3>Loading...</h3>
                 </div>
             </div>
         </div>
@@ -2105,16 +2070,11 @@
         <div class="section-inner">
             <div class="proshop-content">
                 <div class="proshop-text">
-                    <h3>The Pro Shop</h3>
-                    <p>Our fully stocked Pro Shop has everything you need for your round. We offer equipment, apparel, accessories, and professional services to keep your game sharp.</p>
-                    <p>The shop opens no later than April 1st each season (earlier if weather permits). After November 15th, the course remains open for members only until winter conditions force closure.</p>
-                    <div class="proshop-services">
-                        <div class="proshop-service">Club Re-Gripping</div>
-                        <div class="proshop-service">Shoe Re-Spiking</div>
-                        <div class="proshop-service">Private Lessons</div>
-                        <div class="proshop-service">Equipment Sales</div>
-                        <div class="proshop-service">Apparel</div>
-                        <div class="proshop-service">Beverages</div>
+                    <h3 id="proshop-heading">The Pro Shop</h3>
+                    <p id="proshop-text-1">Our fully stocked Pro Shop has everything you need for your round. We offer equipment, apparel, accessories, and professional services to keep your game sharp.</p>
+                    <p id="proshop-text-2">The shop opens no later than April 1st each season (earlier if weather permits). After November 15th, the course remains open for members only until winter conditions force closure.</p>
+                    <div class="proshop-services" id="proshop-services">
+                        <div class="proshop-service">Loading...</div>
                     </div>
                 </div>
                 <div class="proshop-image" style="background: url('images/nature7.jpg') center/cover;">
@@ -2138,28 +2098,28 @@
                         <div class="contact-item-icon">📍</div>
                         <div class="contact-item-text">
                             <h4>Address</h4>
-                            <p>181 Main Street<br>Farmington, NH 03835</p>
+                            <p id="contact-address">181 Main Street<br>Farmington, NH 03835</p>
                         </div>
                     </div>
                     <div class="contact-item">
                         <div class="contact-item-icon">📞</div>
                         <div class="contact-item-text">
                             <h4>Phone</h4>
-                            <p><a href="tel:6037552412">(603) 755-2412</a></p>
+                            <p id="contact-phone"><a href="tel:6037552412">(603) 755-2412</a></p>
                         </div>
                     </div>
                     <div class="contact-item">
                         <div class="contact-item-icon">✉️</div>
                         <div class="contact-item-text">
                             <h4>Email</h4>
-                            <p><a href="/cdn-cgi/l/email-protection#553c3b333a15133427383c3b32213a3b163a203b21272c163920371b1d7b363a38"><span class="__cf_email__" data-cfemail="553c3b333a15133427383c3b32213a3b163a203b21272c163920371b1d7b363a38">[email&#160;protected]</span></a></p>
+                            <p id="contact-email"><a href="mailto:fcc@metrocast.net">fcc@metrocast.net</a></p>
                         </div>
                     </div>
                     <div class="social-links">
-                        <a href="https://www.facebook.com/FarmingtonCountryClubNH/" class="social-link" target="_blank" title="Follow us on Facebook">
+                        <a href="https://www.facebook.com/FarmingtonCountryClubNH/" class="social-link" target="_blank" title="Follow us on Facebook" id="facebook-link">
                             <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                         </a>
-                        <a href="https://www.instagram.com/farmingtoncountryclubnh/" class="social-link" target="_blank" title="Follow us on Instagram">
+                        <a href="https://www.instagram.com/farmingtoncountryclubnh/" class="social-link" target="_blank" title="Follow us on Instagram" id="instagram-link">
                             <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
                         </a>
                     </div>
@@ -3172,13 +3132,210 @@
             }
         }
 
+        // Load All Site Settings (for about, contact, etc.)
+        async function loadAllSettings() {
+            try {
+                const { data } = await supabaseClient
+                    .from('site_settings')
+                    .select('key, value');
+                
+                if (!data) return;
+                
+                const settings = {};
+                data.forEach(row => settings[row.key] = row.value);
+                
+                // Hero section
+                const tagline = document.getElementById('hero-tagline');
+                if (tagline && settings.hero_tagline) tagline.textContent = settings.hero_tagline;
+                
+                // About section
+                const aboutHeading = document.getElementById('about-heading');
+                if (aboutHeading && settings.about_heading) aboutHeading.textContent = settings.about_heading;
+                
+                const aboutText1 = document.getElementById('about-text-1');
+                if (aboutText1 && settings.about_text_1) aboutText1.textContent = settings.about_text_1;
+                
+                const aboutText2 = document.getElementById('about-text-2');
+                if (aboutText2 && settings.about_text_2) aboutText2.textContent = settings.about_text_2;
+                
+                // Stats
+                const statEstablished = document.getElementById('stat-established');
+                if (statEstablished && settings.stat_established) statEstablished.textContent = settings.stat_established;
+                
+                const statHoles = document.getElementById('stat-holes');
+                if (statHoles && settings.stat_holes) statHoles.textContent = settings.stat_holes;
+                
+                const statPar = document.getElementById('stat-par');
+                if (statPar && settings.stat_par) statPar.textContent = settings.stat_par;
+                
+                // Contact info
+                const contactAddress = document.getElementById('contact-address');
+                if (contactAddress && settings.contact_address_line1) {
+                    contactAddress.innerHTML = settings.contact_address_line1 + '<br>' + (settings.contact_address_line2 || '');
+                }
+                
+                const contactPhone = document.getElementById('contact-phone');
+                if (contactPhone && settings.contact_phone) {
+                    const phoneClean = settings.contact_phone.replace(/[^0-9]/g, '');
+                    contactPhone.innerHTML = `<a href="tel:${phoneClean}">${settings.contact_phone}</a>`;
+                }
+                
+                const contactEmail = document.getElementById('contact-email');
+                if (contactEmail && settings.contact_email) {
+                    contactEmail.innerHTML = `<a href="mailto:${settings.contact_email}">${settings.contact_email}</a>`;
+                }
+                
+                // Social links
+                const facebookLink = document.getElementById('facebook-link');
+                if (facebookLink && settings.facebook_url) facebookLink.href = settings.facebook_url;
+                
+                const instagramLink = document.getElementById('instagram-link');
+                if (instagramLink && settings.instagram_url) instagramLink.href = settings.instagram_url;
+                
+                // Pro shop
+                const proshopHeading = document.getElementById('proshop-heading');
+                if (proshopHeading && settings.proshop_heading) proshopHeading.textContent = settings.proshop_heading;
+                
+                const proshopText1 = document.getElementById('proshop-text-1');
+                if (proshopText1 && settings.proshop_text_1) proshopText1.textContent = settings.proshop_text_1;
+                
+                const proshopText2 = document.getElementById('proshop-text-2');
+                if (proshopText2 && settings.proshop_text_2) proshopText2.textContent = settings.proshop_text_2;
+                
+                // Tee time URL
+                if (settings.tee_time_url) {
+                    document.querySelectorAll('a[href*="tenfore.golf"]').forEach(link => {
+                        link.href = settings.tee_time_url;
+                    });
+                }
+                
+            } catch (error) {
+                console.log('Could not load settings:', error);
+            }
+        }
+        
+        // Load Course Ratings
+        async function loadCourseRatings() {
+            try {
+                const { data } = await supabaseClient
+                    .from('course_ratings')
+                    .select('*')
+                    .order('sort_order');
+                
+                if (!data) return;
+                
+                const ratingsContainer = document.getElementById('course-ratings-display');
+                if (!ratingsContainer) return;
+                
+                const maleRatings = data.filter(r => r.gender === 'male');
+                const femaleRatings = data.filter(r => r.gender === 'female');
+                
+                let html = '';
+                maleRatings.forEach(r => {
+                    html += `<strong>Male – ${r.tee_name}:</strong> ${r.rating}/${r.slope}<br>`;
+                });
+                femaleRatings.forEach(r => {
+                    html += `<strong>Female – ${r.tee_name}:</strong> ${r.rating}/${r.slope}<br>`;
+                });
+                
+                ratingsContainer.innerHTML = html;
+                
+            } catch (error) {
+                console.log('Could not load course ratings:', error);
+            }
+        }
+        
+        // Load Course Info Cards
+        async function loadCourseInfo() {
+            try {
+                const { data } = await supabaseClient
+                    .from('course_info')
+                    .select('*')
+                    .eq('active', true)
+                    .order('sort_order');
+                
+                if (!data) return;
+                
+                const grid = document.getElementById('course-info-grid');
+                if (!grid) return;
+                
+                // Load ratings for the first card
+                const { data: ratings } = await supabaseClient
+                    .from('course_ratings')
+                    .select('*')
+                    .order('sort_order');
+                
+                let ratingsHtml = '';
+                if (ratings) {
+                    ratings.forEach(r => {
+                        const genderLabel = r.gender.charAt(0).toUpperCase() + r.gender.slice(1);
+                        ratingsHtml += `<strong>${genderLabel} – ${r.tee_name}:</strong> ${r.rating}/${r.slope}<br>`;
+                    });
+                }
+                
+                grid.innerHTML = data.map(card => {
+                    let content = card.content;
+                    if (content === 'RATINGS_DISPLAY') {
+                        content = ratingsHtml;
+                    }
+                    
+                    let buttonHtml = '';
+                    if (card.has_button) {
+                        if (card.button_link === '#scorecard') {
+                            buttonHtml = `<button class="btn btn-primary" style="margin-top: 1rem; width: 100%;" onclick="openScorecardModal()">${card.button_text}</button>`;
+                        } else {
+                            buttonHtml = `<a href="${card.button_link}" target="_blank" class="btn btn-primary" style="margin-top: 1rem; width: 100%; display: flex; align-items: center; justify-content: center;">${card.button_text}</a>`;
+                        }
+                    }
+                    
+                    return `
+                        <div class="course-card">
+                            <div class="course-card-icon">${card.icon}</div>
+                            <h3>${card.title}</h3>
+                            <p style="font-size: 0.85rem; line-height: 1.6;">${content}</p>
+                            ${buttonHtml}
+                        </div>
+                    `;
+                }).join('');
+                
+            } catch (error) {
+                console.log('Could not load course info:', error);
+            }
+        }
+        
+        // Load Pro Shop Services
+        async function loadProshopServices() {
+            try {
+                const { data } = await supabaseClient
+                    .from('pro_shop_services')
+                    .select('*')
+                    .eq('active', true)
+                    .order('sort_order');
+                
+                if (!data) return;
+                
+                const container = document.getElementById('proshop-services');
+                if (!container) return;
+                
+                container.innerHTML = data.map(s => 
+                    `<div class="proshop-service">${s.service_name}</div>`
+                ).join('');
+                
+            } catch (error) {
+                console.log('Could not load pro shop services:', error);
+            }
+        }
+
         // Initialize all data loading
         document.addEventListener('DOMContentLoaded', () => {
             loadSiteSettings();
             loadAnnouncement();
+            loadAllSettings();
+            loadCourseInfo();
             loadScorecard();
             loadRates();
             loadLeagues();
+            loadProshopServices();
         });
     </script>
 </body>
