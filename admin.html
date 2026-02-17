@@ -1115,42 +1115,179 @@
 
         function renderCourseInfoCards() {
             const container = document.getElementById('course-info-cards');
-            container.innerHTML = courseInfoData.map((card, idx) => `
-                <div class="card">
-                    <h3 class="card-title">${card.icon} ${card.title}</h3>
-                    <div class="form-row">
+            container.innerHTML = courseInfoData.map((card, idx) => {
+                // Check if this is the ratings display card
+                const isRatingsCard = card.content === 'RATINGS_DISPLAY';
+                const isScorecard = card.button_link === '#scorecard';
+                
+                let contentSection = '';
+                if (isRatingsCard) {
+                    contentSection = `
                         <div class="form-group">
-                            <label class="form-label">Icon (emoji)</label>
-                            <input type="text" class="form-input" value="${card.icon}" onchange="updateCourseInfo(${idx}, 'icon', this.value)">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Title</label>
-                            <input type="text" class="form-input" value="${card.title}" onchange="updateCourseInfo(${idx}, 'title', this.value)">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Content</label>
-                        <textarea class="form-textarea" onchange="updateCourseInfo(${idx}, 'content', this.value)">${card.content}</textarea>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <div class="form-check">
-                                <input type="checkbox" ${card.has_button ? 'checked' : ''} onchange="updateCourseInfo(${idx}, 'has_button', this.checked)">
-                                <label>Show button</label>
+                            <label class="form-label">Content</label>
+                            <div style="background: var(--gold-pale); padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
+                                <p style="margin: 0 0 0.75rem 0; font-size: 0.9rem; color: var(--gray-600);">
+                                    <strong>This card displays Course Ratings.</strong> Edit ratings below:
+                                </p>
+                                <div id="inline-ratings-editor-${idx}">
+                                    <!-- Ratings will be loaded here -->
+                                </div>
+                                <button class="btn btn-secondary btn-sm" onclick="navigateToSection('ratings')" style="margin-top: 0.75rem;">
+                                    Open Full Ratings Editor →
+                                </button>
                             </div>
                         </div>
+                    `;
+                } else {
+                    contentSection = `
                         <div class="form-group">
-                            <label class="form-label">Button Text</label>
-                            <input type="text" class="form-input" value="${card.button_text || ''}" onchange="updateCourseInfo(${idx}, 'button_text', this.value)">
+                            <label class="form-label">Content</label>
+                            <textarea class="form-textarea" onchange="updateCourseInfo(${idx}, 'content', this.value)">${card.content}</textarea>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">Button Link</label>
-                            <input type="text" class="form-input" value="${card.button_link || ''}" onchange="updateCourseInfo(${idx}, 'button_link', this.value)">
+                    `;
+                }
+                
+                let buttonSection = '';
+                if (isScorecard) {
+                    buttonSection = `
+                        <div class="form-row">
+                            <div class="form-group">
+                                <div class="form-check">
+                                    <input type="checkbox" ${card.has_button ? 'checked' : ''} onchange="updateCourseInfo(${idx}, 'has_button', this.checked)">
+                                    <label>Show button</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Button Text</label>
+                                <input type="text" class="form-input" value="${card.button_text || ''}" onchange="updateCourseInfo(${idx}, 'button_text', this.value)">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Button Action</label>
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <span style="background: var(--green-light); padding: 0.5rem 0.75rem; border-radius: 4px; font-size: 0.85rem;">Opens Scorecard Modal</span>
+                                    <button class="btn btn-secondary btn-sm" onclick="navigateToSection('scorecard')">Edit Scorecard →</button>
+                                </div>
+                            </div>
                         </div>
+                    `;
+                } else {
+                    buttonSection = `
+                        <div class="form-row">
+                            <div class="form-group">
+                                <div class="form-check">
+                                    <input type="checkbox" ${card.has_button ? 'checked' : ''} onchange="updateCourseInfo(${idx}, 'has_button', this.checked)">
+                                    <label>Show button</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Button Text</label>
+                                <input type="text" class="form-input" value="${card.button_text || ''}" onchange="updateCourseInfo(${idx}, 'button_text', this.value)">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Button Link</label>
+                                <input type="text" class="form-input" value="${card.button_link || ''}" onchange="updateCourseInfo(${idx}, 'button_link', this.value)">
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                return `
+                    <div class="card">
+                        <h3 class="card-title">${card.icon} ${card.title}</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Icon (emoji)</label>
+                                <input type="text" class="form-input" value="${card.icon}" onchange="updateCourseInfo(${idx}, 'icon', this.value)">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Title</label>
+                                <input type="text" class="form-input" value="${card.title}" onchange="updateCourseInfo(${idx}, 'title', this.value)">
+                            </div>
+                        </div>
+                        ${contentSection}
+                        ${buttonSection}
+                        <button class="btn btn-primary btn-sm" onclick="saveCourseInfoCard(${idx})">Save Card</button>
                     </div>
-                    <button class="btn btn-primary btn-sm" onclick="saveCourseInfoCard(${idx})">Save Card</button>
-                </div>
-            `).join('');
+                `;
+            }).join('');
+            
+            // Load inline ratings editors
+            loadInlineRatingsEditors();
+        }
+        
+        // Load inline ratings editors for course info cards
+        async function loadInlineRatingsEditors() {
+            const editors = document.querySelectorAll('[id^="inline-ratings-editor-"]');
+            if (editors.length === 0) return;
+            
+            // Fetch ratings if not already loaded
+            if (ratingsData.length === 0) {
+                const { data } = await supabaseClient.from('course_ratings').select('*').order('sort_order');
+                if (data) ratingsData = data;
+            }
+            
+            editors.forEach(editor => {
+                const maleRatings = ratingsData.filter(r => r.gender === 'male');
+                const femaleRatings = ratingsData.filter(r => r.gender === 'female');
+                
+                editor.innerHTML = `
+                    <table class="data-table" style="font-size: 0.85rem; margin-bottom: 0.5rem;">
+                        <thead>
+                            <tr><th colspan="3" style="background: var(--green-dark); color: white;">Male</th></tr>
+                            <tr><th>Tee</th><th>Rating</th><th>Slope</th></tr>
+                        </thead>
+                        <tbody>
+                            ${maleRatings.map(r => `
+                                <tr data-id="${r.id}">
+                                    <td>${r.tee_name}</td>
+                                    <td><input type="number" step="0.1" value="${r.rating}" class="inline-rating" style="width: 60px;"></td>
+                                    <td><input type="number" value="${r.slope}" class="inline-slope" style="width: 60px;"></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    <table class="data-table" style="font-size: 0.85rem;">
+                        <thead>
+                            <tr><th colspan="3" style="background: var(--gold); color: var(--green-dark);">Female</th></tr>
+                            <tr><th>Tee</th><th>Rating</th><th>Slope</th></tr>
+                        </thead>
+                        <tbody>
+                            ${femaleRatings.map(r => `
+                                <tr data-id="${r.id}">
+                                    <td>${r.tee_name}</td>
+                                    <td><input type="number" step="0.1" value="${r.rating}" class="inline-rating" style="width: 60px;"></td>
+                                    <td><input type="number" value="${r.slope}" class="inline-slope" style="width: 60px;"></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    <button class="btn btn-gold btn-sm" onclick="saveInlineRatings()" style="margin-top: 0.5rem;">Save Ratings</button>
+                `;
+            });
+        }
+        
+        // Save ratings from inline editor
+        async function saveInlineRatings() {
+            const rows = document.querySelectorAll('[id^="inline-ratings-editor-"] tr[data-id]');
+            
+            for (const row of rows) {
+                const id = row.dataset.id;
+                const rating = parseFloat(row.querySelector('.inline-rating').value);
+                const slope = parseInt(row.querySelector('.inline-slope').value);
+                
+                await supabaseClient.from('course_ratings').update({ rating, slope, updated_at: new Date().toISOString() }).eq('id', id);
+            }
+            
+            showAlert('course-info', 'Ratings saved!');
+        }
+        
+        // Navigate to a section
+        function navigateToSection(sectionName) {
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.querySelector(`.nav-item[data-section="${sectionName}"]`).classList.add('active');
+            
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.getElementById('section-' + sectionName).classList.add('active');
         }
 
         function updateCourseInfo(idx, field, value) {
