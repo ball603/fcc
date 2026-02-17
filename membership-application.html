@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Membership Application | Farmington Country Club</title>
+    <link rel="icon" type="image/png" href="FCC-tree-gold-favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --green-dark: #1e3a2f;
+            --green-mid: #2d4a3e;
+            --green-accent: #3d6b56;
+            --green-light: #e8f0eb;
+            --gold: #b8956c;
+            --gold-light: #d4be82;
+            --gold-pale: #f5efe8;
+            --white: #ffffff;
+            --gray-50: #fafaf9;
+            --gray-100: #f5f5f4;
+            --gray-200: #e7e5e4;
+            --gray-300: #d6d3d1;
+            --gray-400: #a8a29e;
+            --gray-600: #57534e;
+            --gray-800: #292524;
+            --gray-900: #1c1917;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            color: var(--gray-800);
+            background: var(--gray-50);
+            line-height: 1.65;
+            font-size: 16px;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Libre Baskerville', serif;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        a {
+            color: var(--green-dark);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Header */
+        header {
+            background: var(--green-dark);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 72px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .logo:hover {
+            text-decoration: none;
+        }
+
+        .logo-img {
+            height: 40px;
+            width: auto;
+        }
+
+        .logo-text {
+            color: var(--white);
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 0.25rem;
+        }
+
+        .nav-links a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--white);
+            background: rgba(255,255,255,0.1);
+            text-decoration: none;
+        }
+
+        /* Mobile Toggle */
+        .mobile-toggle {
+            display: none;
+            cursor: pointer;
+            flex-direction: column;
+            gap: 5px;
+            padding: 10px;
+        }
+
+        .mobile-toggle span {
+            width: 22px;
+            height: 2px;
+            background: var(--white);
+            border-radius: 1px;
+        }
+
+        /* Mobile Menu */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--green-dark);
+            z-index: 2000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        .mobile-menu.active {
+            display: flex;
+        }
+
+        .mobile-menu a {
+            color: var(--white);
+            font-size: 1.5rem;
+            font-family: 'Libre Baskerville', serif;
+            text-decoration: none;
+        }
+
+        .mobile-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            color: var(--white);
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        /* Page Hero */
+        .page-hero {
+            background: linear-gradient(135deg, var(--green-dark) 0%, var(--green-mid) 100%);
+            padding: 3rem 2rem;
+            text-align: center;
+            color: var(--white);
+        }
+
+        .page-hero h1 {
+            font-size: 2.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-hero p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .page-hero .year {
+            display: inline-block;
+            background: var(--gold);
+            color: var(--green-dark);
+            padding: 0.25rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Form Card */
+        .form-card {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-card h2 {
+            font-size: 1.25rem;
+            color: var(--green-dark);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--gold-pale);
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 100px;
+            gap: 1rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            color: var(--gray-800);
+        }
+
+        label.required::after {
+            content: ' *';
+            color: #dc2626;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            font-family: inherit;
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            background: var(--white);
+            color: var(--gray-800);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--green-accent);
+            box-shadow: 0 0 0 3px rgba(61, 107, 86, 0.1);
+        }
+
+        /* Age Notice */
+        .age-notice {
+            background: var(--green-light);
+            border: 1px solid var(--green-accent);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        .age-notice.visible {
+            display: block;
+        }
+
+        .age-notice p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--green-dark);
+        }
+
+        .age-notice strong {
+            color: var(--green-dark);
+        }
+
+        /* Membership Options */
+        .membership-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .membership-option {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: var(--gray-50);
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .membership-option:hover:not(.disabled) {
+            border-color: var(--green-accent);
+            background: var(--green-light);
+        }
+
+        .membership-option.selected {
+            border-color: var(--green-dark);
+            background: var(--green-light);
+        }
+
+        .membership-option.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: var(--gray-100);
+        }
+
+        .membership-option.disabled:hover {
+            border-color: var(--gray-200);
+            background: var(--gray-100);
+        }
+
+        .membership-option input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 1rem;
+            accent-color: var(--green-dark);
+        }
+
+        .membership-option.disabled input[type="radio"] {
+            pointer-events: none;
+        }
+
+        .membership-option .option-details {
+            flex: 1;
+        }
+
+        .membership-option .option-name {
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        .membership-option .option-ages {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+        }
+
+        .membership-option .option-price {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--green-dark);
+        }
+
+        .membership-option .not-eligible {
+            font-size: 0.8rem;
+            color: #dc2626;
+            margin-top: 0.25rem;
+        }
+
+        /* Spouse Section */
+        .spouse-section {
+            display: none;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px dashed var(--gray-300);
+        }
+
+        .spouse-section.visible {
+            display: block;
+        }
+
+        .spouse-section h3 {
+            font-size: 1rem;
+            color: var(--green-dark);
+            margin-bottom: 1rem;
+        }
+
+        /* Cart Rental Add-on */
+        .addon-option {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: var(--gold-pale);
+            border: 2px solid var(--gold);
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .addon-option .option-details {
+            flex: 1;
+        }
+
+        .addon-option .option-name {
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        .addon-option .option-note {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+        }
+
+        .addon-option .option-price {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--green-dark);
+        }
+
+        .cart-quantity {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-right: 1rem;
+        }
+
+        .cart-quantity label {
+            font-weight: 500;
+            font-size: 0.9rem;
+            margin-bottom: 0;
+        }
+
+        .cart-quantity select {
+            width: 60px;
+            padding: 0.5rem;
+            font-size: 1rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            background: var(--white);
+        }
+
+        /* Total Section */
+        .total-section {
+            background: var(--green-dark);
+            color: var(--white);
+            padding: 1.25rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .total-section .total-label {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .total-section .total-amount {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: 'Libre Baskerville', serif;
+        }
+
+        /* Payment Info Box */
+        .payment-info {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .payment-info h3 {
+            font-size: 1rem;
+            color: var(--green-dark);
+            margin-bottom: 1rem;
+        }
+
+        .payment-option {
+            margin-bottom: 1rem;
+        }
+
+        .payment-option:last-child {
+            margin-bottom: 0;
+        }
+
+        .payment-option strong {
+            color: var(--green-dark);
+        }
+
+        .payment-option p {
+            margin: 0.25rem 0 0 0;
+            font-size: 0.95rem;
+            color: var(--gray-600);
+        }
+
+        /* Online Payment Button - PLACEHOLDER FOR FUTURE USE */
+        .online-payment-section {
+            display: none; /* Change to 'block' when payment link is available */
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+
+        .online-payment-btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--green-accent) 0%, var(--green-dark) 100%);
+            color: var(--white);
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .online-payment-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(30, 58, 47, 0.3);
+            text-decoration: none;
+        }
+
+        .online-payment-note {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            margin-top: 0.5rem;
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            font-family: inherit;
+            color: var(--green-dark);
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 1.5rem;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(184, 149, 108, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--green-dark);
+            color: var(--white);
+            padding: 2rem;
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        footer p {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: var(--gold);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-toggle {
+                display: flex;
+            }
+
+            .header-inner {
+                padding: 0 1rem;
+            }
+
+            .page-hero h1 {
+                font-size: 1.75rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .form-card {
+                padding: 1.5rem;
+            }
+
+            .form-row,
+            .form-row-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .membership-option {
+                flex-wrap: wrap;
+            }
+
+            .membership-option .option-price {
+                width: 100%;
+                text-align: right;
+                margin-top: 0.5rem;
+            }
+        }
+
+        /* Form validation */
+        input:invalid:not(:placeholder-shown) {
+            border-color: #dc2626;
+        }
+
+        /* Loading state */
+        .submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-inner">
+            <a href="index.html" class="logo">
+                <img src="FCC-tree-gold.png" alt="FCC Logo" class="logo-img">
+                <span class="logo-text">Farmington Country Club</span>
+            </a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#about">About</a></li>
+                    <li><a href="index.html#rates">Rates</a></li>
+                    <li><a href="index.html#events">Events</a></li>
+                    <li><a href="index.html#leagues">Leagues</a></li>
+                    <li><a href="index.html#contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="mobile-toggle" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <span class="mobile-close" onclick="toggleMobileMenu()">×</span>
+        <a href="index.html" onclick="toggleMobileMenu()">Home</a>
+        <a href="index.html#about" onclick="toggleMobileMenu()">About</a>
+        <a href="index.html#rates" onclick="toggleMobileMenu()">Rates</a>
+        <a href="index.html#events" onclick="toggleMobileMenu()">Events</a>
+        <a href="index.html#leagues" onclick="toggleMobileMenu()">Leagues</a>
+        <a href="index.html#contact" onclick="toggleMobileMenu()">Contact</a>
+    </div>
+
+    <section class="page-hero">
+        <span class="year" id="membership-year">2025</span>
+        <h1>Membership Application</h1>
+        <p>Join our golf family at Farmington Country Club</p>
+    </section>
+
+    <main class="main-content">
+        <form action="https://formsubmit.co/kjcardinal@gmail.com" method="POST">
+            <!-- FormSubmit Configuration -->
+            <input type="hidden" name="_subject" value="New Membership Application">
+            <input type="hidden" name="_template" value="table">
+            <input type="hidden" name="_captcha" value="false">
+            <input type="hidden" name="_next" value="https://farmingtoncountryclubnh.com/membership-thank-you.html">
+            
+            <!-- Hidden field for total -->
+            <input type="hidden" name="Total Amount" id="hidden-total" value="$0">
+            <!-- Hidden field for calculated age -->
+            <input type="hidden" name="Age on April 1st" id="hidden-age" value="">
+
+            <div class="form-card">
+                <h2>Personal Information</h2>
+                
+                <div class="form-group">
+                    <label for="name" class="required">Full Name</label>
+                    <input type="text" id="name" name="Name" required placeholder="John Smith">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email" class="required">Email Address</label>
+                        <input type="email" id="email" name="Email" required placeholder="john@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone" class="required">Phone Number</label>
+                        <input type="tel" id="phone" name="Phone" required placeholder="(603) 555-1234">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="dob" class="required">Date of Birth</label>
+                    <input type="date" id="dob" name="Date of Birth" required>
+                    <p style="font-size: 0.85rem; color: var(--gray-600); margin-top: 0.25rem;">Membership age is based on your age on April 1st.</p>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <h2>Mailing Address</h2>
+                
+                <div class="form-group">
+                    <label for="address" class="required">Street Address</label>
+                    <input type="text" id="address" name="Street Address" required placeholder="123 Main Street">
+                </div>
+
+                <div class="form-row-3">
+                    <div class="form-group">
+                        <label for="city" class="required">City</label>
+                        <input type="text" id="city" name="City" required placeholder="Farmington">
+                    </div>
+                    <div class="form-group">
+                        <label for="state" class="required">State</label>
+                        <input type="text" id="state" name="State" required placeholder="NH" maxlength="2">
+                    </div>
+                    <div class="form-group">
+                        <label for="zip" class="required">Zip</label>
+                        <input type="text" id="zip" name="Zip Code" required placeholder="03835" maxlength="10">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <h2>Membership Selection</h2>
+                
+                <div class="age-notice" id="age-notice">
+                    <p>Based on your date of birth, you will be <strong id="calculated-age">--</strong> years old on April 1st, <span id="april-year">2025</span>. Eligible membership options are highlighted below.</p>
+                </div>
+
+                <div class="membership-options" id="membership-options">
+                    <!-- Options will be populated by JavaScript -->
+                    <div class="membership-option">
+                        <input type="radio" name="Membership Type" value="Loading..." disabled>
+                        <div class="option-details">
+                            <div class="option-name">Loading membership options...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Spouse Section (shown when Husband & Wife is selected) -->
+                <div class="spouse-section" id="spouse-section">
+                    <h3>Spouse Information</h3>
+                    
+                    <div class="form-group">
+                        <label for="spouse-name" class="required">Spouse's Full Name</label>
+                        <input type="text" id="spouse-name" name="Spouse Name" placeholder="Jane Smith">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="spouse-email">Spouse's Email Address</label>
+                            <input type="email" id="spouse-email" name="Spouse Email" placeholder="jane@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="spouse-phone">Spouse's Phone Number</label>
+                            <input type="tel" id="spouse-phone" name="Spouse Phone" placeholder="(603) 555-1234">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="spouse-dob">Spouse's Date of Birth</label>
+                        <input type="date" id="spouse-dob" name="Spouse Date of Birth">
+                    </div>
+                </div>
+
+                <!-- Cart Rental Section -->
+                <div class="cart-rental-section" id="cart-rental-section">
+                    <div class="addon-option">
+                        <div class="option-details">
+                            <div class="option-name">Annual Cart Rental</div>
+                            <div class="option-note">Per seat, for the full season</div>
+                        </div>
+                        <div class="cart-quantity">
+                            <label for="cart-quantity">Qty:</label>
+                            <select id="cart-quantity" name="Annual Cart Rentals">
+                                <option value="0">0</option>
+                                <option value="1">1</option>
+                            </select>
+                        </div>
+                        <span class="option-price" id="cart-price">$450/ea</span>
+                    </div>
+                </div>
+
+                <div class="total-section">
+                    <span class="total-label">Total Due:</span>
+                    <span class="total-amount" id="total-amount">$0</span>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <h2>Payment Information</h2>
+                
+                <div class="payment-info">
+                    <div class="payment-option">
+                        <strong>💳 Pay by Credit Card:</strong>
+                        <p>Call the clubhouse at <a href="tel:603-755-2412">(603) 755-2412</a> to complete your payment.</p>
+                    </div>
+                    <div class="payment-option">
+                        <strong>✉️ Pay by Check:</strong>
+                        <p>Mail checks payable to "Farmington Country Club" to:<br>
+                        <strong>181 Main Street, Farmington, NH 03835</strong></p>
+                    </div>
+                </div>
+
+                <!-- ============================================================
+                     ONLINE PAYMENT SECTION - PLACEHOLDER FOR FUTURE USE
+                     
+                     To enable online payments:
+                     1. Change display:none to display:block in .online-payment-section CSS above
+                     2. Replace YOUR_PAYMENT_LINK_HERE below with the actual payment URL
+                     ============================================================ -->
+                <div class="online-payment-section">
+                    <a href="YOUR_PAYMENT_LINK_HERE" class="online-payment-btn" target="_blank">
+                        💳 Pay Online Now
+                    </a>
+                    <p class="online-payment-note">Secure payment processing</p>
+                </div>
+
+                <p style="font-size: 0.9rem; color: var(--gray-600); margin-top: 1rem; text-align: center;">
+                    Membership age based on April 1st. Limited to 315 members.<br>
+                    A non-refundable deposit of $100 must be paid by March 1st.<br>
+                    Full balance must be paid by May 1st.
+                </p>
+            </div>
+
+            <button type="submit" class="submit-btn">Submit Application</button>
+        </form>
+    </main>
+
+    <footer>
+        <p>© <span id="footer-year">2025</span> Farmington Country Club | 181 Main Street, Farmington, NH 03835 | <a href="tel:603-755-2412">(603) 755-2412</a></p>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            document.getElementById('mobileMenu').classList.toggle('active');
+        }
+
+        // Google Sheets URL for rates
+        const RATES_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQNHAWwxlmmPPPlcyVbOR2PAzQYXI6owEf8wQlgYnVo1gBH8ngkgNB_ogNRet8Qrw/pub?gid=538479920&single=true&output=csv';
+
+        // Membership data
+        let membershipRates = [];
+        let cartRentalPrice = 450;
+        let selectedMembershipPrice = 0;
+        let membershipYear = new Date().getFullYear();
+        let userAgeOnApril1 = null;
+
+        // Calculate age on April 1st of the membership year
+        function calculateAgeOnApril1(dob) {
+            const birthDate = new Date(dob);
+            const april1 = new Date(membershipYear, 3, 1); // April is month 3 (0-indexed)
+            
+            let age = april1.getFullYear() - birthDate.getFullYear();
+            const monthDiff = april1.getMonth() - birthDate.getMonth();
+            
+            if (monthDiff < 0 || (monthDiff === 0 && april1.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            
+            return age;
+        }
+
+        // Check if user is eligible for a membership type based on age
+        function isEligible(rate, age) {
+            if (!rate.ages || rate.name === 'Husband & Wife') return true;
+            
+            const ageStr = rate.ages;
+            
+            // Parse age ranges like "12-17", "18-22", "65+"
+            if (ageStr.includes('+')) {
+                const minAge = parseInt(ageStr);
+                return age >= minAge;
+            } else if (ageStr.includes('-')) {
+                const [min, max] = ageStr.split('-').map(Number);
+                return age >= min && age <= max;
+            }
+            
+            return true;
+        }
+
+        // Load rates from Google Sheets
+        async function loadRates() {
+            try {
+                const response = await fetch(RATES_SHEET_URL);
+                const text = await response.text();
+                const lines = text.trim().split('\n');
+
+                let year = '';
+                let inMembershipSection = false;
+                let inCartSection = false;
+
+                lines.forEach(line => {
+                    let cells = [];
+                    let current = '';
+                    let inQuotes = false;
+                    for (let char of line) {
+                        if (char === '"') inQuotes = !inQuotes;
+                        else if (char === ',' && !inQuotes) {
+                            cells.push(current.trim());
+                            current = '';
+                        } else {
+                            current += char;
+                        }
+                    }
+                    cells.push(current.trim());
+
+                    const firstCell = cells[0] || '';
+                    const secondCell = cells[1] || '';
+
+                    // Get year
+                    if (firstCell === 'Year' && secondCell) {
+                        year = secondCell;
+                        membershipYear = parseInt(year) || new Date().getFullYear();
+                        document.getElementById('membership-year').textContent = year;
+                        document.getElementById('april-year').textContent = year;
+                        document.getElementById('footer-year').textContent = year;
+                        return;
+                    }
+
+                    // Track sections
+                    if (firstCell.includes('MEMBERSHIP RATES')) {
+                        inMembershipSection = true;
+                        inCartSection = false;
+                        return;
+                    }
+                    if (firstCell.includes('GREENS FEES')) {
+                        inMembershipSection = false;
+                        return;
+                    }
+                    if (firstCell.includes('CART FEES')) {
+                        inCartSection = true;
+                        inMembershipSection = false;
+                        return;
+                    }
+                    if (firstCell === 'Type') return;
+
+                    // Parse membership rates
+                    if (inMembershipSection && firstCell && secondCell) {
+                        const price = parseInt(secondCell.replace(/[^0-9]/g, ''));
+                        if (!isNaN(price) && price > 0) {
+                            // Extract age range if present
+                            const ageMatch = firstCell.match(/\(([^)]+)\)/);
+                            const ages = ageMatch ? ageMatch[1] : '';
+                            const name = firstCell.replace(/\s*\([^)]+\)/, '').trim();
+                            
+                            membershipRates.push({
+                                name: name,
+                                ages: ages,
+                                price: price,
+                                fullName: firstCell
+                            });
+                        }
+                    }
+
+                    // Get cart rental price
+                    if (inCartSection && firstCell.toLowerCase().includes('yearly') && secondCell) {
+                        const price = parseInt(secondCell.replace(/[^0-9]/g, ''));
+                        if (!isNaN(price)) {
+                            cartRentalPrice = price;
+                            document.getElementById('cart-price').textContent = '$' + price.toLocaleString();
+                        }
+                    }
+                });
+
+                // Render membership options
+                renderMembershipOptions();
+
+            } catch (error) {
+                console.log('Could not load rates:', error);
+                // Show default options on error
+                membershipRates = [
+                    { name: 'Junior', ages: '12-17', price: 150, fullName: 'Junior (12-17)' },
+                    { name: 'Young Adult', ages: '18-22', price: 300, fullName: 'Young Adult (18-22)' },
+                    { name: 'Young Professional', ages: '23-29', price: 500, fullName: 'Young Professional (23-29)' },
+                    { name: 'Annual Membership', ages: '30-64', price: 750, fullName: 'Annual Membership (30-64)' },
+                    { name: 'Senior Membership', ages: '65+', price: 700, fullName: 'Senior Membership (65+)' },
+                    { name: 'Husband & Wife', ages: '', price: 1300, fullName: 'Husband & Wife' }
+                ];
+                renderMembershipOptions();
+            }
+        }
+
+        function renderMembershipOptions() {
+            const container = document.getElementById('membership-options');
+            
+            container.innerHTML = membershipRates.map((rate, index) => {
+                const eligible = userAgeOnApril1 === null || isEligible(rate, userAgeOnApril1);
+                const disabledClass = !eligible ? 'disabled' : '';
+                const disabledAttr = !eligible ? 'disabled' : '';
+                
+                return `
+                <label class="membership-option ${disabledClass}" data-price="${rate.price}" data-name="${rate.name}" ${!eligible ? '' : `onclick="selectMembership(this, ${rate.price}, '${rate.name}')"`}>
+                    <input type="radio" name="Membership Type" value="${rate.fullName} - $${rate.price.toLocaleString()}" ${disabledAttr} ${!eligible ? '' : 'required'}>
+                    <div class="option-details">
+                        <div class="option-name">${rate.name}</div>
+                        ${rate.ages ? `<div class="option-ages">Ages ${rate.ages}</div>` : ''}
+                        ${!eligible ? `<div class="not-eligible">Not eligible based on age</div>` : ''}
+                    </div>
+                    <span class="option-price">$${rate.price.toLocaleString()}</span>
+                </label>
+            `}).join('');
+
+            // Re-add required attribute only to enabled radios
+            const enabledRadios = container.querySelectorAll('input[type="radio"]:not([disabled])');
+            if (enabledRadios.length > 0) {
+                enabledRadios[0].required = true;
+            }
+        }
+
+        function selectMembership(element, price, name) {
+            if (element.classList.contains('disabled')) return;
+            
+            // Remove selected class from all options
+            document.querySelectorAll('.membership-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked option
+            element.classList.add('selected');
+            
+            // Check the radio button
+            const radio = element.querySelector('input[type="radio"]');
+            if (radio) radio.checked = true;
+            
+            // Update price
+            selectedMembershipPrice = price;
+            updateTotal();
+            
+            // Show/hide spouse section and update cart options
+            const spouseSection = document.getElementById('spouse-section');
+            const spouseInputs = spouseSection.querySelectorAll('input');
+            const cartSelect = document.getElementById('cart-quantity');
+            
+            if (name === 'Husband & Wife') {
+                spouseSection.classList.add('visible');
+                // Make spouse name required
+                document.getElementById('spouse-name').required = true;
+                // Allow 0, 1, or 2 cart rentals for couples
+                cartSelect.innerHTML = `
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                `;
+            } else {
+                spouseSection.classList.remove('visible');
+                // Remove required and clear values
+                spouseInputs.forEach(input => {
+                    input.required = false;
+                    input.value = '';
+                });
+                // Only allow 0 or 1 cart rental for individual memberships
+                cartSelect.innerHTML = `
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                `;
+            }
+            // Reset cart selection
+            cartSelect.value = '0';
+            updateTotal();
+        }
+
+        function updateTotal() {
+            const cartSelect = document.getElementById('cart-quantity');
+            const cartQty = parseInt(cartSelect.value) || 0;
+            let total = selectedMembershipPrice;
+            
+            total += cartQty * cartRentalPrice;
+            
+            document.getElementById('total-amount').textContent = '$' + total.toLocaleString();
+            document.getElementById('hidden-total').value = '$' + total.toLocaleString();
+        }
+
+        // Handle DOB change
+        function handleDOBChange() {
+            const dobInput = document.getElementById('dob');
+            if (dobInput.value) {
+                userAgeOnApril1 = calculateAgeOnApril1(dobInput.value);
+                document.getElementById('calculated-age').textContent = userAgeOnApril1;
+                document.getElementById('age-notice').classList.add('visible');
+                document.getElementById('hidden-age').value = userAgeOnApril1;
+                
+                // Re-render options with eligibility
+                renderMembershipOptions();
+                
+                // Reset selection if current selection is now ineligible
+                selectedMembershipPrice = 0;
+                updateTotal();
+            }
+        }
+
+        // Event listeners
+        document.getElementById('cart-quantity').addEventListener('change', updateTotal);
+        document.getElementById('dob').addEventListener('change', handleDOBChange);
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', loadRates);
+    </script>
+</body>
+</html>

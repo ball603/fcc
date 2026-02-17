@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tournament Bible | Farmington Country Club</title>
+    <link rel="icon" type="image/png" href="FCC-tree-gold-favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --green-dark: #1e3a2f;
+            --green-mid: #2d4a3e;
+            --green-accent: #3d6b56;
+            --green-light: #e8f0eb;
+            --gold: #b8956c;
+            --gold-light: #d4be82;
+            --gold-pale: #f5efe8;
+            --white: #ffffff;
+            --gray-50: #fafaf9;
+            --gray-100: #f5f5f4;
+            --gray-200: #e7e5e4;
+            --gray-300: #d6d3d1;
+            --gray-400: #a8a29e;
+            --gray-600: #57534e;
+            --gray-800: #292524;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--gray-800);
+            background: var(--gray-50);
+            line-height: 1.65;
+            font-size: 16px;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Libre Baskerville', serif;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        a {
+            color: var(--green-dark);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Header */
+        header {
+            background: var(--green-dark);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 72px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .logo-img {
+            height: 40px;
+            width: auto;
+        }
+
+        .logo-text {
+            color: var(--white);
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 0.25rem;
+        }
+
+        nav a {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        nav a:hover {
+            color: var(--white);
+            background: rgba(255,255,255,0.1);
+            text-decoration: none;
+        }
+
+        .mobile-toggle {
+            display: none;
+            cursor: pointer;
+            flex-direction: column;
+            gap: 5px;
+            padding: 10px;
+        }
+
+        .mobile-toggle span {
+            width: 22px;
+            height: 2px;
+            background: var(--white);
+        }
+
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--green-dark);
+            z-index: 2000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        .mobile-menu.active {
+            display: flex;
+        }
+
+        .mobile-menu a {
+            color: var(--white);
+            font-size: 1.5rem;
+            font-family: 'Libre Baskerville', serif;
+        }
+
+        .mobile-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            color: var(--white);
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        /* Page Hero */
+        .page-hero {
+            background: linear-gradient(135deg, var(--green-dark) 0%, var(--green-mid) 100%);
+            padding: 3rem 2rem;
+            text-align: center;
+            color: var(--white);
+        }
+
+        .page-hero .year-badge {
+            display: inline-block;
+            background: var(--gold);
+            color: var(--green-dark);
+            padding: 0.25rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .page-hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-hero h1 .trophy {
+            color: var(--gold);
+        }
+
+        .page-hero .subtitle {
+            font-size: 1.1rem;
+            color: var(--gold-light);
+        }
+
+        .page-hero .subtitle-line2 {
+            display: none;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Section Headers */
+        .section-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            color: var(--green-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .section-header h2 .trophy {
+            color: var(--gold);
+        }
+
+        .section-header .gold-line {
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 100%);
+            margin: 0 auto;
+            border-radius: 2px;
+        }
+
+        /* Henry Wilson Cup Section */
+        .hwc-section {
+            margin-bottom: 3rem;
+        }
+
+        .hwc-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .hwc-card {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--gray-200);
+            transition: all 0.2s ease;
+        }
+
+        .hwc-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            border-color: var(--gold);
+        }
+
+        .hwc-card-header {
+            background: var(--green-dark);
+            color: var(--white);
+            padding: 1rem 1.25rem;
+            border-bottom: 3px solid var(--gold);
+        }
+
+        .hwc-card-header h3 {
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+        }
+
+        .hwc-card-header .trophy {
+            margin-right: 0.5rem;
+        }
+
+        .hwc-card-content {
+            padding: 1.25rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .hwc-card-content p {
+            color: var(--gray-600);
+            font-size: 0.95rem;
+            line-height: 1.7;
+            flex: 1;
+        }
+
+        .hwc-card-content .read-more {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--gold);
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .hwc-card-content .read-more:hover {
+            color: var(--green-dark);
+        }
+
+        /* HWC Events List Card */
+        .hwc-events-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .hwc-events-list ul {
+            list-style: none;
+        }
+
+        .hwc-events-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--gray-200);
+            font-size: 0.9rem;
+            color: var(--gray-800);
+        }
+
+        .hwc-events-list li:last-child {
+            border-bottom: none;
+        }
+
+        .hwc-events-list .note {
+            font-size: 0.8rem;
+            font-style: italic;
+            color: var(--gray-600);
+            padding-top: 0.75rem;
+            margin-top: 0.5rem;
+            border-top: 1px dashed var(--gray-300);
+        }
+
+        /* Tournament Schedule */
+        .schedule-section {
+            margin-bottom: 2rem;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+        }
+
+        /* Calendar Card - 3 Part Design */
+        .calendar-card {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid var(--gray-200);
+            display: flex;
+            flex-direction: column;
+            min-height: 160px;
+        }
+
+        .calendar-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            border-color: var(--gold);
+        }
+
+        .calendar-card.expanded {
+            border-color: var(--green-dark);
+        }
+
+        /* Next upcoming event highlight */
+        .calendar-card.next-event {
+            border: 3px solid var(--gold);
+            box-shadow: 0 4px 16px rgba(184, 149, 108, 0.3);
+        }
+
+        .calendar-card.next-event:hover {
+            box-shadow: 0 8px 24px rgba(184, 149, 108, 0.4);
+        }
+
+        /* Header - Month (Green) */
+        .calendar-header {
+            background: var(--green-dark);
+            color: var(--white);
+            text-align: center;
+            padding: 0.5rem 0.5rem;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+        }
+
+        /* Body - Day (White bg, Gold number) */
+        .calendar-body {
+            background: var(--white);
+            text-align: center;
+            padding: 0.75rem 0.5rem;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .calendar-body .day {
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--gold);
+            line-height: 1;
+        }
+
+        .calendar-body .tbd {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--gray-400);
+        }
+
+        /* Footer - Event Name (Light gold bg, Green text) */
+        .calendar-footer {
+            background: var(--gold-pale);
+            text-align: center;
+            padding: 0.75rem 0.5rem;
+            min-height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .calendar-footer h4 {
+            font-size: 0.85rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            line-height: 1.3;
+            color: var(--green-dark);
+        }
+
+        /* Expanded Event Detail (Featured - Overlay Style) */
+        .event-detail {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 900px;
+            width: 90%;
+            max-height: 85vh;
+            overflow: hidden;
+            z-index: 2500;
+            animation: featuredIn 0.3s ease;
+        }
+
+        .event-detail.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .event-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 2400;
+        }
+
+        .event-overlay.active {
+            display: block;
+        }
+
+        @keyframes featuredIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .event-detail-header {
+            background: var(--green-dark);
+            color: var(--white);
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid var(--gold);
+        }
+
+        .event-detail-header h3 {
+            font-size: 1.25rem;
+        }
+
+        .event-detail-close {
+            background: none;
+            border: none;
+            color: var(--white);
+            font-size: 1.5rem;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+
+        .event-detail-close:hover {
+            opacity: 1;
+        }
+
+        .event-detail-body {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 2rem;
+            padding: 1.5rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .event-description {
+            color: var(--gray-600);
+            line-height: 1.8;
+        }
+
+        .event-description h4 {
+            color: var(--green-dark);
+            font-size: 1rem;
+            margin: 1.5rem 0 0.75rem 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .event-description h4:first-child {
+            margin-top: 0;
+        }
+
+        .event-description p {
+            margin-bottom: 1rem;
+        }
+
+        .event-description p:last-child {
+            margin-bottom: 0;
+        }
+
+        .event-quick-facts {
+            background: linear-gradient(135deg, var(--gold-pale) 0%, var(--white) 100%);
+            border-radius: 10px;
+            padding: 1.25rem;
+            border: 2px solid var(--gold);
+            height: fit-content;
+        }
+
+        .event-quick-facts h4 {
+            font-size: 0.9rem;
+            color: var(--green-dark);
+            margin-bottom: 1rem;
+            font-family: 'Inter', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--gold);
+        }
+
+        .quick-fact {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .quick-fact:last-child {
+            margin-bottom: 0;
+        }
+
+        .quick-fact-icon {
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            width: 24px;
+            text-align: center;
+        }
+
+        .quick-fact-content {
+            flex: 1;
+        }
+
+        .quick-fact-label {
+            font-size: 0.75rem;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .quick-fact-value {
+            font-weight: 600;
+            color: var(--green-dark);
+            font-size: 1rem;
+        }
+
+        /* Event description field icons */
+        .field-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--green-dark);
+            font-size: 1rem;
+            margin: 1.5rem 0 0.75rem 0;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+        }
+
+        .field-header:first-child {
+            margin-top: 0;
+        }
+
+        .field-icon {
+            font-size: 1.1rem;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 3000;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--white);
+            border-radius: 12px;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            animation: modalIn 0.3s ease;
+            border: 3px solid var(--gold);
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .modal-header {
+            background: var(--green-dark);
+            color: var(--white);
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid var(--gold);
+        }
+
+        .modal-header h3 {
+            font-size: 1.25rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--white);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .modal-body p {
+            color: var(--gray-600);
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+
+        .modal-body p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--green-dark);
+            color: var(--white);
+            padding: 2rem;
+            text-align: center;
+        }
+
+        footer p {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: var(--gold);
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .hwc-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .event-detail-body {
+                grid-template-columns: 1fr;
+            }
+
+            .event-quick-facts {
+                order: -1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav ul {
+                display: none;
+            }
+
+            .mobile-toggle {
+                display: flex;
+            }
+
+            .page-hero h1 {
+                font-size: 1.75rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .calendar-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .calendar-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-inner">
+            <a href="index.html" class="logo">
+                <img src="FCC-tree-gold.png" alt="FCC Logo" class="logo-img">
+                <span class="logo-text">Farmington Country Club</span>
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#about">About</a></li>
+                    <li><a href="index.html#rates">Rates</a></li>
+                    <li><a href="index.html#events">Events</a></li>
+                    <li><a href="index.html#leagues">Leagues</a></li>
+                    <li><a href="index.html#contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="mobile-toggle" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <div class="mobile-menu" id="mobileMenu">
+        <span class="mobile-close" onclick="toggleMobileMenu()">×</span>
+        <a href="index.html">Home</a>
+        <a href="index.html#about">About</a>
+        <a href="index.html#rates">Rates</a>
+        <a href="index.html#events">Events</a>
+        <a href="index.html#leagues">Leagues</a>
+        <a href="index.html#contact">Contact</a>
+    </div>
+
+    <section class="page-hero">
+        <span class="year-badge" id="year-badge">2025</span>
+        <h1><span class="trophy">🏆</span> Tournament Bible</h1>
+        <div class="subtitle">Your complete guide to tournaments and golf events at FCC</div>
+    </section>
+
+    <main class="main-content">
+        <!-- Henry Wilson Cup Section -->
+        <section class="hwc-section">
+            <div class="section-header">
+                <h2><span class="trophy">🏆</span> Meet the Henry Wilson Cup</h2>
+                <div class="gold-line"></div>
+            </div>
+
+            <div class="hwc-grid">
+                <div class="hwc-card">
+                    <div class="hwc-card-header">
+                        <h3><span class="trophy">🏆</span> <span id="hwc-what-title">What is the Henry Wilson Cup?</span></h3>
+                    </div>
+                    <div class="hwc-card-content">
+                        <p id="hwc-what-preview">The Henry Wilson Cup is a season long event unique to Farmington Country Club...</p>
+                        <span class="read-more" onclick="openModal('what')">Read More →</span>
+                    </div>
+                </div>
+
+                <div class="hwc-card">
+                    <div class="hwc-card-header">
+                        <h3><span class="trophy">🏆</span> <span id="hwc-why-title">Why the Henry Wilson Cup?</span></h3>
+                    </div>
+                    <div class="hwc-card-content">
+                        <p id="hwc-why-preview">As many of you already know, Henry Wilson was elected the 18th Vice President...</p>
+                        <span class="read-more" onclick="openModal('why')">Read More →</span>
+                    </div>
+                </div>
+
+                <div class="hwc-card">
+                    <div class="hwc-card-header">
+                        <h3>📅 <span id="year-events">2025</span> HWC Events</h3>
+                    </div>
+                    <div class="hwc-card-content">
+                        <div class="hwc-events-list" id="hwc-events-list">
+                            <ul>
+                                <li>Loading events...</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tournament Schedule -->
+        <section class="schedule-section">
+            <div class="section-header">
+                <h2>📅 Tournament Schedule</h2>
+                <div class="gold-line"></div>
+            </div>
+
+            <div class="calendar-grid" id="calendar-grid">
+                <!-- Calendar cards will be inserted here -->
+            </div>
+
+            <!-- Event details will be inserted here dynamically -->
+            <div class="event-overlay" id="event-overlay" onclick="closeCurrentEvent()"></div>
+            <div id="event-details-container"></div>
+        </section>
+    </main>
+
+    <!-- Modals for HWC -->
+    <div class="modal-overlay" id="modal-what" onclick="closeModal('what')">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3>🏆 <span id="modal-what-title">What is the Henry Wilson Cup?</span></h3>
+                <button class="modal-close" onclick="closeModal('what')">×</button>
+            </div>
+            <div class="modal-body" id="modal-what-body">
+                <p>Loading...</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-why" onclick="closeModal('why')">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3>🏆 <span id="modal-why-title">Why the Henry Wilson Cup?</span></h3>
+                <button class="modal-close" onclick="closeModal('why')">×</button>
+            </div>
+            <div class="modal-body" id="modal-why-body">
+                <p>Loading...</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© <span id="footer-year">2025</span> Farmington Country Club | 181 Main Street, Farmington, NH 03835 | <a href="tel:603-755-2412">(603) 755-2412</a></p>
+    </footer>
+
+    <script>
+        // Mobile menu
+        function toggleMobileMenu() {
+            document.getElementById('mobileMenu').classList.toggle('active');
+        }
+
+        // Modals
+        function openModal(type) {
+            document.getElementById('modal-' + type).classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(type) {
+            document.getElementById('modal-' + type).classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay.active').forEach(m => {
+                    m.classList.remove('active');
+                });
+                document.body.style.overflow = '';
+            }
+        });
+
+        // =====================================================
+        // GOOGLE SHEETS CONFIGURATION
+        // =====================================================
+        
+        const SHEET_BASE = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQq1s77a5JMqB6l6cYbvEUEbnaJjuy7BwV6SbJWLpMuGEdVyrCrISFOKsmJtX_DFg/pub';
+        
+        // Tab GIDs
+        const SHEETS = {
+            settings: SHEET_BASE + '?gid=1987281963&single=true&output=csv',
+            henryWilson: SHEET_BASE + '?gid=590647090&single=true&output=csv',
+            eventList: SHEET_BASE + '?gid=1738944814&single=true&output=csv'
+        };
+        
+        // Individual event tab GIDs
+        const EVENT_GIDS = {
+            'presidents-cup': '921396511',
+            'mens-league': '1022984888',
+            'battle-of-bars': '743692829',
+            'club-championship': '1519405575',
+            'senior-club-championship': '1123696583',
+            'mens-farmington-cup': '289185398',
+            'member-member': '1189656598',
+            'parent-child': '1690364181',
+            'husband-wife': '227080671',
+            'ladies-farmington-cup': '1843908561',
+            'medal-play': '509874278',
+            'member-guest': '576543451',
+            'junior-club-championship': '1080229207',
+            '2-person-championship': '1514097756'
+        };
+
+        // SET TO FALSE TO USE GOOGLE SHEETS
+        const DEMO_MODE = false;
+        
+        // Helper: Parse CSV with proper quote handling (including newlines in quoted fields)
+        function parseCSV(text) {
+            const result = [];
+            let row = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i];
+                const nextChar = text[i + 1];
+                
+                if (char === '"') {
+                    if (inQuotes && nextChar === '"') {
+                        // Escaped quote
+                        current += '"';
+                        i++;
+                    } else {
+                        // Toggle quote state
+                        inQuotes = !inQuotes;
+                    }
+                } else if (char === ',' && !inQuotes) {
+                    row.push(current.trim());
+                    current = '';
+                } else if ((char === '\n' || (char === '\r' && nextChar === '\n')) && !inQuotes) {
+                    // End of row (skip \r if \r\n)
+                    if (char === '\r') i++;
+                    row.push(current.trim());
+                    if (row.some(cell => cell !== '')) {
+                        result.push(row);
+                    }
+                    row = [];
+                    current = '';
+                } else if (char === '\r' && !inQuotes) {
+                    // Standalone \r as line ending
+                    row.push(current.trim());
+                    if (row.some(cell => cell !== '')) {
+                        result.push(row);
+                    }
+                    row = [];
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            
+            // Don't forget the last field/row
+            row.push(current.trim());
+            if (row.some(cell => cell !== '')) {
+                result.push(row);
+            }
+            
+            return result;
+        }
+        
+        // Helper: Parse Field/Value tab into object
+        function parseFieldValueTab(text) {
+            const rows = parseCSV(text);
+            const data = {};
+            
+            for (const row of rows) {
+                if (row.length >= 2 && row[0] && row[0].toLowerCase() !== 'field') {
+                    // Convert field name to camelCase key
+                    const key = row[0].toLowerCase()
+                        .replace(/\s+(.)/g, (_, c) => c.toUpperCase())
+                        .replace(/\s/g, '');
+                    data[key] = row[1] || '';
+                }
+            }
+            return data;
+        }
+        
+        // Helper: Parse Event List tab
+        function parseEventList(text) {
+            const rows = parseCSV(text);
+            const events = [];
+            
+            // Skip header row
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i];
+                if (row.length >= 6 && row[5]?.toUpperCase() === 'TRUE') {
+                    events.push({
+                        order: parseInt(row[0]) || 999,
+                        id: row[1],
+                        name: row[2],
+                        startDate: row[3],
+                        endDate: row[4]
+                    });
+                }
+            }
+            return events.sort((a, b) => a.order - b.order);
+        }
+        
+        // Fetch event details from individual tab
+        async function fetchEventDetails(eventId) {
+            try {
+                // You'll need to add GIDs for each event tab
+                // For now, return null and use event list data
+                return null;
+            } catch (e) {
+                console.log('Could not fetch event details for', eventId);
+                return null;
+            }
+        }
+
+        // Demo data
+        const demoData = {
+            year: '2025',
+            hwc: {
+                whatTitle: 'What is the Henry Wilson Cup?',
+                whatPreview: 'The Henry Wilson Cup is a season long event unique to Farmington Country Club. To participate in the event you must be a member. For the 2025 season there are Cup series will include 86 events.',
+                whatFull: `The Henry Wilson Cup is a season long event unique to Farmington Country Club. To participate in the event you must be a member. For the 2025 season there are Cup series will include 86 events.
+
+During the season every player will accumulate "points" in the Henry Wilson Events (See the event list for details). The "points" are equal to your shop credit winnings in the events you play in for the season (with a couple of exceptions as shown in the event list). At the end of the season the top 10 money winners and the returning champion will have a 9 Hole Shootout.
+
+The Shootout starts on Hole #1 with all 11 players. This is handicapped by using your current GHIN, so your score on each hole is your "net" score.
+
+On Hole #1, the highest 2 scoring players will be eliminated. If there is a tie, there will be a pre-determined "Shootout" tie breaker (a putt, a chip, a bunker shot, or some other skill challenge).
+
+After Hole #1, 1 player is eliminated on each hole until we have a champion on the 9th green. All participants in the Henry Wilson Shootout will receive a portion of the Henry Wilson Shootout pot.`,
+                whyTitle: 'Why the Henry Wilson Cup?',
+                whyPreview: 'As many of you already know, Henry Wilson was elected the 18th Vice President of the United States under President Ulysses S Grant in 1872. Henry was born in Farmington February 16, 1812 as Jeremiah Jones Colbath.',
+                whyFull: `As many of you already know, Henry Wilson was elected the 18th Vice President of the United States under President Ulysses S Grant in 1872. Henry was born in Farmington February 16, 1812 as Jeremiah Jones Colbath. His actual birth place was very close to our current Club House, perhaps across the street. His family was very poor and at the age of 10 he became an indentured worker for 10 years to a local farmer. At the age of 21 he decided he didn't like his name so he petitioned to have it changed to Henry Wilson. Around that time he moved to Natick, Massachusetts to learn shoe making and became active in politics.
+
+There is a monument in his honor near the entrance to the upper parking area at the club and many of his family members are buried in the cemetery off the left side of the 9th fairway.`,
+                events: ['Weekend Games', "Men's League Pins & Putts", "Men's League Quota Game", "Men's League Fall Games", "Senior League Pins & Putts", "Ladies League Pins & Putts", "2-Person Tournament*", "Husband & Wife*", "Member / Member*", "Presidents Cup*", "Parent Child*"],
+                eventsNote: '*These event payouts will be pro-rated for fields of less than 48 players'
+            },
+            events: [
+                {
+                    id: 'presidents-cup',
+                    name: 'Presidents Cup',
+                    startDate: '',
+                    endDate: '',
+                    signUpDeadline: 'April 27th',
+                    entryFee: '$20',
+                    description: 'The Presidents Cup (aka Sandbaggers Open!) is a single elimination handicapped tournament. Matches must be played by the deadlines posted.',
+                    eligibility: 'You must be a member to participate – All members, Male and Female are encouraged to participate. A GHIN handicap is required.',
+                    format: 'Match Play, Single Elimination',
+                    handicap: '100% of your current playing handicap.',
+                    tees: 'Rule of 88 applies for forward tees.',
+                    prizes: 'Pro Shop credit will be paid out to the players making the Semi-Finals.',
+                    details: 'Seeding done through random drawing. 1st and 2nd seed go to prior year winner and runner up.'
+                },
+                {
+                    id: 'mens-league',
+                    name: "Men's Tuesday Night League",
+                    startDate: '2025-05-06',
+                    endDate: '2025-08-26',
+                    signUpDeadline: 'April 22nd',
+                    entryFee: '$50',
+                    description: "The Tuesday Night League is our premier men's league competition. Each week two teams play head to head.",
+                    eligibility: 'All male members over the age of 21.',
+                    format: 'Match Play (9 holes per match)',
+                    prizes: 'Winning team receives jackets, runner up receives shirts. Includes year-end banquet.',
+                    details: 'Maximum 88 players (8 teams of 11). Wait list available.'
+                },
+                {
+                    id: '2-person-championship',
+                    name: '2-Person Championship',
+                    startDate: '2025-05-20',
+                    signUpDeadline: 'May 20th',
+                    entryFee: '$40/team',
+                    description: 'Single elimination handicapped tournament. 2-person NET best ball event.',
+                    eligibility: 'All members. GHIN required. Teams may be Men, Women, Juniors or mix.',
+                    format: '2-person NET best ball',
+                    handicap: '90% of difference in handicaps',
+                    prizes: 'Pro Shop credit to Semi-Finalists. Counts toward Henry Wilson Shootout.'
+                },
+                {
+                    id: 'battle-of-bars',
+                    name: 'Battle of the Bars',
+                    startDate: '2025-06-09',
+                    signUpDeadline: 'June 2nd',
+                    entryFee: '$400/team',
+                    description: 'A friendly competition between 4-person teams sponsored by local bars. Winning team displays trophy at their bar!',
+                    format: '4-person scramble. Max score: double bogey.',
+                    prizes: 'Pro Shop Credit to top teams. Closest to Pin and Longest Putt.',
+                    details: 'Entry includes green/cart fees, catered meal, and prize pool.'
+                },
+                {
+                    id: 'mens-farmington-cup',
+                    name: "Men's Farmington Cup",
+                    startDate: '2025-07-12',
+                    endDate: '2025-07-13',
+                    signUpDeadline: 'June 10th',
+                    entryFee: '$65',
+                    description: "FCC's version of the Ryder Cup. Captains are Club Championship winner and runner up.",
+                    eligibility: 'All male members age 21+',
+                    format: 'Team: Scramble, Alternate Shot, Best Ball, Singles',
+                    prizes: 'All participants receive Farmington Cup shirt and Sunday meal.',
+                    details: 'All play is head to head, no handicaps. Rule of 88 applies.'
+                },
+                {
+                    id: 'club-championship',
+                    name: 'Club Championship',
+                    startDate: '2025-07-13',
+                    endDate: '2025-09-01',
+                    signUpDeadline: 'June 10th',
+                    entryFee: 'None',
+                    description: "The official championship of Farmington Country Club. Non-handicapped, match play, single elimination.",
+                    eligibility: 'All members welcome',
+                    format: 'Non-handicapped Match Play, Single Elimination',
+                    prizes: 'Trophies and recognition',
+                    details: "Multiple divisions by handicap (Men's) and age (Senior/Ladies)."
+                },
+                {
+                    id: 'member-member',
+                    name: 'Member / Member',
+                    startDate: '2025-07-19',
+                    signUpDeadline: 'July 8th',
+                    entryFee: '$85/team',
+                    description: '18-hole shotgun: 6 holes Best Ball, 6 holes Scramble, 6 holes Alternate Shot.',
+                    eligibility: 'Members only. GHIN required for NET prizes.',
+                    format: 'Best Ball, Scramble, Alternate Shot',
+                    prizes: 'Pro Shop credit. Counts toward Henry Wilson. Optional $5 skins.',
+                    details: "Men's and Ladies divisions. Entry includes catered meal."
+                },
+                {
+                    id: 'parent-child',
+                    name: 'Parent / Child Championship',
+                    startDate: '2025-08-02',
+                    signUpDeadline: 'July 28th',
+                    entryFee: '$30-60/team',
+                    description: 'Play with your child, grandchild, or stepchild.',
+                    eligibility: 'Parent or child must be a member',
+                    format: '6 holes scramble, 6 alternate shot, 6 total score',
+                    prizes: 'Pro Shop credit. Part of Henry Wilson Points.',
+                    details: 'Junior Division (17 & under) and Senior Division (18+).'
+                },
+                {
+                    id: 'husband-wife',
+                    name: 'Husband & Wife Championship',
+                    startDate: '2025-08-03',
+                    signUpDeadline: 'July 28th',
+                    entryFee: '$80-110/team',
+                    description: '18-hole handicapped event with scramble, alternate shot, and best ball.',
+                    eligibility: 'Husband or Wife must be member. Other couples welcome but not eligible to win championship.',
+                    format: '6 holes each: scramble, alternate shot, best ball',
+                    prizes: 'Pro Shop credit. Part of Henry Wilson Points.',
+                    details: 'Entry includes meal. Rule of 88 applies.'
+                },
+                {
+                    id: 'ladies-farmington-cup',
+                    name: 'Ladies Farmington Cup',
+                    startDate: '2025-08-16',
+                    signUpDeadline: 'July 16th',
+                    entryFee: '$65-95',
+                    description: "Ladies version of FCC's Ryder Cup.",
+                    eligibility: 'All female members and Ladies League members',
+                    format: 'Two 9-hole 2-person scramble sessions',
+                    prizes: 'Farmington Cup shirt and meal for all participants.'
+                },
+                {
+                    id: 'medal-play',
+                    name: 'Medal Play Championship',
+                    startDate: '2025-08-23',
+                    signUpDeadline: 'August 19th',
+                    entryFee: '$20',
+                    description: '1-day stroke play event. Pure stroke play, non-handicapped.',
+                    eligibility: 'Members only',
+                    format: 'Stroke Play (36 holes Championship, 18 holes other flights)',
+                    prizes: 'Pro Shop credit. Part of Henry Wilson Points.',
+                    details: 'Multiple divisions by handicap. Ties decided by sudden death.'
+                },
+                {
+                    id: 'member-guest',
+                    name: 'Member / Guest',
+                    startDate: '2025-09-06',
+                    signUpDeadline: 'August 26th',
+                    entryFee: '$150/team',
+                    description: '18-hole 2-man Best Ball with Gross and Net prizes.',
+                    eligibility: 'All adult members. GHIN required for NET.',
+                    format: '2-man Best Ball',
+                    handicap: '100% of course handicap',
+                    prizes: 'Pro Shop credit. Closest to Pin, Longest Putt. Optional skins.',
+                    details: "Men's and Ladies divisions. Entry includes meal."
+                },
+                {
+                    id: 'junior-club-championship',
+                    name: 'Junior Club Championship',
+                    startDate: '2025-09-14',
+                    signUpDeadline: 'September 9th',
+                    entryFee: 'None',
+                    description: '1-day, 18-hole stroke play event for juniors.',
+                    eligibility: 'Junior members ages 12-17',
+                    format: 'Stroke Play. No stroke limit. Every ball holed out.',
+                    prizes: 'Lowest score wins Junior Club Championship.'
+                }
+            ]
+        };
+
+        // Parse date for calendar display
+        function parseDate(dateStr) {
+            if (!dateStr || dateStr === 'TBD') return null;
+            const date = new Date(dateStr);
+            if (isNaN(date)) return null;
+            return date;
+        }
+
+        function getMonthName(date) {
+            return date.toLocaleString('en-US', { month: 'long' }).toUpperCase();
+        }
+
+        function getDay(date) {
+            return date.getDate();
+        }
+
+        // Render calendar card - 3 part design
+        function renderCalendarCard(event, isNextEvent = false) {
+            const startDate = parseDate(event.startDate);
+            
+            let monthText = 'TBD';
+            let dayText = '';
+            let isTbd = true;
+            
+            if (startDate) {
+                monthText = getMonthName(startDate);
+                dayText = getDay(startDate);
+                isTbd = false;
+            }
+
+            const nextEventClass = isNextEvent ? ' next-event' : '';
+
+            return `
+                <div class="calendar-card${nextEventClass}" id="card-${event.id}" onclick="toggleEvent('${event.id}')">
+                    <div class="calendar-header">
+                        ${monthText}
+                    </div>
+                    <div class="calendar-body">
+                        ${isTbd ? '<span class="tbd">TBD</span>' : `<span class="day">${dayText}</span>`}
+                    </div>
+                    <div class="calendar-footer">
+                        <h4>${event.name}</h4>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Field icons mapping
+        const fieldIcons = {
+            eligibility: '👥',
+            format: '📋',
+            handicap: '🎯',
+            tees: '⛳',
+            prizes: '🏆',
+            details: '📝'
+        };
+
+        // Render event detail
+        function renderEventDetail(event) {
+            const quickFacts = [];
+            const startDate = parseDate(event.startDate);
+            const endDate = parseDate(event.endDate);
+            
+            // Smart date display
+            if (startDate && endDate) {
+                // Has both start and end date
+                quickFacts.push({ 
+                    icon: '📅', 
+                    label: 'Start Date', 
+                    value: startDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) 
+                });
+                quickFacts.push({ 
+                    icon: '🏁', 
+                    label: 'End Date', 
+                    value: endDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) 
+                });
+            } else if (startDate) {
+                // Single date only
+                quickFacts.push({ 
+                    icon: '📅', 
+                    label: 'Date', 
+                    value: startDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) 
+                });
+            } else {
+                // TBD
+                quickFacts.push({ icon: '📅', label: 'Date', value: 'TBD' });
+            }
+            
+            if (event.signUpDeadline) quickFacts.push({ icon: '✍️', label: 'Sign-Up Deadline', value: event.signUpDeadline });
+            if (event.entryFee) quickFacts.push({ icon: '💵', label: 'Entry Fee', value: event.entryFee });
+
+            // Build description sections with icons
+            let descHtml = '';
+            if (event.description) descHtml += `<p>${event.description}</p>`;
+            if (event.eligibility) descHtml += `<div class="field-header"><span class="field-icon">${fieldIcons.eligibility}</span> Eligibility</div><p>${event.eligibility}</p>`;
+            if (event.format) descHtml += `<div class="field-header"><span class="field-icon">${fieldIcons.format}</span> Format</div><p>${event.format}</p>`;
+            if (event.handicap) descHtml += `<div class="field-header"><span class="field-icon">${fieldIcons.handicap}</span> Handicap</div><p>${event.handicap}</p>`;
+            if (event.tees) descHtml += `<div class="field-header"><span class="field-icon">${fieldIcons.tees}</span> Tees</div><p>${event.tees}</p>`;
+            if (event.prizes) descHtml += `<div class="field-header"><span class="field-icon">${fieldIcons.prizes}</span> Prizes</div><p>${event.prizes}</p>`;
+            if (event.details) descHtml += `<div class="field-header"><span class="field-icon">${fieldIcons.details}</span> Additional Details</div><p>${event.details.replace(/\n/g, '<br>')}</p>`;
+
+            return `
+                <div class="event-detail" id="detail-${event.id}">
+                    <div class="event-detail-header">
+                        <h3>🏌️ ${event.name}</h3>
+                        <button class="event-detail-close" onclick="closeEvent('${event.id}')">&times;</button>
+                    </div>
+                    <div class="event-detail-body">
+                        <div class="event-description">
+                            ${descHtml}
+                        </div>
+                        <div class="event-quick-facts">
+                            <h4>📌 Quick Facts</h4>
+                            ${quickFacts.map(f => `
+                                <div class="quick-fact">
+                                    <span class="quick-fact-icon">${f.icon}</span>
+                                    <div class="quick-fact-content">
+                                        <div class="quick-fact-label">${f.label}</div>
+                                        <div class="quick-fact-value">${f.value}</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Toggle event detail (featured/overlay)
+        let currentOpenEvent = null;
+
+        function toggleEvent(eventId) {
+            const detail = document.getElementById('detail-' + eventId);
+            const card = document.getElementById('card-' + eventId);
+            const overlay = document.getElementById('event-overlay');
+            
+            // Close currently open event
+            if (currentOpenEvent && currentOpenEvent !== eventId) {
+                document.getElementById('detail-' + currentOpenEvent)?.classList.remove('active');
+                document.getElementById('card-' + currentOpenEvent)?.classList.remove('expanded');
+            }
+
+            // Toggle this event
+            if (detail.classList.contains('active')) {
+                detail.classList.remove('active');
+                card.classList.remove('expanded');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+                currentOpenEvent = null;
+            } else {
+                detail.classList.add('active');
+                card.classList.add('expanded');
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                currentOpenEvent = eventId;
+            }
+        }
+
+        function closeEvent(eventId) {
+            document.getElementById('detail-' + eventId)?.classList.remove('active');
+            document.getElementById('card-' + eventId)?.classList.remove('expanded');
+            document.getElementById('event-overlay')?.classList.remove('active');
+            document.body.style.overflow = '';
+            currentOpenEvent = null;
+        }
+
+        function closeCurrentEvent() {
+            if (currentOpenEvent) {
+                closeEvent(currentOpenEvent);
+            }
+        }
+
+        // Close on Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && currentOpenEvent) {
+                closeCurrentEvent();
+            }
+        });
+
+        // Sort events by start date
+        function sortEvents(events) {
+            return [...events].sort((a, b) => {
+                const dateA = parseDate(a.startDate);
+                const dateB = parseDate(b.startDate);
+                if (!dateA && !dateB) return 0;
+                if (!dateA) return 1;
+                if (!dateB) return -1;
+                return dateA - dateB;
+            });
+        }
+
+        // Initialize
+        async function init() {
+            if (DEMO_MODE) {
+                // Use demo data
+                const year = demoData.year;
+                document.getElementById('year-badge').textContent = year;
+                document.getElementById('year-events').textContent = year;
+                document.getElementById('footer-year').textContent = year;
+
+                // HWC content
+                document.getElementById('hwc-what-title').textContent = demoData.hwc.whatTitle;
+                document.getElementById('hwc-what-preview').textContent = demoData.hwc.whatPreview;
+                document.getElementById('modal-what-title').textContent = demoData.hwc.whatTitle;
+                document.getElementById('modal-what-body').innerHTML = demoData.hwc.whatFull.split('\n\n').map(p => `<p>${p}</p>`).join('');
+
+                document.getElementById('hwc-why-title').textContent = demoData.hwc.whyTitle;
+                document.getElementById('hwc-why-preview').textContent = demoData.hwc.whyPreview;
+                document.getElementById('modal-why-title').textContent = demoData.hwc.whyTitle;
+                document.getElementById('modal-why-body').innerHTML = demoData.hwc.whyFull.split('\n\n').map(p => `<p>${p}</p>`).join('');
+
+                // HWC Events list
+                const eventsListHtml = `
+                    <ul>
+                        ${demoData.hwc.events.map(e => `<li>${e}</li>`).join('')}
+                    </ul>
+                    <div class="note">${demoData.hwc.eventsNote}</div>
+                `;
+                document.getElementById('hwc-events-list').innerHTML = eventsListHtml;
+
+                // Sort and render events
+                const sortedEvents = sortEvents(demoData.events);
+                
+                // Find the next upcoming event (first event with a date >= today)
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                let nextEventId = null;
+                
+                for (const event of sortedEvents) {
+                    const eventDate = parseDate(event.startDate);
+                    if (eventDate && eventDate >= today) {
+                        nextEventId = event.id;
+                        break;
+                    }
+                }
+                
+                // Render calendar cards (mark next event)
+                const calendarHtml = sortedEvents.map(e => renderCalendarCard(e, e.id === nextEventId)).join('');
+                document.getElementById('calendar-grid').innerHTML = calendarHtml;
+
+                // Render event details
+                const detailsHtml = sortedEvents.map(e => renderEventDetail(e)).join('');
+                document.getElementById('event-details-container').innerHTML = detailsHtml;
+            } else {
+                // Load from Google Sheets
+                await loadFromSheets();
+            }
+        }
+        
+        // Load data from Google Sheets
+        async function loadFromSheets() {
+            try {
+                // Load Settings
+                const settingsResp = await fetch(SHEETS.settings);
+                const settingsText = await settingsResp.text();
+                const settings = parseFieldValueTab(settingsText);
+                
+                const year = settings.year || '2025';
+                document.getElementById('year-badge').textContent = year;
+                document.getElementById('year-events').textContent = year;
+                document.getElementById('footer-year').textContent = year;
+                
+                // Load Henry Wilson Cup
+                const hwcResp = await fetch(SHEETS.henryWilson);
+                const hwcText = await hwcResp.text();
+                const hwc = parseFieldValueTab(hwcText);
+                
+                document.getElementById('hwc-what-title').textContent = hwc.whatIsTitle || 'What is the Henry Wilson Cup?';
+                document.getElementById('hwc-what-preview').textContent = hwc.whatIsPreview || '';
+                document.getElementById('modal-what-title').textContent = hwc.whatIsTitle || 'What is the Henry Wilson Cup?';
+                
+                // Handle line breaks - the text from sheets has actual newlines
+                const whatFullText = hwc.whatIsFull || hwc.whatIsPreview || '';
+                const whatParagraphs = whatFullText.split(/\n\s*\n/).filter(p => p.trim());
+                document.getElementById('modal-what-body').innerHTML = whatParagraphs.length > 0 
+                    ? whatParagraphs.map(p => `<p>${p.trim()}</p>`).join('')
+                    : `<p>${hwc.whatIsPreview || 'No content available.'}</p>`;
+                
+                document.getElementById('hwc-why-title').textContent = hwc.whyTitle || 'Why the Henry Wilson Cup?';
+                document.getElementById('hwc-why-preview').textContent = hwc.whyPreview || '';
+                document.getElementById('modal-why-title').textContent = hwc.whyTitle || 'Why the Henry Wilson Cup?';
+                
+                const whyFullText = hwc.whyFull || hwc.whyPreview || '';
+                const whyParagraphs = whyFullText.split(/\n\s*\n/).filter(p => p.trim());
+                document.getElementById('modal-why-body').innerHTML = whyParagraphs.length > 0
+                    ? whyParagraphs.map(p => `<p>${p.trim()}</p>`).join('')
+                    : `<p>${hwc.whyPreview || 'No content available.'}</p>`;
+                
+                // HWC Events
+                const eventsList = hwc.events ? hwc.events.split(',').map(e => e.trim()) : [];
+                const eventsListHtml = `
+                    <ul>
+                        ${eventsList.map(e => `<li>${e}</li>`).join('')}
+                    </ul>
+                    ${hwc.eventsNote ? `<div class="note">${hwc.eventsNote}</div>` : ''}
+                `;
+                document.getElementById('hwc-events-list').innerHTML = eventsListHtml;
+                
+                // Load Event List
+                const eventsResp = await fetch(SHEETS.eventList);
+                const eventsText = await eventsResp.text();
+                const eventList = parseEventList(eventsText);
+                
+                // Fetch details for each event from its individual tab - IN PARALLEL
+                const eventPromises = eventList.map(async (evt) => {
+                    const eventGid = EVENT_GIDS[evt.id];
+                    if (eventGid) {
+                        try {
+                            const eventResp = await fetch(SHEET_BASE + '?gid=' + eventGid + '&single=true&output=csv');
+                            const eventText = await eventResp.text();
+                            const eventData = parseFieldValueTab(eventText);
+                            return {
+                                ...evt,
+                                signUpDeadline: eventData.signUpDeadline || eventData['sign-upDeadline'] || '',
+                                entryFee: eventData.entryFee || '',
+                                description: eventData.description || '',
+                                eligibility: eventData.eligibility || '',
+                                format: eventData.format || '',
+                                handicap: eventData.handicap || '',
+                                tees: eventData.tees || '',
+                                prizes: eventData.prizes || '',
+                                details: (eventData.details || eventData.additionalDetails || '').replace(/\\n/g, '\n')
+                            };
+                        } catch (e) {
+                            console.log('Could not load details for event:', evt.id);
+                            return evt;
+                        }
+                    } else {
+                        // No GID configured for this event, use basic info
+                        return evt;
+                    }
+                });
+                
+                const events = await Promise.all(eventPromises);
+                
+                // Sort events by date
+                const sortedEvents = sortEvents(events);
+                
+                // Find next upcoming event
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                let nextEventId = null;
+                
+                for (const event of sortedEvents) {
+                    const eventDate = parseDate(event.startDate);
+                    if (eventDate && eventDate >= today) {
+                        nextEventId = event.id;
+                        break;
+                    }
+                }
+                
+                // Render calendar cards
+                const calendarHtml = sortedEvents.map(e => renderCalendarCard(e, e.id === nextEventId)).join('');
+                document.getElementById('calendar-grid').innerHTML = calendarHtml;
+                
+                // Render event details
+                const detailsHtml = sortedEvents.map(e => renderEventDetail(e)).join('');
+                document.getElementById('event-details-container').innerHTML = detailsHtml;
+                
+            } catch (error) {
+                console.error('Error loading from Google Sheets:', error);
+                // Fall back to showing an error message
+                document.getElementById('calendar-grid').innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--gray-600);">Unable to load tournament data. Please try again later.</p>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
