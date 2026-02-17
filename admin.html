@@ -556,7 +556,6 @@
                 <div class="nav-section">
                     <div class="nav-section-title">Course</div>
                     <a class="nav-item" data-section="course-info">Course Info Cards</a>
-                    <a class="nav-item" data-section="ratings">Course Ratings</a>
                     <a class="nav-item" data-section="scorecard">Scorecard</a>
                 </div>
                 <div class="nav-section">
@@ -629,12 +628,6 @@
                             <div class="form-group">
                                 <label class="form-label">Rates Year</label>
                                 <input type="text" class="form-input" id="setting-rates-year" placeholder="e.g. 2025">
-                            </div>
-                            <div class="form-group">
-                                <div class="form-check" style="margin-top: 1.75rem;">
-                                    <input type="checkbox" id="setting-membership-open">
-                                    <label for="setting-membership-open">Membership applications open</label>
-                                </div>
                             </div>
                         </div>
                         <button class="btn btn-primary" onclick="saveSettings()">Save Changes</button>
@@ -814,6 +807,24 @@
                     <p class="section-description">Manage membership rates, greens fees, and cart rentals.</p>
                     
                     <div id="alert-rates" class="alert"></div>
+                    
+                    <div class="card">
+                        <h3 class="card-title">Membership Settings</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <div class="form-check">
+                                    <input type="checkbox" id="setting-membership-open">
+                                    <label for="setting-membership-open">Membership applications open</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Membership Note</label>
+                            <input type="text" class="form-input" id="setting-membership-note" placeholder="e.g. Membership age based on April 1st. Limited to 315 members.">
+                            <small style="color: var(--gray-400);">Displayed below membership rates on the site</small>
+                        </div>
+                        <button class="btn btn-primary btn-sm" onclick="saveMembershipSettings()">Save Membership Settings</button>
+                    </div>
                     
                     <div class="card">
                         <h3 class="card-title">Membership Rates</h3>
@@ -1029,7 +1040,6 @@
                 { key: 'season_status', value: document.getElementById('setting-season-status').value },
                 { key: 'clubhouse_opens', value: document.getElementById('setting-clubhouse-opens').value },
                 { key: 'rates_year', value: document.getElementById('setting-rates-year').value },
-                { key: 'membership_open', value: document.getElementById('setting-membership-open').checked ? 'true' : 'false' },
                 { key: 'tee_time_url', value: document.getElementById('setting-tee-time-url').value }
             ];
             
@@ -1435,6 +1445,28 @@
                 };
                 renderRates();
             }
+            
+            // Load membership settings
+            const { data: settings } = await supabaseClient.from('site_settings').select('key, value');
+            if (settings) {
+                const s = {};
+                settings.forEach(row => s[row.key] = row.value);
+                document.getElementById('setting-membership-open').checked = s.membership_open === 'true';
+                document.getElementById('setting-membership-note').value = s.membership_note || '';
+            }
+        }
+        
+        async function saveMembershipSettings() {
+            const updates = [
+                { key: 'membership_open', value: document.getElementById('setting-membership-open').checked ? 'true' : 'false' },
+                { key: 'membership_note', value: document.getElementById('setting-membership-note').value }
+            ];
+            
+            for (const u of updates) {
+                await supabaseClient.from('site_settings').upsert({ key: u.key, value: u.value, updated_at: new Date().toISOString() }, { onConflict: 'key' });
+            }
+            
+            showAlert('rates', 'Membership settings saved!');
         }
 
         function renderRates() {
