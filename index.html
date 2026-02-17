@@ -1904,9 +1904,7 @@
                         </div>
                     </div>
                     <div class="rates-card-footer">
-                        <div class="rates-note" id="membership-note">
-                            Membership age based on April 1st. Limited to 315 members.
-                        </div>
+                        <div class="rates-note" id="membership-note"></div>
                         <a href="membership-application.html" class="membership-apply-btn">Apply for Membership →</a>
                     </div>
                 </div>
@@ -3211,8 +3209,13 @@
                 
                 // Membership note
                 const membershipNote = document.getElementById('membership-note');
-                if (membershipNote && settings.membership_note) {
-                    membershipNote.textContent = settings.membership_note;
+                if (membershipNote) {
+                    if (settings.membership_note && settings.membership_note.trim() !== '') {
+                        membershipNote.textContent = settings.membership_note;
+                        membershipNote.style.display = 'block';
+                    } else {
+                        membershipNote.style.display = 'none';
+                    }
                 }
                 
             } catch (error) {

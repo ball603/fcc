@@ -772,33 +772,32 @@
                 <!-- Scorecard Section -->
                 <div class="content-section" id="section-scorecard">
                     <h1 class="section-title">Scorecard</h1>
-                    <p class="section-description">Edit hole-by-hole yardages, pars, and handicaps.</p>
+                    <p class="section-description">Edit hole-by-hole yardages, pars, and handicaps. Add or remove holes and tee boxes as needed.</p>
                     
                     <div id="alert-scorecard" class="alert"></div>
                     
                     <div class="card">
-                        <div class="scorecard-edit">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3 class="card-title" style="margin: 0;">Hole Data</h3>
+                            <div>
+                                <button class="btn btn-secondary btn-sm" onclick="addScorecardHole()">+ Add Hole</button>
+                            </div>
+                        </div>
+                        <div class="scorecard-edit" style="overflow-x: auto;">
                             <table id="scorecard-table">
-                                <thead>
-                                    <tr>
-                                        <th>Row</th>
-                                        <th>1</th>
-                                        <th>2</th>
-                                        <th>3</th>
-                                        <th>4</th>
-                                        <th>5</th>
-                                        <th>6</th>
-                                        <th>7</th>
-                                        <th>8</th>
-                                        <th>9</th>
-                                    </tr>
+                                <thead id="scorecard-header">
+                                    <!-- Header will be generated dynamically -->
                                 </thead>
-                                <tbody></tbody>
+                                <tbody id="scorecard-body">
+                                    <!-- Body will be generated dynamically -->
+                                </tbody>
                             </table>
                         </div>
+                        <div style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <button class="btn btn-primary" onclick="saveScorecard()">Save Scorecard</button>
+                            <button class="btn btn-secondary" onclick="addScorecardRow()">+ Add Tee Box Row</button>
+                        </div>
                     </div>
-                    
-                    <button class="btn btn-primary" onclick="saveScorecard()">Save Scorecard</button>
                 </div>
 
                 <!-- Rates Section -->
@@ -1142,9 +1141,6 @@
                                 <div id="inline-ratings-editor-${idx}">
                                     <!-- Ratings will be loaded here -->
                                 </div>
-                                <button class="btn btn-secondary btn-sm" onclick="navigateToSection('ratings')" style="margin-top: 0.75rem;">
-                                    Open Full Ratings Editor →
-                                </button>
                             </div>
                         </div>
                     `;
@@ -1243,37 +1239,71 @@
                 editor.innerHTML = `
                     <table class="data-table" style="font-size: 0.85rem; margin-bottom: 0.5rem;">
                         <thead>
-                            <tr><th colspan="3" style="background: var(--green-dark); color: white;">Male</th></tr>
-                            <tr><th>Tee</th><th>Rating</th><th>Slope</th></tr>
+                            <tr><th colspan="4" style="background: var(--green-dark); color: white;">Male</th></tr>
+                            <tr><th>Tee</th><th>Rating</th><th>Slope</th><th></th></tr>
                         </thead>
-                        <tbody>
+                        <tbody id="male-inline-ratings">
                             ${maleRatings.map(r => `
                                 <tr data-id="${r.id}">
-                                    <td>${r.tee_name}</td>
+                                    <td><input type="text" value="${r.tee_name}" class="inline-tee" style="width: 90px;"></td>
                                     <td><input type="number" step="0.1" value="${r.rating}" class="inline-rating" style="width: 60px;"></td>
                                     <td><input type="number" value="${r.slope}" class="inline-slope" style="width: 60px;"></td>
+                                    <td><button class="btn btn-danger btn-sm" onclick="deleteInlineRating(${r.id}, 'male')" style="padding: 0.2rem 0.5rem;">×</button></td>
                                 </tr>
                             `).join('')}
                         </tbody>
                     </table>
+                    <button class="btn btn-secondary btn-sm" onclick="addInlineRating('male')" style="margin-bottom: 1rem;">+ Add Male Tee</button>
+                    
                     <table class="data-table" style="font-size: 0.85rem;">
                         <thead>
-                            <tr><th colspan="3" style="background: var(--gold); color: var(--green-dark);">Female</th></tr>
-                            <tr><th>Tee</th><th>Rating</th><th>Slope</th></tr>
+                            <tr><th colspan="4" style="background: var(--gold); color: var(--green-dark);">Female</th></tr>
+                            <tr><th>Tee</th><th>Rating</th><th>Slope</th><th></th></tr>
                         </thead>
-                        <tbody>
+                        <tbody id="female-inline-ratings">
                             ${femaleRatings.map(r => `
                                 <tr data-id="${r.id}">
-                                    <td>${r.tee_name}</td>
+                                    <td><input type="text" value="${r.tee_name}" class="inline-tee" style="width: 90px;"></td>
                                     <td><input type="number" step="0.1" value="${r.rating}" class="inline-rating" style="width: 60px;"></td>
                                     <td><input type="number" value="${r.slope}" class="inline-slope" style="width: 60px;"></td>
+                                    <td><button class="btn btn-danger btn-sm" onclick="deleteInlineRating(${r.id}, 'female')" style="padding: 0.2rem 0.5rem;">×</button></td>
                                 </tr>
                             `).join('')}
                         </tbody>
                     </table>
-                    <button class="btn btn-gold btn-sm" onclick="saveInlineRatings()" style="margin-top: 0.5rem;">Save Ratings</button>
+                    <button class="btn btn-secondary btn-sm" onclick="addInlineRating('female')" style="margin-bottom: 0.5rem;">+ Add Female Tee</button>
+                    <br>
+                    <button class="btn btn-gold btn-sm" onclick="saveInlineRatings()" style="margin-top: 0.5rem;">Save All Ratings</button>
                 `;
             });
+        }
+        
+        // Add a new rating row
+        async function addInlineRating(gender) {
+            const newRating = {
+                gender: gender,
+                tee_name: 'New Tee',
+                rating: 70.0,
+                slope: 120,
+                sort_order: ratingsData.filter(r => r.gender === gender).length + 1
+            };
+            
+            const { data, error } = await supabaseClient.from('course_ratings').insert(newRating).select().single();
+            if (!error && data) {
+                ratingsData.push(data);
+                loadInlineRatingsEditors();
+                showAlert('course-info', 'Tee added!');
+            }
+        }
+        
+        // Delete a rating row
+        async function deleteInlineRating(id, gender) {
+            if (confirm('Delete this tee rating?')) {
+                await supabaseClient.from('course_ratings').delete().eq('id', id);
+                ratingsData = ratingsData.filter(r => r.id !== id);
+                loadInlineRatingsEditors();
+                showAlert('course-info', 'Tee deleted');
+            }
         }
         
         // Save ratings from inline editor
@@ -1282,11 +1312,16 @@
             
             for (const row of rows) {
                 const id = row.dataset.id;
+                const tee_name = row.querySelector('.inline-tee').value;
                 const rating = parseFloat(row.querySelector('.inline-rating').value);
                 const slope = parseInt(row.querySelector('.inline-slope').value);
                 
-                await supabaseClient.from('course_ratings').update({ rating, slope, updated_at: new Date().toISOString() }).eq('id', id);
+                await supabaseClient.from('course_ratings').update({ tee_name, rating, slope, updated_at: new Date().toISOString() }).eq('id', id);
             }
+            
+            // Reload ratings data
+            const { data } = await supabaseClient.from('course_ratings').select('*').order('sort_order');
+            if (data) ratingsData = data;
             
             showAlert('course-info', 'Ratings saved!');
         }
@@ -1374,6 +1409,16 @@
         // SCORECARD
         // =============================================
         let scorecardData = [];
+        let scorecardRows = ['par', 'white_blue', 'black_tops', 'green_tops', 'red_gold', 'back_hcp', 'fwd_hcp'];
+        let scorecardRowLabels = {
+            'par': 'Par',
+            'white_blue': 'White/Blue',
+            'black_tops': 'Black Tops',
+            'green_tops': 'Green Tops',
+            'red_gold': 'Red/Gold',
+            'back_hcp': 'Back HCP',
+            'fwd_hcp': 'Fwd HCP'
+        };
 
         async function loadScorecard() {
             const { data } = await supabaseClient.from('scorecard').select('*').order('hole');
@@ -1384,29 +1429,104 @@
         }
 
         function renderScorecard() {
-            const tbody = document.querySelector('#scorecard-table tbody');
-            const rows = [
-                { label: 'Par', field: 'par' },
-                { label: 'White/Blue', field: 'white_blue' },
-                { label: 'Black Tops', field: 'black_tops' },
-                { label: 'Green Tops', field: 'green_tops' },
-                { label: 'Red/Gold', field: 'red_gold' },
-                { label: 'Back HCP', field: 'back_hcp' },
-                { label: 'Fwd HCP', field: 'fwd_hcp' }
-            ];
+            const header = document.getElementById('scorecard-header');
+            const tbody = document.getElementById('scorecard-body');
             
-            tbody.innerHTML = rows.map(row => `
-                <tr data-field="${row.field}">
-                    <td class="row-label">${row.label}</td>
-                    ${scorecardData.map((hole, idx) => `
-                        <td><input type="number" value="${hole[row.field] || ''}" data-hole="${idx}"></td>
-                    `).join('')}
-                </tr>
-            `).join('');
+            // Build header with hole numbers
+            let headerHtml = '<tr><th>Row</th>';
+            scorecardData.forEach(hole => {
+                headerHtml += `<th>${hole.hole}</th>`;
+            });
+            headerHtml += '<th></th></tr>';
+            header.innerHTML = headerHtml;
+            
+            // Build body rows
+            let bodyHtml = '';
+            scorecardRows.forEach(field => {
+                bodyHtml += `<tr data-field="${field}">`;
+                bodyHtml += `<td class="row-label">${scorecardRowLabels[field] || field}</td>`;
+                scorecardData.forEach((hole, idx) => {
+                    bodyHtml += `<td><input type="number" value="${hole[field] || ''}" data-hole="${idx}" style="width: 50px;"></td>`;
+                });
+                bodyHtml += `<td><button class="btn btn-danger btn-sm" onclick="deleteScorecardRow('${field}')" style="padding: 0.2rem 0.5rem;">×</button></td>`;
+                bodyHtml += '</tr>';
+            });
+            
+            // Add delete hole row at bottom
+            bodyHtml += '<tr><td class="row-label" style="font-size: 0.75rem; color: var(--gray-400);">Delete Hole</td>';
+            scorecardData.forEach(hole => {
+                bodyHtml += `<td><button class="btn btn-danger btn-sm" onclick="deleteScorecardHole(${hole.id})" style="padding: 0.2rem 0.5rem; font-size: 0.7rem;">Del</button></td>`;
+            });
+            bodyHtml += '<td></td></tr>';
+            
+            tbody.innerHTML = bodyHtml;
+        }
+        
+        async function addScorecardHole() {
+            const nextHole = scorecardData.length + 1;
+            const newHole = {
+                hole: nextHole,
+                par: 4,
+                white_blue: null,
+                black_tops: null,
+                green_tops: null,
+                red_gold: null,
+                back_hcp: null,
+                fwd_hcp: null
+            };
+            
+            const { data, error } = await supabaseClient.from('scorecard').insert(newHole).select().single();
+            if (!error && data) {
+                scorecardData.push(data);
+                renderScorecard();
+                showAlert('scorecard', `Hole ${nextHole} added!`);
+            }
+        }
+        
+        async function deleteScorecardHole(id) {
+            if (confirm('Delete this hole? This will remove all data for this hole.')) {
+                await supabaseClient.from('scorecard').delete().eq('id', id);
+                scorecardData = scorecardData.filter(h => h.id !== id);
+                
+                // Renumber remaining holes
+                for (let i = 0; i < scorecardData.length; i++) {
+                    if (scorecardData[i].hole !== i + 1) {
+                        await supabaseClient.from('scorecard').update({ hole: i + 1 }).eq('id', scorecardData[i].id);
+                        scorecardData[i].hole = i + 1;
+                    }
+                }
+                
+                renderScorecard();
+                showAlert('scorecard', 'Hole deleted and renumbered');
+            }
+        }
+        
+        function addScorecardRow() {
+            const rowName = prompt('Enter row name (e.g., "Blue Tees"):');
+            if (rowName) {
+                const fieldName = rowName.toLowerCase().replace(/[^a-z0-9]/g, '_');
+                if (!scorecardRows.includes(fieldName)) {
+                    scorecardRows.push(fieldName);
+                    scorecardRowLabels[fieldName] = rowName;
+                    renderScorecard();
+                    showAlert('scorecard', `Row "${rowName}" added. Enter values and save.`);
+                } else {
+                    alert('A row with a similar name already exists.');
+                }
+            }
+        }
+        
+        function deleteScorecardRow(field) {
+            if (confirm(`Delete the "${scorecardRowLabels[field]}" row?`)) {
+                scorecardRows = scorecardRows.filter(r => r !== field);
+                delete scorecardRowLabels[field];
+                renderScorecard();
+                showAlert('scorecard', 'Row removed. Save to confirm changes.');
+            }
         }
 
         async function saveScorecard() {
-            const rows = document.querySelectorAll('#scorecard-table tbody tr');
+            const rows = document.querySelectorAll('#scorecard-body tr[data-field]');
             
             // Build update objects for each hole
             const holeUpdates = scorecardData.map(() => ({}));
@@ -1415,7 +1535,9 @@
                 const field = row.dataset.field;
                 row.querySelectorAll('input').forEach(input => {
                     const holeIdx = parseInt(input.dataset.hole);
-                    holeUpdates[holeIdx][field] = parseInt(input.value) || null;
+                    if (!isNaN(holeIdx)) {
+                        holeUpdates[holeIdx][field] = input.value ? parseInt(input.value) : null;
+                    }
                 });
             });
             
