@@ -2411,7 +2411,7 @@
         </div>
     </footer>
 
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    <script>
         // Mobile Menu Toggle
         function toggleMobileMenu() {
             document.getElementById('mobileMenu').classList.toggle('active');
@@ -2859,7 +2859,7 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJid21idnNwbGFkdW5laXl3cWZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzMzI0MzUsImV4cCI6MjA4NjkwODQzNX0.glJqYpFvPvYM0avZNN0jp7E-uprZiILQpKdBSs0WKPU';
         
         // Initialize Supabase client
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
         // Site settings (with defaults)
         let siteSettings = {
@@ -2870,7 +2870,7 @@
         // Load Site Settings from Supabase
         async function loadSiteSettings() {
             try {
-                const { data, error } = await supabase
+                const { data, error } = await supabaseClient
                     .from('site_settings')
                     .select('key, value');
                 
@@ -2906,7 +2906,7 @@
         // Load Announcement Banner from Supabase
         async function loadAnnouncement() {
             try {
-                const { data, error } = await supabase
+                const { data, error } = await supabaseClient
                     .from('announcements')
                     .select('*')
                     .eq('active', true)
@@ -2936,7 +2936,7 @@
         // Load Scorecard from Supabase
         async function loadScorecard() {
             try {
-                const { data, error } = await supabase
+                const { data, error } = await supabaseClient
                     .from('scorecard')
                     .select('*')
                     .order('hole');
@@ -3050,7 +3050,7 @@
         async function loadRates() {
             try {
                 // Get rates year from site_settings
-                const { data: settingsData } = await supabase
+                const { data: settingsData } = await supabaseClient
                     .from('site_settings')
                     .select('value')
                     .eq('key', 'rates_year')
@@ -3064,7 +3064,7 @@
                 }
                 
                 // Get all rates
-                const { data, error } = await supabase
+                const { data, error } = await supabaseClient
                     .from('rates')
                     .select('*')
                     .order('sort_order');
@@ -3111,7 +3111,7 @@
         // Load Leagues from Supabase
         async function loadLeagues() {
             try {
-                const { data, error } = await supabase
+                const { data, error } = await supabaseClient
                     .from('leagues')
                     .select('*')
                     .eq('active', true)
