@@ -1873,10 +1873,45 @@
                 <div class="gold-line"></div>
             </div>
             <div class="course-grid" id="course-info-grid">
-                <!-- Course info cards loaded dynamically from Supabase -->
                 <div class="course-card">
                     <div class="course-card-icon">⛳</div>
-                    <h3>Loading...</h3>
+                    <h3>Course Rating/Slope</h3>
+                    <p style="font-size: 0.85rem; line-height: 1.6;">
+                    <strong>Male – White/Blue:</strong> 69.9/127<br>
+                    <strong>Male – Black Tops:</strong> 69.2/125<br>
+                    <strong>Male – Green Tops:</strong> 66.6/117<br>
+                    <strong>Male – Red/Gold:</strong> 65.6/108<br>
+                    <strong>Female – White/Blue:</strong> 76.3/131<br>
+                    <strong>Female – Black Tops:</strong> 75.4/127<br>
+                    <strong>Female – Green Tops:</strong> 72.2/124<br>
+                    <strong>Female – Red/Gold:</strong> 70.3/118</p>
+                    <button class="btn btn-primary" style="margin-top: 1rem; width: 100%;" onclick="openScorecardModal()">View Scorecard</button>
+                </div>
+                <div class="course-card">
+                    <div class="course-card-icon">🏌️</div>
+                    <h3>Tee Times</h3>
+                    <p>Required on weekends and holidays. Members can book up to 1 week in advance. Non-members can book 5 days ahead.</p>
+                    <a href="https://fox.tenfore.golf/farmington" target="_blank" class="btn btn-primary" style="margin-top: 1rem; width: 100%; display: flex; align-items: center; justify-content: center;">Book a Tee Time</a>
+                </div>
+                <div class="course-card">
+                    <div class="course-card-icon">🚗</div>
+                    <h3>Golf Carts</h3>
+                    <p>Power carts available. Must have valid driver's license. Keep carts on paths when possible and 30ft from greens.</p>
+                </div>
+                <div class="course-card">
+                    <div class="course-card-icon">👕</div>
+                    <h3>Dress Code</h3>
+                    <p>Shirts and shoes required. No tank tops, bathing suits, or offensive attire. Pro shop decision is final.</p>
+                </div>
+                <div class="course-card">
+                    <div class="course-card-icon">⏱️</div>
+                    <h3>Pace of Play</h3>
+                    <p>Course should be played in just over 2 hours for 9 holes. Play ready golf and stay behind the group ahead.</p>
+                </div>
+                <div class="course-card">
+                    <div class="course-card-icon">📋</div>
+                    <h3>Local Rules</h3>
+                    <p>USGA rules govern play. Preferred lies in fairways (1 club length). All staked trees are mandatory free lift.</p>
                 </div>
             </div>
         </div>
@@ -2090,7 +2125,12 @@
                     <p id="proshop-text-1">Our fully stocked Pro Shop has everything you need for your round. We offer equipment, apparel, accessories, and professional services to keep your game sharp.</p>
                     <p id="proshop-text-2">The shop opens no later than April 1st each season (earlier if weather permits). After November 15th, the course remains open for members only until winter conditions force closure.</p>
                     <div class="proshop-services" id="proshop-services">
-                        <div class="proshop-service">Loading...</div>
+                        <div class="proshop-service">Club Re-Gripping</div>
+                        <div class="proshop-service">Shoe Re-Spiking</div>
+                        <div class="proshop-service">Private Lessons</div>
+                        <div class="proshop-service">Equipment Sales</div>
+                        <div class="proshop-service">Apparel</div>
+                        <div class="proshop-service">Beverages</div>
                     </div>
                 </div>
                 <div class="proshop-image" style="background: url('images/nature7.jpg') center/cover;">
@@ -3275,13 +3315,21 @@
         // Load Course Info Cards
         async function loadCourseInfo() {
             try {
-                const { data } = await supabaseClient
+                const { data, error } = await supabaseClient
                     .from('course_info')
                     .select('*')
                     .eq('active', true)
                     .order('sort_order');
                 
-                if (!data) return;
+                if (error) {
+                    console.log('Course info error:', error);
+                    return; // Keep default HTML
+                }
+                
+                if (!data || data.length === 0) {
+                    console.log('No course info data found');
+                    return; // Keep default HTML
+                }
                 
                 const grid = document.getElementById('course-info-grid');
                 if (!grid) return;
@@ -3333,13 +3381,18 @@
         // Load Pro Shop Services
         async function loadProshopServices() {
             try {
-                const { data } = await supabaseClient
+                const { data, error } = await supabaseClient
                     .from('pro_shop_services')
                     .select('*')
                     .eq('active', true)
                     .order('sort_order');
                 
-                if (!data) return;
+                if (error) {
+                    console.log('Pro shop services error:', error);
+                    return; // Keep default HTML
+                }
+                
+                if (!data || data.length === 0) return; // Keep default HTML
                 
                 const container = document.getElementById('proshop-services');
                 if (!container) return;
