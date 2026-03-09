@@ -746,7 +746,6 @@
         .scorecard-display td.col-total {
             width: 70px;
             min-width: 70px;
-            font-weight: 700;
         }
 
         .scorecard-display th:last-child,
@@ -2168,7 +2167,7 @@
                         <div class="contact-item-icon">✉️</div>
                         <div class="contact-item-text">
                             <h4>Email</h4>
-                            <p id="contact-email"><a href="/cdn-cgi/l/email-protection#a6c0c5c5e6cbc3d2d4c9c5c7d5d288c8c3d2"><span class="__cf_email__" data-cfemail="096f6a6a49646c7d7b666a687a7d27676c7d">[email&#160;protected]</span></a></p>
+                            <p id="contact-email"><a href="mailto:fcc@metrocast.net">fcc@metrocast.net</a></p>
                         </div>
                     </div>
                     <div class="social-links">
@@ -2427,7 +2426,7 @@
         </div>
     </footer>
 
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    <script>
         // Mobile Menu Toggle
         function toggleMobileMenu() {
             document.getElementById('mobileMenu').classList.toggle('active');
@@ -3322,12 +3321,12 @@
                     .order('sort_order');
                 
                 if (error) {
-                    console.log('Course info error:', error);
+                    console.log('Course info query error:', error);
                     return; // Keep default HTML
                 }
                 
                 if (!data || data.length === 0) {
-                    console.log('No course info data found');
+                    console.log('No course info data');
                     return; // Keep default HTML
                 }
                 
@@ -3409,4 +3408,14 @@
         // Initialize all data loading
         document.addEventListener('DOMContentLoaded', () => {
             loadSiteSettings();
-            
+            loadAnnouncement();
+            loadAllSettings();
+            loadCourseInfo();
+            loadScorecard();
+            loadRates();
+            loadLeagues();
+            loadProshopServices();
+        });
+    </script>
+</body>
+</html>
