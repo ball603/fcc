@@ -1767,7 +1767,7 @@
                 data.sort_order = leaguesData.length;
                 await supabaseClient.from('leagues').insert(data);
             } else {
-                await supabaseClient.from('rates').update(data).eq('id', id);
+                await supabaseClient.from('leagues').update(data).eq('id', id);
             }
             
             await loadLeagues();
