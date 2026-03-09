@@ -1763,11 +1763,20 @@
                 updated_at: new Date().toISOString()
             };
             
+            let error;
             if (String(id).startsWith('new-')) {
                 data.sort_order = leaguesData.length;
-                await supabaseClient.from('leagues').insert(data);
+                const result = await supabaseClient.from('leagues').insert(data);
+                error = result.error;
             } else {
-                await supabaseClient.from('leagues').update(data).eq('id', id);
+                const result = await supabaseClient.from('leagues').update(data).eq('id', id);
+                error = result.error;
+            }
+            
+            if (error) {
+                console.error('League save error:', error);
+                showAlert('leagues', 'Error: ' + error.message, 'error');
+                return;
             }
             
             await loadLeagues();
