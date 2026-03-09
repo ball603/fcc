@@ -722,6 +722,7 @@
             width: 100%;
             border-collapse: collapse;
             font-size: 0.9rem;
+            table-layout: fixed;
         }
 
         .scorecard-display th,
@@ -730,6 +731,22 @@
             text-align: center;
             border-right: 1px solid var(--gray-200);
             white-space: nowrap;
+            box-sizing: border-box;
+            width: 60px;
+            min-width: 60px;
+        }
+        
+        .scorecard-display th.row-label,
+        .scorecard-display td.row-label {
+            width: 120px;
+            min-width: 120px;
+        }
+        
+        .scorecard-display th.col-total,
+        .scorecard-display td.col-total {
+            width: 70px;
+            min-width: 70px;
+            font-weight: 700;
         }
 
         .scorecard-display th:last-child,
@@ -749,7 +766,8 @@
             font-weight: 600;
             padding-left: 1rem;
             background: var(--gray-50);
-            min-width: 140px;
+            width: 120px;
+            min-width: 120px;
             position: sticky;
             left: 0;
             z-index: 1;
@@ -839,8 +857,8 @@
         }
 
         .scorecard-divider {
-            height: 8px;
-            background: var(--gray-100);
+            height: 2rem;
+            background: transparent;
         }
 
         /* Events Section */
@@ -2110,7 +2128,7 @@
                         <div class="contact-item-icon">✉️</div>
                         <div class="contact-item-text">
                             <h4>Email</h4>
-                            <p id="contact-email"><a href="mailto:fcc@metrocast.net">fcc@metrocast.net</a></p>
+                            <p id="contact-email"><a href="/cdn-cgi/l/email-protection#a6c0c5c5e6cbc3d2d4c9c5c7d5d288c8c3d2"><span class="__cf_email__" data-cfemail="096f6a6a49646c7d7b666a687a7d27676c7d">[email&#160;protected]</span></a></p>
                         </div>
                     </div>
                     <div class="social-links">
@@ -2369,7 +2387,7 @@
         </div>
     </footer>
 
-    <script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         // Mobile Menu Toggle
         function toggleMobileMenu() {
             document.getElementById('mobileMenu').classList.toggle('active');
@@ -3338,14 +3356,4 @@
         // Initialize all data loading
         document.addEventListener('DOMContentLoaded', () => {
             loadSiteSettings();
-            loadAnnouncement();
-            loadAllSettings();
-            loadCourseInfo();
-            loadScorecard();
-            loadRates();
-            loadLeagues();
-            loadProshopServices();
-        });
-    </script>
-</body>
-</html>
+            
