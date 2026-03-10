@@ -618,13 +618,8 @@
                                     <option value="open">Open</option>
                                     <option value="closed">Closed</option>
                                 </select>
+                                <small style="color: var(--gray-400);">Controls visibility of "Tee Times" nav link and "Book a Tee Time" button</small>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">Clubhouse Opens</label>
-                                <input type="text" class="form-input" id="setting-clubhouse-opens" placeholder="e.g. April 1st">
-                            </div>
-                        </div>
-                        <div class="form-row">
                             <div class="form-group">
                                 <label class="form-label">Rates Year</label>
                                 <input type="text" class="form-input" id="setting-rates-year" placeholder="e.g. 2025">
@@ -1027,9 +1022,7 @@
                 data.forEach(row => settingsData[row.key] = row.value);
                 
                 document.getElementById('setting-season-status').value = settingsData.season_status || 'open';
-                document.getElementById('setting-clubhouse-opens').value = settingsData.clubhouse_opens || '';
                 document.getElementById('setting-rates-year').value = settingsData.rates_year || '';
-                document.getElementById('setting-membership-open').checked = settingsData.membership_open === 'true';
                 document.getElementById('setting-tee-time-url').value = settingsData.tee_time_url || '';
             }
         }
@@ -1037,7 +1030,6 @@
         async function saveSettings() {
             const updates = [
                 { key: 'season_status', value: document.getElementById('setting-season-status').value },
-                { key: 'clubhouse_opens', value: document.getElementById('setting-clubhouse-opens').value },
                 { key: 'rates_year', value: document.getElementById('setting-rates-year').value },
                 { key: 'tee_time_url', value: document.getElementById('setting-tee-time-url').value }
             ];

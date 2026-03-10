@@ -1782,9 +1782,11 @@
                 <ul class="nav-links">
                     <li><a href="#home" class="active">Home</a></li>
                     <li><a href="#about">About</a></li>
+                    <li id="nav-tee-times"><a href="https://fox.tenfore.golf/farmington" target="_blank">Tee Times</a></li>
                     <li><a href="#rates">Rates</a></li>
                     <li><a href="#events">Events</a></li>
                     <li><a href="#leagues">Leagues</a></li>
+                    <li><a href="#proshop">Pro Shop</a></li>
                     <li><a href="#contact">Contact</a></li>
                     <li class="nav-social">
                         <a href="https://www.facebook.com/FarmingtonCountryClubNH/" target="_blank" title="Facebook">
@@ -1809,9 +1811,11 @@
         <span class="mobile-close" onclick="toggleMobileMenu()">×</span>
         <a href="#home" onclick="toggleMobileMenu()">Home</a>
         <a href="#about" onclick="toggleMobileMenu()">About</a>
+        <a href="https://fox.tenfore.golf/farmington" target="_blank" id="mobile-tee-times" onclick="toggleMobileMenu()">Tee Times</a>
         <a href="#rates" onclick="toggleMobileMenu()">Rates</a>
         <a href="#events" onclick="toggleMobileMenu()">Events</a>
         <a href="#leagues" onclick="toggleMobileMenu()">Leagues</a>
+        <a href="#proshop" onclick="toggleMobileMenu()">Pro Shop</a>
         <a href="#contact" onclick="toggleMobileMenu()">Contact</a>
     </div>
 
@@ -1824,7 +1828,7 @@
             <div class="hero-badge">Farmington, NH • Established 1924</div>
             <h1>Farmington Country Club</h1>
             <p class="subtitle" id="hero-tagline">A nine-hole hidden gem on the banks of the Cocheco River</p>
-            <div class="hero-cta">
+            <div class="hero-cta" id="hero-tee-time">
                 <a href="https://fox.tenfore.golf/farmington" target="_blank" class="btn btn-primary">Book a Tee Time</a>
             </div>
         </div>
@@ -2116,7 +2120,7 @@
     </section>
 
     <!-- Pro Shop Section -->
-    <section class="section proshop">
+    <section class="section proshop" id="proshop">
         <div class="section-inner">
             <div class="proshop-content">
                 <div class="proshop-text">
@@ -2899,11 +2903,17 @@
                         if (row.key === 'membership_closed_message') {
                             siteSettings.membershipClosedMessage = row.value;
                         }
+                        if (row.key === 'season_status') {
+                            siteSettings.seasonStatus = row.value;
+                        }
                     });
                 }
                 
                 // Update membership application link visibility
                 updateMembershipVisibility();
+                
+                // Update tee times visibility based on season status
+                updateSeasonStatus();
                 
             } catch (error) {
                 console.log('Could not load site settings:', error);
@@ -2916,6 +2926,23 @@
             if (membershipLink && !siteSettings.membershipOpen) {
                 membershipLink.style.display = 'none';
             }
+        }
+        
+        // Update tee times visibility based on season status
+        function updateSeasonStatus() {
+            const isClosed = siteSettings.seasonStatus === 'closed';
+            
+            // Hide/show nav tee times link
+            const navTeeTime = document.getElementById('nav-tee-times');
+            if (navTeeTime) navTeeTime.style.display = isClosed ? 'none' : '';
+            
+            // Hide/show mobile tee times link
+            const mobileTeeTime = document.getElementById('mobile-tee-times');
+            if (mobileTeeTime) mobileTeeTime.style.display = isClosed ? 'none' : '';
+            
+            // Hide/show hero Book a Tee Time button
+            const heroTeeTime = document.getElementById('hero-tee-time');
+            if (heroTeeTime) heroTeeTime.style.display = isClosed ? 'none' : '';
         }
 
         // Load Announcement Banner from Supabase
