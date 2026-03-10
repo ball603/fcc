@@ -2108,8 +2108,8 @@
     <section class="section leagues" id="leagues">
         <div class="section-inner">
             <div class="section-header">
-                <h2>Our Leagues</h2>
-                <p>Compete, connect, and have fun with fellow golfers</p>
+                <h2 id="leagues-heading">Our Leagues</h2>
+                <p id="leagues-subheading">Compete, connect, and have fun with fellow golfers</p>
                 <div class="gold-line"></div>
             </div>
             <div class="leagues-grid" id="leagues-grid">
@@ -3480,6 +3480,13 @@
                         [settings.proshop_text_1, settings.proshop_text_2].filter(Boolean).join('\n\n');
                     if (text) proshopText.innerHTML = textToHtml(text);
                 }
+                
+                // Leagues section
+                const leaguesHeading = document.getElementById('leagues-heading');
+                if (leaguesHeading && settings.leagues_heading) leaguesHeading.textContent = settings.leagues_heading;
+                
+                const leaguesSubheading = document.getElementById('leagues-subheading');
+                if (leaguesSubheading && settings.leagues_subheading) leaguesSubheading.textContent = settings.leagues_subheading;
                 
                 // Events section
                 const eventsHeading = document.getElementById('events-heading');
