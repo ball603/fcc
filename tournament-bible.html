@@ -1142,9 +1142,9 @@
                 if (hwc) {
                     document.getElementById('hwc-what-title').textContent = hwc.what_title || 'What is the Henry Wilson Cup?';
                     
-                    // Create preview from first sentence/paragraph
-                    const whatPreview = hwc.what_content ? hwc.what_content.split('\n\n')[0] : '';
-                    document.getElementById('hwc-what-preview').textContent = whatPreview;
+                    // Extract first sentence for preview
+                    const whatFirstSentence = hwc.what_content ? hwc.what_content.split(/(?<=\.)\s/)[0] : '';
+                    document.getElementById('hwc-what-preview').textContent = whatFirstSentence;
                     document.getElementById('modal-what-title').textContent = hwc.what_title || 'What is the Henry Wilson Cup?';
                     
                     // Handle line breaks for full content
@@ -1155,8 +1155,9 @@
                     
                     document.getElementById('hwc-why-title').textContent = hwc.why_title || 'Why the Henry Wilson Cup?';
                     
-                    const whyPreview = hwc.why_content ? hwc.why_content.split('\n\n')[0] : '';
-                    document.getElementById('hwc-why-preview').textContent = whyPreview;
+                    // Extract first sentence for preview
+                    const whyFirstSentence = hwc.why_content ? hwc.why_content.split(/(?<=\.)\s/)[0] : '';
+                    document.getElementById('hwc-why-preview').textContent = whyFirstSentence;
                     document.getElementById('modal-why-title').textContent = hwc.why_title || 'Why the Henry Wilson Cup?';
                     
                     const whyParagraphs = (hwc.why_content || '').split('\n\n').filter(p => p.trim());
