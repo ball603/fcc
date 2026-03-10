@@ -2148,19 +2148,28 @@
                 const grayText = [80, 80, 80];
                 
                 let y = margin;
+                let currentPage = 1;
                 
                 // Helper: Add page header
-                function addPageHeader(title) {
+                function addPageHeader() {
                     doc.setFillColor(...greenDark);
-                    doc.rect(0, 0, pageWidth, 60, 'F');
+                    doc.rect(0, 0, pageWidth, 50, 'F');
                     doc.setTextColor(255, 255, 255);
-                    doc.setFontSize(18);
+                    doc.setFontSize(16);
                     doc.setFont('helvetica', 'bold');
-                    doc.text(title, margin, 38);
+                    doc.text(year + ' Tournament Bible', margin, 32);
                     doc.setFontSize(10);
                     doc.setFont('helvetica', 'normal');
-                    doc.text(year + ' Season', pageWidth - margin, 38, { align: 'right' });
-                    return 80;
+                    doc.setTextColor(...gold);
+                    doc.text('Farmington Country Club', pageWidth - margin, 32, { align: 'right' });
+                    return 70;
+                }
+                
+                // Helper: Add page footer
+                function addPageFooter(pageNum) {
+                    doc.setFontSize(8);
+                    doc.setTextColor(150, 150, 150);
+                    doc.text('Farmington Country Club  |  ' + year + ' Tournament Bible  |  Page ' + pageNum, pageWidth / 2, pageHeight - 25, { align: 'center' });
                 }
                 
                 // Helper: Add section title
@@ -2171,18 +2180,18 @@
                     doc.text(title, margin, yPos);
                     doc.setDrawColor(...gold);
                     doc.setLineWidth(2);
-                    doc.line(margin, yPos + 5, margin + 100, yPos + 5);
-                    return yPos + 25;
+                    doc.line(margin, yPos + 6, margin + 80, yPos + 6);
+                    return yPos + 28;
                 }
                 
                 // Helper: Add wrapped text
-                function addWrappedText(text, yPos, fontSize = 10, color = grayText) {
+                function addWrappedText(text, yPos, fontSize = 10, color = grayText, lineHeight = 1.5) {
                     doc.setTextColor(...color);
                     doc.setFontSize(fontSize);
                     doc.setFont('helvetica', 'normal');
                     const lines = doc.splitTextToSize(text, contentWidth);
                     doc.text(lines, margin, yPos);
-                    return yPos + (lines.length * fontSize * 1.4);
+                    return yPos + (lines.length * fontSize * lineHeight);
                 }
                 
                 // Helper: Format date
@@ -2192,207 +2201,322 @@
                     return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
                 }
                 
-                // ========== PAGE 1: Henry Wilson Cup ==========
-                y = addPageHeader('🏆 Tournament Bible');
+                // ========== COVER PAGE ==========
+                // Green background header area
+                doc.setFillColor(...greenDark);
+                doc.rect(0, 0, pageWidth, 280, 'F');
+                
+                // Draw a simple tree shape (gold)
+                doc.setFillColor(...gold);
+                // Tree trunk
+                doc.rect(pageWidth/2 - 8, 180, 16, 50, 'F');
+                // Tree foliage (triangle layers)
+                doc.triangle(pageWidth/2, 60, pageWidth/2 - 60, 140, pageWidth/2 + 60, 140, 'F');
+                doc.triangle(pageWidth/2, 90, pageWidth/2 - 50, 160, pageWidth/2 + 50, 160, 'F');
+                doc.triangle(pageWidth/2, 115, pageWidth/2 - 45, 185, pageWidth/2 + 45, 185, 'F');
+                
+                // Club name
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(28);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Farmington Country Club', pageWidth / 2, 320, { align: 'center' });
+                
+                // Gold divider
+                doc.setDrawColor(...gold);
+                doc.setLineWidth(3);
+                doc.line(pageWidth/2 - 100, 345, pageWidth/2 + 100, 345);
+                
+                // Year + Tournament Bible
+                doc.setTextColor(...greenDark);
+                doc.setFontSize(42);
+                doc.setFont('helvetica', 'bold');
+                doc.text(year, pageWidth / 2, 410, { align: 'center' });
+                
+                doc.setFontSize(24);
+                doc.text('Tournament Bible', pageWidth / 2, 450, { align: 'center' });
+                
+                // Tagline
+                doc.setFontSize(11);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(120, 120, 120);
+                doc.text('Your complete guide to tournaments and events', pageWidth / 2, 490, { align: 'center' });
+                
+                // Footer on cover
+                doc.setFontSize(9);
+                doc.setTextColor(150, 150, 150);
+                doc.text('Farmington, New Hampshire', pageWidth / 2, pageHeight - 50, { align: 'center' });
+                
+                // ========== PAGE 2: Henry Wilson Cup ==========
+                doc.addPage();
+                currentPage = 2;
+                y = addPageHeader();
+                
+                // Page subtitle
+                doc.setTextColor(...greenDark);
+                doc.setFontSize(20);
+                doc.setFont('helvetica', 'bold');
+                doc.text('The Henry Wilson Cup', margin, y);
+                y += 35;
                 
                 // What is the Henry Wilson Cup?
-                y = addSectionTitle('🏆 ' + (hwc?.what_title || 'What is the Henry Wilson Cup?'), y);
+                y = addSectionTitle(hwc?.what_title || 'What is the Henry Wilson Cup?', y);
                 if (hwc?.what_content) {
                     const whatParagraphs = hwc.what_content.split('\n\n');
                     whatParagraphs.forEach(para => {
                         y = addWrappedText(para.trim(), y);
-                        y += 8;
+                        y += 12;
                     });
                 }
-                y += 10;
+                y += 8;
                 
                 // Why the Henry Wilson Cup?
-                y = addSectionTitle('🏆 ' + (hwc?.why_title || 'Why the Henry Wilson Cup?'), y);
+                y = addSectionTitle(hwc?.why_title || 'Why the Henry Wilson Cup?', y);
                 if (hwc?.why_content) {
                     const whyParagraphs = hwc.why_content.split('\n\n');
                     whyParagraphs.forEach(para => {
                         y = addWrappedText(para.trim(), y);
-                        y += 8;
+                        y += 12;
                     });
                 }
-                y += 10;
+                y += 8;
                 
                 // HWC Events
-                y = addSectionTitle('📅 ' + year + ' HWC Qualifying Events', y);
+                y = addSectionTitle(year + ' HWC Qualifying Events', y);
                 if (hwc?.qualifying_events) {
                     const eventsList = hwc.qualifying_events.split(',').map(e => e.trim());
                     doc.setTextColor(...grayText);
                     doc.setFontSize(10);
                     eventsList.forEach(evt => {
-                        doc.text('• ' + evt, margin + 10, y);
-                        y += 14;
+                        doc.text('  •  ' + evt, margin, y);
+                        y += 16;
                     });
                 }
                 if (hwc?.events_note) {
-                    y += 5;
+                    y += 8;
                     doc.setFontSize(9);
                     doc.setTextColor(120, 120, 120);
+                    doc.setFont('helvetica', 'italic');
                     doc.text(hwc.events_note, margin, y);
-                    y += 20;
                 }
                 
-                // Table of Contents
-                y = addSectionTitle('📋 Tournament Directory', y);
+                addPageFooter(currentPage);
+                
+                // ========== PAGE 3: Tournament Directory ==========
+                doc.addPage();
+                currentPage = 3;
+                y = addPageHeader();
+                
+                // Page subtitle
+                doc.setTextColor(...greenDark);
+                doc.setFontSize(20);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Tournament Directory', margin, y);
+                y += 35;
+                
+                // Table header
+                doc.setFillColor(245, 245, 245);
+                doc.rect(margin, y - 12, contentWidth, 20, 'F');
+                doc.setTextColor(...greenDark);
                 doc.setFontSize(10);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Event Name', margin + 10, y);
+                doc.text('Date', margin + 300, y);
+                doc.text('Page', pageWidth - margin - 30, y);
+                y += 25;
+                
+                // List events
+                doc.setFont('helvetica', 'normal');
                 (events || []).forEach((event, idx) => {
-                    if (y > pageHeight - 60) {
-                        doc.addPage();
-                        y = addPageHeader('🏆 Tournament Bible') + 20;
+                    // Alternating row background
+                    if (idx % 2 === 0) {
+                        doc.setFillColor(250, 250, 250);
+                        doc.rect(margin, y - 12, contentWidth, 22, 'F');
                     }
+                    
                     doc.setTextColor(...grayText);
+                    doc.setFontSize(10);
                     doc.text(event.name, margin + 10, y);
+                    doc.text(formatDate(event.start_date), margin + 300, y);
                     doc.setTextColor(150, 150, 150);
-                    doc.text('Page ' + (idx + 2), pageWidth - margin, y, { align: 'right' });
-                    y += 16;
+                    doc.text(String(idx + 4), pageWidth - margin - 30, y);
+                    y += 22;
                 });
                 
-                // ========== PAGES 2+: Individual Events ==========
+                addPageFooter(currentPage);
+                
+                // ========== PAGES 4+: Individual Events ==========
                 (events || []).forEach((event, idx) => {
                     doc.addPage();
-                    y = addPageHeader(event.name);
+                    currentPage = idx + 4;
+                    y = addPageHeader();
                     
-                    // Event title with HWC badge
+                    // Event title
                     doc.setTextColor(...greenDark);
                     doc.setFontSize(22);
                     doc.setFont('helvetica', 'bold');
                     doc.text(event.name, margin, y);
-                    y += 10;
+                    y += 12;
                     
+                    // HWC badge
                     if (event.henry_wilson) {
+                        y += 8;
                         doc.setFillColor(...gold);
-                        doc.roundedRect(margin, y, 180, 20, 3, 3, 'F');
+                        doc.roundedRect(margin, y - 10, 195, 18, 3, 3, 'F');
                         doc.setTextColor(...greenDark);
                         doc.setFontSize(9);
                         doc.setFont('helvetica', 'bold');
-                        doc.text('🏆 Counts Toward Henry Wilson Cup', margin + 8, y + 14);
-                        y += 30;
+                        doc.text('COUNTS TOWARD HENRY WILSON CUP', margin + 8, y + 2);
+                        y += 18;
                     }
-                    y += 15;
                     
                     // Gold divider
+                    y += 12;
                     doc.setDrawColor(...gold);
-                    doc.setLineWidth(3);
-                    doc.line(margin, y, margin + 80, y);
-                    y += 20;
+                    doc.setLineWidth(2);
+                    doc.line(margin, y, margin + 60, y);
+                    y += 25;
                     
-                    // Quick facts grid
-                    const quickFacts = [
-                        { icon: '🗓️', label: 'Date', value: formatDate(event.start_date) + (event.end_date ? ' - ' + formatDate(event.end_date) : '') },
-                        { icon: '📝', label: 'Signup Deadline', value: event.signup_deadline || 'TBD' },
-                        { icon: '💵', label: 'Entry Fee', value: event.entry_fee || 'Free' }
-                    ];
+                    // Quick facts box
+                    doc.setFillColor(248, 248, 248);
+                    doc.roundedRect(margin, y - 8, contentWidth, 70, 4, 4, 'F');
                     
+                    const factY = y + 8;
                     doc.setFontSize(10);
-                    quickFacts.forEach(fact => {
-                        if (fact.value && fact.value !== 'TBD') {
-                            doc.setTextColor(...greenDark);
-                            doc.setFont('helvetica', 'bold');
-                            doc.text(fact.icon + ' ' + fact.label + ':', margin, y);
-                            doc.setTextColor(...grayText);
-                            doc.setFont('helvetica', 'normal');
-                            doc.text(fact.value, margin + 120, y);
-                            y += 18;
-                        }
-                    });
-                    y += 10;
+                    
+                    // Date
+                    doc.setTextColor(...greenDark);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('Date:', margin + 15, factY);
+                    doc.setTextColor(...grayText);
+                    doc.setFont('helvetica', 'normal');
+                    const dateText = formatDate(event.start_date) + (event.end_date ? '  -  ' + formatDate(event.end_date) : '');
+                    doc.text(dateText, margin + 100, factY);
+                    
+                    // Signup Deadline
+                    doc.setTextColor(...greenDark);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('Signup Deadline:', margin + 15, factY + 20);
+                    doc.setTextColor(...grayText);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text(event.signup_deadline || 'TBD', margin + 130, factY + 20);
+                    
+                    // Entry Fee
+                    doc.setTextColor(...greenDark);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('Entry Fee:', margin + 15, factY + 40);
+                    doc.setTextColor(...grayText);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text(event.entry_fee || 'Free', margin + 100, factY + 40);
+                    
+                    y += 85;
                     
                     // Description
                     if (event.description) {
                         y = addSectionTitle('About This Event', y);
                         y = addWrappedText(event.description, y);
-                        y += 15;
+                        y += 20;
                     }
                     
-                    // Eligibility
+                    // Two-column layout for remaining details
+                    const col1X = margin;
+                    const col2X = margin + contentWidth/2 + 10;
+                    let col1Y = y;
+                    let col2Y = y;
+                    
+                    // Eligibility (left column)
                     if (event.eligibility) {
                         doc.setTextColor(...greenDark);
                         doc.setFontSize(11);
                         doc.setFont('helvetica', 'bold');
-                        doc.text('👥 Eligibility', margin, y);
-                        y += 15;
-                        y = addWrappedText(event.eligibility, y);
-                        y += 15;
+                        doc.text('Eligibility', col1X, col1Y);
+                        col1Y += 16;
+                        doc.setTextColor(...grayText);
+                        doc.setFontSize(10);
+                        doc.setFont('helvetica', 'normal');
+                        const eligLines = doc.splitTextToSize(event.eligibility, contentWidth/2 - 20);
+                        doc.text(eligLines, col1X, col1Y);
+                        col1Y += eligLines.length * 14 + 15;
                     }
                     
-                    // Format
+                    // Format (right column)
                     if (event.format) {
                         doc.setTextColor(...greenDark);
                         doc.setFontSize(11);
                         doc.setFont('helvetica', 'bold');
-                        doc.text('🎯 Format', margin, y);
-                        y += 15;
-                        y = addWrappedText(event.format, y);
-                        y += 15;
+                        doc.text('Format', col2X, col2Y);
+                        col2Y += 16;
+                        doc.setTextColor(...grayText);
+                        doc.setFontSize(10);
+                        doc.setFont('helvetica', 'normal');
+                        const formatLines = doc.splitTextToSize(event.format, contentWidth/2 - 20);
+                        doc.text(formatLines, col2X, col2Y);
+                        col2Y += formatLines.length * 14 + 15;
                     }
                     
-                    // Handicap
+                    // Handicap (left column)
                     if (event.handicap) {
                         doc.setTextColor(...greenDark);
                         doc.setFontSize(11);
                         doc.setFont('helvetica', 'bold');
-                        doc.text('📊 Handicap Rules', margin, y);
-                        y += 15;
-                        y = addWrappedText(event.handicap, y);
-                        y += 15;
+                        doc.text('Handicap Rules', col1X, col1Y);
+                        col1Y += 16;
+                        doc.setTextColor(...grayText);
+                        doc.setFontSize(10);
+                        doc.setFont('helvetica', 'normal');
+                        const hcpLines = doc.splitTextToSize(event.handicap, contentWidth/2 - 20);
+                        doc.text(hcpLines, col1X, col1Y);
+                        col1Y += hcpLines.length * 14 + 15;
                     }
                     
-                    // Tees
+                    // Tees (right column)
                     if (event.tees) {
                         doc.setTextColor(...greenDark);
                         doc.setFontSize(11);
                         doc.setFont('helvetica', 'bold');
-                        doc.text('⛳ Tee Rules', margin, y);
-                        y += 15;
-                        y = addWrappedText(event.tees, y);
-                        y += 15;
+                        doc.text('Tee Rules', col2X, col2Y);
+                        col2Y += 16;
+                        doc.setTextColor(...grayText);
+                        doc.setFontSize(10);
+                        doc.setFont('helvetica', 'normal');
+                        const teeLines = doc.splitTextToSize(event.tees, contentWidth/2 - 20);
+                        doc.text(teeLines, col2X, col2Y);
+                        col2Y += teeLines.length * 14 + 15;
                     }
                     
-                    // Prizes
+                    y = Math.max(col1Y, col2Y) + 5;
+                    
+                    // Prizes (full width)
                     if (event.prizes) {
                         doc.setTextColor(...greenDark);
                         doc.setFontSize(11);
                         doc.setFont('helvetica', 'bold');
-                        doc.text('🏆 Prizes', margin, y);
-                        y += 15;
+                        doc.text('Prizes', margin, y);
+                        y += 16;
                         y = addWrappedText(event.prizes, y);
                         y += 15;
                     }
                     
-                    // Additional Details
+                    // Additional Details (full width)
                     if (event.details) {
                         doc.setTextColor(...greenDark);
                         doc.setFontSize(11);
                         doc.setFont('helvetica', 'bold');
-                        doc.text('📋 Additional Details', margin, y);
-                        y += 15;
+                        doc.text('Additional Details', margin, y);
+                        y += 16;
                         y = addWrappedText(event.details, y);
                     }
                     
-                    // Footer
-                    doc.setFontSize(8);
-                    doc.setTextColor(150, 150, 150);
-                    doc.text('Farmington Country Club • ' + year + ' Tournament Bible • Page ' + (idx + 2), pageWidth / 2, pageHeight - 25, { align: 'center' });
+                    addPageFooter(currentPage);
                 });
-                
-                // Add page number to first page
-                doc.setPage(1);
-                doc.setFontSize(8);
-                doc.setTextColor(150, 150, 150);
-                doc.text('Farmington Country Club • ' + year + ' Tournament Bible • Page 1', pageWidth / 2, pageHeight - 25, { align: 'center' });
                 
                 // Save the PDF
                 doc.save('TournamentBible-' + year + '.pdf');
-                statusEl.textContent = '✅ PDF downloaded successfully!';
+                statusEl.textContent = 'PDF downloaded successfully!';
                 setTimeout(() => { statusEl.textContent = ''; }, 3000);
                 
             } catch (error) {
                 console.error('PDF generation error:', error);
-                statusEl.textContent = '❌ Error generating PDF. Check console for details.';
+                statusEl.textContent = 'Error generating PDF. Check console for details.';
             }
         }
 
