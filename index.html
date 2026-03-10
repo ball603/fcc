@@ -2020,8 +2020,8 @@
     <section class="section events" id="events">
         <div class="section-inner">
             <div class="section-header">
-                <h2>Events & Tournaments</h2>
-                <p>Join us for competitions, social events, and special occasions</p>
+                <h2 id="events-heading">Events & Tournaments</h2>
+                <p id="events-subheading">Join us for competitions, social events, and special occasions</p>
                 <div class="gold-line"></div>
             </div>
             <div class="events-container">
@@ -2088,14 +2088,14 @@
                 </div>
                 <div class="events-info">
                     <div class="events-info-header">
-                        <h3>🏆 Tournaments at FCC</h3>
+                        <h3 id="tournaments-heading">🏆 Tournaments at FCC</h3>
                     </div>
                     <div class="events-info-content">
-                        <p>At FCC, we pride ourselves on offering our members many options to compete in tournaments throughout the season. From weekly Pro Shop events to major club championships, there's always something to play for.</p>
-                        <p>The Pro Shop runs tournaments on most weekends and holidays. Entry fees vary depending on the tournament, and all prize money is paid out in Pro Shop credit.</p>
+                        <p id="tournaments-text-1">At FCC, we pride ourselves on offering our members many options to compete in tournaments throughout the season. From weekly Pro Shop events to major club championships, there's always something to play for.</p>
+                        <p id="tournaments-text-2">The Pro Shop runs tournaments on most weekends and holidays. Entry fees vary depending on the tournament, and all prize money is paid out in Pro Shop credit.</p>
                     </div>
                     <div class="events-info-footer">
-                        <a href="tournament-bible.html" class="tournament-bible-btn">View Tournament Bible →</a>
+                        <a href="tournament-bible.html" class="tournament-bible-btn" id="tournaments-link">View Tournament Bible →</a>
                     </div>
                 </div>
             </div>
@@ -3461,6 +3461,28 @@
                 
                 const proshopText2 = document.getElementById('proshop-text-2');
                 if (proshopText2 && settings.proshop_text_2) proshopText2.textContent = settings.proshop_text_2;
+                
+                // Events section
+                const eventsHeading = document.getElementById('events-heading');
+                if (eventsHeading && settings.events_heading) eventsHeading.textContent = settings.events_heading;
+                
+                const eventsSubheading = document.getElementById('events-subheading');
+                if (eventsSubheading && settings.events_subheading) eventsSubheading.textContent = settings.events_subheading;
+                
+                const tournamentsHeading = document.getElementById('tournaments-heading');
+                if (tournamentsHeading && settings.tournaments_heading) tournamentsHeading.textContent = settings.tournaments_heading;
+                
+                const tournamentsText1 = document.getElementById('tournaments-text-1');
+                if (tournamentsText1 && settings.tournaments_text_1) tournamentsText1.textContent = settings.tournaments_text_1;
+                
+                const tournamentsText2 = document.getElementById('tournaments-text-2');
+                if (tournamentsText2 && settings.tournaments_text_2) tournamentsText2.textContent = settings.tournaments_text_2;
+                
+                const tournamentsLink = document.getElementById('tournaments-link');
+                if (tournamentsLink) {
+                    if (settings.tournaments_link_text) tournamentsLink.textContent = settings.tournaments_link_text + ' →';
+                    if (settings.tournaments_link_url) tournamentsLink.href = settings.tournaments_link_url;
+                }
                 
                 // Tee time URL
                 if (settings.tee_time_url) {
