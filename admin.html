@@ -564,6 +564,10 @@
                     <a class="nav-item" data-section="leagues">Leagues</a>
                 </div>
                 <div class="nav-section">
+                    <div class="nav-section-title">Events</div>
+                    <a class="nav-item" data-section="events">Tournament Bible</a>
+                </div>
+                <div class="nav-section">
                     <div class="nav-section-title">Shop</div>
                     <a class="nav-item" data-section="proshop">Pro Shop</a>
                 </div>
@@ -853,6 +857,63 @@
                     <button class="btn btn-gold" onclick="addLeague()" style="margin-top: 1rem;">+ Add New League</button>
                 </div>
 
+                <!-- Events / Tournament Bible Section -->
+                <div class="content-section" id="section-events">
+                    <h1 class="section-title">Tournament Bible</h1>
+                    <p class="section-description">Manage tournament information, Henry Wilson Cup content, and events.</p>
+                    
+                    <div id="alert-events" class="alert"></div>
+                    
+                    <div class="card">
+                        <h3 class="card-title">Tournament Bible Year</h3>
+                        <div class="form-group">
+                            <label class="form-label">Year</label>
+                            <input type="text" class="form-input" id="tb-year" placeholder="2025" style="max-width: 150px;">
+                            <small style="color: var(--gray-400);">This year displays throughout the Tournament Bible page</small>
+                        </div>
+                        <button class="btn btn-primary" onclick="saveTournamentBibleYear()">Save Year</button>
+                    </div>
+                    
+                    <div class="card">
+                        <h3 class="card-title">Henry Wilson Cup</h3>
+                        <div class="form-group">
+                            <label class="form-label">What Title</label>
+                            <input type="text" class="form-input" id="hwc-what-title">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">What Content</label>
+                            <textarea class="form-textarea" id="hwc-what-content" rows="8"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Why Title</label>
+                            <input type="text" class="form-input" id="hwc-why-title">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Why Content</label>
+                            <textarea class="form-textarea" id="hwc-why-content" rows="6"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Qualifying Events</label>
+                            <textarea class="form-textarea" id="hwc-qualifying-events" rows="3" placeholder="Weekend Games, Men's League Pins & Putts, ..."></textarea>
+                            <small style="color: var(--gray-400);">Comma-separated list of events that count toward Henry Wilson Cup points</small>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Events Note</label>
+                            <input type="text" class="form-input" id="hwc-events-note" placeholder="*These event payouts will be pro-rated...">
+                        </div>
+                        <button class="btn btn-primary" onclick="saveHenryWilsonCup()">Save Henry Wilson Cup</button>
+                    </div>
+                    
+                    <div class="card">
+                        <h3 class="card-title">Events / Tournaments</h3>
+                        <p style="color: var(--gray-400); margin-bottom: 1rem;">Manage all tournaments and events shown on the Tournament Bible page.</p>
+                        
+                        <div id="events-list"></div>
+                        
+                        <button class="btn btn-gold" onclick="addEvent()" style="margin-top: 1rem;">+ Add New Event</button>
+                    </div>
+                </div>
+
                 <!-- Pro Shop Section -->
                 <div class="content-section" id="section-proshop">
                     <h1 class="section-title">Pro Shop</h1>
@@ -974,6 +1035,7 @@
                 loadScorecard(),
                 loadRates(),
                 loadLeagues(),
+                loadEvents(),
                 loadProshop()
             ]);
         }
@@ -1783,6 +1845,258 @@
                 leaguesData = leaguesData.filter(l => l.id !== id);
                 renderLeagues();
                 showAlert('leagues', 'League deleted');
+            }
+        }
+
+        // =============================================
+        // EVENTS / TOURNAMENT BIBLE
+        // =============================================
+        let eventsData = [];
+        let hwcData = {};
+
+        async function loadEvents() {
+            // Load year
+            const { data: yearData } = await supabaseClient.from('tournament_bible_settings').select('*').eq('key', 'year').single();
+            if (yearData) {
+                document.getElementById('tb-year').value = yearData.value || '2025';
+            }
+            
+            // Load Henry Wilson Cup
+            const { data: hwc } = await supabaseClient.from('henry_wilson_cup').select('*').limit(1).single();
+            if (hwc) {
+                hwcData = hwc;
+                document.getElementById('hwc-what-title').value = hwc.what_title || '';
+                document.getElementById('hwc-what-content').value = hwc.what_content || '';
+                document.getElementById('hwc-why-title').value = hwc.why_title || '';
+                document.getElementById('hwc-why-content').value = hwc.why_content || '';
+                document.getElementById('hwc-qualifying-events').value = hwc.qualifying_events || '';
+                document.getElementById('hwc-events-note').value = hwc.events_note || '';
+            }
+            
+            // Load events
+            const { data: events } = await supabaseClient.from('events').select('*').order('sort_order');
+            if (events) {
+                eventsData = events;
+                renderEvents();
+            }
+        }
+
+        async function saveTournamentBibleYear() {
+            const year = document.getElementById('tb-year').value;
+            await supabaseClient.from('tournament_bible_settings').upsert({ key: 'year', value: year, updated_at: new Date().toISOString() }, { onConflict: 'key' });
+            showAlert('events', 'Year saved!');
+        }
+
+        async function saveHenryWilsonCup() {
+            const data = {
+                id: hwcData.id || 1,
+                what_title: document.getElementById('hwc-what-title').value,
+                what_content: document.getElementById('hwc-what-content').value,
+                why_title: document.getElementById('hwc-why-title').value,
+                why_content: document.getElementById('hwc-why-content').value,
+                qualifying_events: document.getElementById('hwc-qualifying-events').value,
+                events_note: document.getElementById('hwc-events-note').value,
+                updated_at: new Date().toISOString()
+            };
+            
+            await supabaseClient.from('henry_wilson_cup').upsert(data);
+            showAlert('events', 'Henry Wilson Cup saved!');
+        }
+
+        function renderEvents() {
+            const container = document.getElementById('events-list');
+            container.innerHTML = eventsData.map((event, idx) => `
+                <div class="card" data-event-id="${event.id}" style="margin-bottom: 1rem; border-left: 4px solid ${event.active ? 'var(--green-accent)' : 'var(--gray-300)'};">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3 class="card-title" style="margin: 0;">${event.name || 'New Event'}</h3>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-secondary btn-sm" onclick="toggleEventDetails(${event.id})">Edit</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteEvent(${event.id})">Delete</button>
+                        </div>
+                    </div>
+                    <div style="color: var(--gray-400); font-size: 0.85rem;">
+                        ${event.start_date ? formatDate(event.start_date) : 'No date set'} 
+                        ${event.entry_fee ? '• ' + event.entry_fee : ''}
+                        ${event.henry_wilson ? '• <span style="color: var(--gold);">HW Cup</span>' : ''}
+                    </div>
+                    
+                    <div class="event-details" id="event-details-${event.id}" style="display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--gray-200);">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Event Name</label>
+                                <input type="text" class="form-input event-name" value="${escapeHtml(event.name || '')}">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Slug (URL ID)</label>
+                                <input type="text" class="form-input event-slug" value="${escapeHtml(event.slug || '')}" placeholder="e.g. presidents-cup">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Start Date</label>
+                                <input type="date" class="form-input event-start-date" value="${event.start_date || ''}">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">End Date (optional)</label>
+                                <input type="date" class="form-input event-end-date" value="${event.end_date || ''}">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Signup Deadline</label>
+                                <input type="text" class="form-input event-signup-deadline" value="${escapeHtml(event.signup_deadline || '')}" placeholder="e.g. April 27th">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Entry Fee</label>
+                                <input type="text" class="form-input event-entry-fee" value="${escapeHtml(event.entry_fee || '')}" placeholder="e.g. $20">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-textarea event-description" rows="3">${escapeHtml(event.description || '')}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Eligibility</label>
+                            <textarea class="form-textarea event-eligibility" rows="2">${escapeHtml(event.eligibility || '')}</textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Format</label>
+                                <input type="text" class="form-input event-format" value="${escapeHtml(event.format || '')}">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Handicap Rules</label>
+                                <input type="text" class="form-input event-handicap" value="${escapeHtml(event.handicap || '')}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Tee Rules</label>
+                            <input type="text" class="form-input event-tees" value="${escapeHtml(event.tees || '')}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Prizes</label>
+                            <textarea class="form-textarea event-prizes" rows="2">${escapeHtml(event.prizes || '')}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Additional Details</label>
+                            <textarea class="form-textarea event-details-text" rows="2">${escapeHtml(event.details || '')}</textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Sort Order</label>
+                                <input type="number" class="form-input event-sort-order" value="${event.sort_order || 0}" style="max-width: 100px;">
+                            </div>
+                            <div class="form-group" style="display: flex; align-items: center; gap: 1rem; padding-top: 1.5rem;">
+                                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                    <input type="checkbox" class="event-active" ${event.active ? 'checked' : ''}> Active
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                    <input type="checkbox" class="event-henry-wilson" ${event.henry_wilson ? 'checked' : ''}> Henry Wilson Cup Event
+                                </label>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary btn-sm" onclick="saveEvent(${event.id})" style="margin-top: 1rem;">Save Event</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleEventDetails(id) {
+            const details = document.getElementById(`event-details-${id}`);
+            details.style.display = details.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function addEvent() {
+            const newEvent = {
+                id: 'new-' + Date.now(),
+                slug: '',
+                name: '',
+                start_date: null,
+                end_date: null,
+                signup_deadline: '',
+                entry_fee: '',
+                description: '',
+                eligibility: '',
+                format: '',
+                handicap: '',
+                tees: '',
+                prizes: '',
+                details: '',
+                henry_wilson: false,
+                sort_order: eventsData.length,
+                active: true
+            };
+            eventsData.push(newEvent);
+            renderEvents();
+            // Auto-expand the new event
+            setTimeout(() => toggleEventDetails(newEvent.id), 100);
+        }
+
+        async function saveEvent(id) {
+            const card = document.querySelector(`[data-event-id="${id}"]`);
+            const data = {
+                slug: card.querySelector('.event-slug').value,
+                name: card.querySelector('.event-name').value,
+                start_date: card.querySelector('.event-start-date').value || null,
+                end_date: card.querySelector('.event-end-date').value || null,
+                signup_deadline: card.querySelector('.event-signup-deadline').value,
+                entry_fee: card.querySelector('.event-entry-fee').value,
+                description: card.querySelector('.event-description').value,
+                eligibility: card.querySelector('.event-eligibility').value,
+                format: card.querySelector('.event-format').value,
+                handicap: card.querySelector('.event-handicap').value,
+                tees: card.querySelector('.event-tees').value,
+                prizes: card.querySelector('.event-prizes').value,
+                details: card.querySelector('.event-details-text').value,
+                henry_wilson: card.querySelector('.event-henry-wilson').checked,
+                sort_order: parseInt(card.querySelector('.event-sort-order').value) || 0,
+                active: card.querySelector('.event-active').checked,
+                updated_at: new Date().toISOString()
+            };
+            
+            let error;
+            if (String(id).startsWith('new-')) {
+                const result = await supabaseClient.from('events').insert(data);
+                error = result.error;
+            } else {
+                const result = await supabaseClient.from('events').update(data).eq('id', id);
+                error = result.error;
+            }
+            
+            if (error) {
+                console.error('Event save error:', error);
+                showAlert('events', 'Error: ' + error.message, 'error');
+                return;
+            }
+            
+            // Reload events
+            const { data: events } = await supabaseClient.from('events').select('*').order('sort_order');
+            if (events) {
+                eventsData = events;
+                renderEvents();
+            }
+            showAlert('events', 'Event saved!');
+        }
+
+        async function deleteEvent(id) {
+            if (confirm('Delete this event?')) {
+                if (!String(id).startsWith('new-')) {
+                    await supabaseClient.from('events').delete().eq('id', id);
+                }
+                eventsData = eventsData.filter(e => e.id !== id);
+                renderEvents();
+                showAlert('events', 'Event deleted');
             }
         }
 

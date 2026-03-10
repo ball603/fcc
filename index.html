@@ -3449,6 +3449,69 @@
             }
         }
 
+        // Load Upcoming Events from Google Calendar
+        async function loadUpcomingEvents() {
+            const CALENDAR_ID = 'davemoshermemorial@gmail.com';
+            // NOTE: You need a Google Cloud API key with Calendar API enabled
+            // Get one at: https://console.cloud.google.com/apis/credentials
+            // For now, falls back to default HTML if no valid key
+            const API_KEY = ''; // Add your Google Calendar API key here
+            
+            if (!API_KEY) {
+                console.log('No Google Calendar API key configured - using default events');
+                return; // Keep default HTML
+            }
+            
+            try {
+                const now = new Date().toISOString();
+                const maxResults = 5;
+                
+                const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CALENDAR_ID)}/events?key=${API_KEY}&timeMin=${now}&maxResults=${maxResults}&singleEvents=true&orderBy=startTime`;
+                
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    console.log('Calendar API error:', response.status);
+                    return; // Keep default HTML
+                }
+                
+                const data = await response.json();
+                
+                if (!data.items || data.items.length === 0) {
+                    console.log('No upcoming events');
+                    return; // Keep default HTML
+                }
+                
+                const container = document.getElementById('events-list');
+                if (!container) return;
+                
+                container.innerHTML = data.items.map(event => {
+                    const startDate = event.start.dateTime ? new Date(event.start.dateTime) : new Date(event.start.date);
+                    const month = startDate.toLocaleString('en-US', { month: 'short' }).toUpperCase();
+                    const day = startDate.getDate();
+                    const title = event.summary || 'Event';
+                    const description = event.description ? event.description.substring(0, 100) : '';
+                    
+                    return `
+                        <div class="event-item">
+                            <div class="event-date">
+                                <div class="month">${month}</div>
+                                <div class="day">${day}</div>
+                            </div>
+                            <div class="event-details">
+                                <h4>${title}</h4>
+                                ${description ? `<p>${description}</p>` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+            } catch (error) {
+                console.log('Could not load upcoming events:', error);
+                // Keep default HTML on error
+            }
+        }
+
         // Initialize all data loading
         document.addEventListener('DOMContentLoaded', () => {
             loadSiteSettings();
@@ -3459,6 +3522,7 @@
             loadRates();
             loadLeagues();
             loadProshopServices();
+            loadUpcomingEvents();
         });
     </script>
 </body>

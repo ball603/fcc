@@ -757,6 +757,7 @@
             }
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <header>
@@ -917,329 +918,13 @@
         });
 
         // =====================================================
-        // GOOGLE SHEETS CONFIGURATION
+        // SUPABASE CONFIGURATION
         // =====================================================
         
-        const SHEET_BASE = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQq1s77a5JMqB6l6cYbvEUEbnaJjuy7BwV6SbJWLpMuGEdVyrCrISFOKsmJtX_DFg/pub';
+        const SUPABASE_URL = 'https://bbwmbvspladuneiywqfx.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJid21idnNwbGFkdW5laXl3cWZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzMzI0MzUsImV4cCI6MjA4NjkwODQzNX0.glJqYpFvPvYM0avZNN0jp7E-uprZiILQpKdBSs0WKPU';
         
-        // Tab GIDs
-        const SHEETS = {
-            settings: SHEET_BASE + '?gid=1987281963&single=true&output=csv',
-            henryWilson: SHEET_BASE + '?gid=590647090&single=true&output=csv',
-            eventList: SHEET_BASE + '?gid=1738944814&single=true&output=csv'
-        };
-        
-        // Individual event tab GIDs
-        const EVENT_GIDS = {
-            'presidents-cup': '921396511',
-            'mens-league': '1022984888',
-            'battle-of-bars': '743692829',
-            'club-championship': '1519405575',
-            'senior-club-championship': '1123696583',
-            'mens-farmington-cup': '289185398',
-            'member-member': '1189656598',
-            'parent-child': '1690364181',
-            'husband-wife': '227080671',
-            'ladies-farmington-cup': '1843908561',
-            'medal-play': '509874278',
-            'member-guest': '576543451',
-            'junior-club-championship': '1080229207',
-            '2-person-championship': '1514097756'
-        };
-
-        // SET TO FALSE TO USE GOOGLE SHEETS
-        const DEMO_MODE = false;
-        
-        // Helper: Parse CSV with proper quote handling (including newlines in quoted fields)
-        function parseCSV(text) {
-            const result = [];
-            let row = [];
-            let current = '';
-            let inQuotes = false;
-            
-            for (let i = 0; i < text.length; i++) {
-                const char = text[i];
-                const nextChar = text[i + 1];
-                
-                if (char === '"') {
-                    if (inQuotes && nextChar === '"') {
-                        // Escaped quote
-                        current += '"';
-                        i++;
-                    } else {
-                        // Toggle quote state
-                        inQuotes = !inQuotes;
-                    }
-                } else if (char === ',' && !inQuotes) {
-                    row.push(current.trim());
-                    current = '';
-                } else if ((char === '\n' || (char === '\r' && nextChar === '\n')) && !inQuotes) {
-                    // End of row (skip \r if \r\n)
-                    if (char === '\r') i++;
-                    row.push(current.trim());
-                    if (row.some(cell => cell !== '')) {
-                        result.push(row);
-                    }
-                    row = [];
-                    current = '';
-                } else if (char === '\r' && !inQuotes) {
-                    // Standalone \r as line ending
-                    row.push(current.trim());
-                    if (row.some(cell => cell !== '')) {
-                        result.push(row);
-                    }
-                    row = [];
-                    current = '';
-                } else {
-                    current += char;
-                }
-            }
-            
-            // Don't forget the last field/row
-            row.push(current.trim());
-            if (row.some(cell => cell !== '')) {
-                result.push(row);
-            }
-            
-            return result;
-        }
-        
-        // Helper: Parse Field/Value tab into object
-        function parseFieldValueTab(text) {
-            const rows = parseCSV(text);
-            const data = {};
-            
-            for (const row of rows) {
-                if (row.length >= 2 && row[0] && row[0].toLowerCase() !== 'field') {
-                    // Convert field name to camelCase key
-                    const key = row[0].toLowerCase()
-                        .replace(/\s+(.)/g, (_, c) => c.toUpperCase())
-                        .replace(/\s/g, '');
-                    data[key] = row[1] || '';
-                }
-            }
-            return data;
-        }
-        
-        // Helper: Parse Event List tab
-        function parseEventList(text) {
-            const rows = parseCSV(text);
-            const events = [];
-            
-            // Skip header row
-            for (let i = 1; i < rows.length; i++) {
-                const row = rows[i];
-                if (row.length >= 6 && row[5]?.toUpperCase() === 'TRUE') {
-                    events.push({
-                        order: parseInt(row[0]) || 999,
-                        id: row[1],
-                        name: row[2],
-                        startDate: row[3],
-                        endDate: row[4]
-                    });
-                }
-            }
-            return events.sort((a, b) => a.order - b.order);
-        }
-        
-        // Fetch event details from individual tab
-        async function fetchEventDetails(eventId) {
-            try {
-                // You'll need to add GIDs for each event tab
-                // For now, return null and use event list data
-                return null;
-            } catch (e) {
-                console.log('Could not fetch event details for', eventId);
-                return null;
-            }
-        }
-
-        // Demo data
-        const demoData = {
-            year: '2025',
-            hwc: {
-                whatTitle: 'What is the Henry Wilson Cup?',
-                whatPreview: 'The Henry Wilson Cup is a season long event unique to Farmington Country Club. To participate in the event you must be a member. For the 2025 season there are Cup series will include 86 events.',
-                whatFull: `The Henry Wilson Cup is a season long event unique to Farmington Country Club. To participate in the event you must be a member. For the 2025 season there are Cup series will include 86 events.
-
-During the season every player will accumulate "points" in the Henry Wilson Events (See the event list for details). The "points" are equal to your shop credit winnings in the events you play in for the season (with a couple of exceptions as shown in the event list). At the end of the season the top 10 money winners and the returning champion will have a 9 Hole Shootout.
-
-The Shootout starts on Hole #1 with all 11 players. This is handicapped by using your current GHIN, so your score on each hole is your "net" score.
-
-On Hole #1, the highest 2 scoring players will be eliminated. If there is a tie, there will be a pre-determined "Shootout" tie breaker (a putt, a chip, a bunker shot, or some other skill challenge).
-
-After Hole #1, 1 player is eliminated on each hole until we have a champion on the 9th green. All participants in the Henry Wilson Shootout will receive a portion of the Henry Wilson Shootout pot.`,
-                whyTitle: 'Why the Henry Wilson Cup?',
-                whyPreview: 'As many of you already know, Henry Wilson was elected the 18th Vice President of the United States under President Ulysses S Grant in 1872. Henry was born in Farmington February 16, 1812 as Jeremiah Jones Colbath.',
-                whyFull: `As many of you already know, Henry Wilson was elected the 18th Vice President of the United States under President Ulysses S Grant in 1872. Henry was born in Farmington February 16, 1812 as Jeremiah Jones Colbath. His actual birth place was very close to our current Club House, perhaps across the street. His family was very poor and at the age of 10 he became an indentured worker for 10 years to a local farmer. At the age of 21 he decided he didn't like his name so he petitioned to have it changed to Henry Wilson. Around that time he moved to Natick, Massachusetts to learn shoe making and became active in politics.
-
-There is a monument in his honor near the entrance to the upper parking area at the club and many of his family members are buried in the cemetery off the left side of the 9th fairway.`,
-                events: ['Weekend Games', "Men's League Pins & Putts", "Men's League Quota Game", "Men's League Fall Games", "Senior League Pins & Putts", "Ladies League Pins & Putts", "2-Person Tournament*", "Husband & Wife*", "Member / Member*", "Presidents Cup*", "Parent Child*"],
-                eventsNote: '*These event payouts will be pro-rated for fields of less than 48 players'
-            },
-            events: [
-                {
-                    id: 'presidents-cup',
-                    name: 'Presidents Cup',
-                    startDate: '',
-                    endDate: '',
-                    signUpDeadline: 'April 27th',
-                    entryFee: '$20',
-                    description: 'The Presidents Cup (aka Sandbaggers Open!) is a single elimination handicapped tournament. Matches must be played by the deadlines posted.',
-                    eligibility: 'You must be a member to participate – All members, Male and Female are encouraged to participate. A GHIN handicap is required.',
-                    format: 'Match Play, Single Elimination',
-                    handicap: '100% of your current playing handicap.',
-                    tees: 'Rule of 88 applies for forward tees.',
-                    prizes: 'Pro Shop credit will be paid out to the players making the Semi-Finals.',
-                    details: 'Seeding done through random drawing. 1st and 2nd seed go to prior year winner and runner up.'
-                },
-                {
-                    id: 'mens-league',
-                    name: "Men's Tuesday Night League",
-                    startDate: '2025-05-06',
-                    endDate: '2025-08-26',
-                    signUpDeadline: 'April 22nd',
-                    entryFee: '$50',
-                    description: "The Tuesday Night League is our premier men's league competition. Each week two teams play head to head.",
-                    eligibility: 'All male members over the age of 21.',
-                    format: 'Match Play (9 holes per match)',
-                    prizes: 'Winning team receives jackets, runner up receives shirts. Includes year-end banquet.',
-                    details: 'Maximum 88 players (8 teams of 11). Wait list available.'
-                },
-                {
-                    id: '2-person-championship',
-                    name: '2-Person Championship',
-                    startDate: '2025-05-20',
-                    signUpDeadline: 'May 20th',
-                    entryFee: '$40/team',
-                    description: 'Single elimination handicapped tournament. 2-person NET best ball event.',
-                    eligibility: 'All members. GHIN required. Teams may be Men, Women, Juniors or mix.',
-                    format: '2-person NET best ball',
-                    handicap: '90% of difference in handicaps',
-                    prizes: 'Pro Shop credit to Semi-Finalists. Counts toward Henry Wilson Shootout.'
-                },
-                {
-                    id: 'battle-of-bars',
-                    name: 'Battle of the Bars',
-                    startDate: '2025-06-09',
-                    signUpDeadline: 'June 2nd',
-                    entryFee: '$400/team',
-                    description: 'A friendly competition between 4-person teams sponsored by local bars. Winning team displays trophy at their bar!',
-                    format: '4-person scramble. Max score: double bogey.',
-                    prizes: 'Pro Shop Credit to top teams. Closest to Pin and Longest Putt.',
-                    details: 'Entry includes green/cart fees, catered meal, and prize pool.'
-                },
-                {
-                    id: 'mens-farmington-cup',
-                    name: "Men's Farmington Cup",
-                    startDate: '2025-07-12',
-                    endDate: '2025-07-13',
-                    signUpDeadline: 'June 10th',
-                    entryFee: '$65',
-                    description: "FCC's version of the Ryder Cup. Captains are Club Championship winner and runner up.",
-                    eligibility: 'All male members age 21+',
-                    format: 'Team: Scramble, Alternate Shot, Best Ball, Singles',
-                    prizes: 'All participants receive Farmington Cup shirt and Sunday meal.',
-                    details: 'All play is head to head, no handicaps. Rule of 88 applies.'
-                },
-                {
-                    id: 'club-championship',
-                    name: 'Club Championship',
-                    startDate: '2025-07-13',
-                    endDate: '2025-09-01',
-                    signUpDeadline: 'June 10th',
-                    entryFee: 'None',
-                    description: "The official championship of Farmington Country Club. Non-handicapped, match play, single elimination.",
-                    eligibility: 'All members welcome',
-                    format: 'Non-handicapped Match Play, Single Elimination',
-                    prizes: 'Trophies and recognition',
-                    details: "Multiple divisions by handicap (Men's) and age (Senior/Ladies)."
-                },
-                {
-                    id: 'member-member',
-                    name: 'Member / Member',
-                    startDate: '2025-07-19',
-                    signUpDeadline: 'July 8th',
-                    entryFee: '$85/team',
-                    description: '18-hole shotgun: 6 holes Best Ball, 6 holes Scramble, 6 holes Alternate Shot.',
-                    eligibility: 'Members only. GHIN required for NET prizes.',
-                    format: 'Best Ball, Scramble, Alternate Shot',
-                    prizes: 'Pro Shop credit. Counts toward Henry Wilson. Optional $5 skins.',
-                    details: "Men's and Ladies divisions. Entry includes catered meal."
-                },
-                {
-                    id: 'parent-child',
-                    name: 'Parent / Child Championship',
-                    startDate: '2025-08-02',
-                    signUpDeadline: 'July 28th',
-                    entryFee: '$30-60/team',
-                    description: 'Play with your child, grandchild, or stepchild.',
-                    eligibility: 'Parent or child must be a member',
-                    format: '6 holes scramble, 6 alternate shot, 6 total score',
-                    prizes: 'Pro Shop credit. Part of Henry Wilson Points.',
-                    details: 'Junior Division (17 & under) and Senior Division (18+).'
-                },
-                {
-                    id: 'husband-wife',
-                    name: 'Husband & Wife Championship',
-                    startDate: '2025-08-03',
-                    signUpDeadline: 'July 28th',
-                    entryFee: '$80-110/team',
-                    description: '18-hole handicapped event with scramble, alternate shot, and best ball.',
-                    eligibility: 'Husband or Wife must be member. Other couples welcome but not eligible to win championship.',
-                    format: '6 holes each: scramble, alternate shot, best ball',
-                    prizes: 'Pro Shop credit. Part of Henry Wilson Points.',
-                    details: 'Entry includes meal. Rule of 88 applies.'
-                },
-                {
-                    id: 'ladies-farmington-cup',
-                    name: 'Ladies Farmington Cup',
-                    startDate: '2025-08-16',
-                    signUpDeadline: 'July 16th',
-                    entryFee: '$65-95',
-                    description: "Ladies version of FCC's Ryder Cup.",
-                    eligibility: 'All female members and Ladies League members',
-                    format: 'Two 9-hole 2-person scramble sessions',
-                    prizes: 'Farmington Cup shirt and meal for all participants.'
-                },
-                {
-                    id: 'medal-play',
-                    name: 'Medal Play Championship',
-                    startDate: '2025-08-23',
-                    signUpDeadline: 'August 19th',
-                    entryFee: '$20',
-                    description: '1-day stroke play event. Pure stroke play, non-handicapped.',
-                    eligibility: 'Members only',
-                    format: 'Stroke Play (36 holes Championship, 18 holes other flights)',
-                    prizes: 'Pro Shop credit. Part of Henry Wilson Points.',
-                    details: 'Multiple divisions by handicap. Ties decided by sudden death.'
-                },
-                {
-                    id: 'member-guest',
-                    name: 'Member / Guest',
-                    startDate: '2025-09-06',
-                    signUpDeadline: 'August 26th',
-                    entryFee: '$150/team',
-                    description: '18-hole 2-man Best Ball with Gross and Net prizes.',
-                    eligibility: 'All adult members. GHIN required for NET.',
-                    format: '2-man Best Ball',
-                    handicap: '100% of course handicap',
-                    prizes: 'Pro Shop credit. Closest to Pin, Longest Putt. Optional skins.',
-                    details: "Men's and Ladies divisions. Entry includes meal."
-                },
-                {
-                    id: 'junior-club-championship',
-                    name: 'Junior Club Championship',
-                    startDate: '2025-09-14',
-                    signUpDeadline: 'September 9th',
-                    entryFee: 'None',
-                    description: '1-day, 18-hole stroke play event for juniors.',
-                    eligibility: 'Junior members ages 12-17',
-                    format: 'Stroke Play. No stroke limit. Every ball holed out.',
-                    prizes: 'Lowest score wins Junior Club Championship.'
-                }
-            ]
-        };
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // Parse date for calendar display
         function parseDate(dateStr) {
@@ -1434,147 +1119,86 @@ There is a monument in his honor near the entrance to the upper parking area at 
 
         // Initialize
         async function init() {
-            if (DEMO_MODE) {
-                // Use demo data
-                const year = demoData.year;
+            try {
+                // Load Year setting
+                const { data: yearData } = await supabaseClient
+                    .from('tournament_bible_settings')
+                    .select('value')
+                    .eq('key', 'year')
+                    .single();
+                
+                const year = yearData?.value || '2025';
                 document.getElementById('year-badge').textContent = year;
                 document.getElementById('year-events').textContent = year;
                 document.getElementById('footer-year').textContent = year;
-
-                // HWC content
-                document.getElementById('hwc-what-title').textContent = demoData.hwc.whatTitle;
-                document.getElementById('hwc-what-preview').textContent = demoData.hwc.whatPreview;
-                document.getElementById('modal-what-title').textContent = demoData.hwc.whatTitle;
-                document.getElementById('modal-what-body').innerHTML = demoData.hwc.whatFull.split('\n\n').map(p => `<p>${p}</p>`).join('');
-
-                document.getElementById('hwc-why-title').textContent = demoData.hwc.whyTitle;
-                document.getElementById('hwc-why-preview').textContent = demoData.hwc.whyPreview;
-                document.getElementById('modal-why-title').textContent = demoData.hwc.whyTitle;
-                document.getElementById('modal-why-body').innerHTML = demoData.hwc.whyFull.split('\n\n').map(p => `<p>${p}</p>`).join('');
-
-                // HWC Events list
-                const eventsListHtml = `
-                    <ul>
-                        ${demoData.hwc.events.map(e => `<li>${e}</li>`).join('')}
-                    </ul>
-                    <div class="note">${demoData.hwc.eventsNote}</div>
-                `;
-                document.getElementById('hwc-events-list').innerHTML = eventsListHtml;
-
-                // Sort and render events
-                const sortedEvents = sortEvents(demoData.events);
                 
-                // Find the next upcoming event (first event with a date >= today)
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                let nextEventId = null;
+                // Load Henry Wilson Cup content
+                const { data: hwc } = await supabaseClient
+                    .from('henry_wilson_cup')
+                    .select('*')
+                    .limit(1)
+                    .single();
                 
-                for (const event of sortedEvents) {
-                    const eventDate = parseDate(event.startDate);
-                    if (eventDate && eventDate >= today) {
-                        nextEventId = event.id;
-                        break;
-                    }
+                if (hwc) {
+                    document.getElementById('hwc-what-title').textContent = hwc.what_title || 'What is the Henry Wilson Cup?';
+                    
+                    // Create preview from first sentence/paragraph
+                    const whatPreview = hwc.what_content ? hwc.what_content.split('\n\n')[0] : '';
+                    document.getElementById('hwc-what-preview').textContent = whatPreview;
+                    document.getElementById('modal-what-title').textContent = hwc.what_title || 'What is the Henry Wilson Cup?';
+                    
+                    // Handle line breaks for full content
+                    const whatParagraphs = (hwc.what_content || '').split('\n\n').filter(p => p.trim());
+                    document.getElementById('modal-what-body').innerHTML = whatParagraphs.length > 0 
+                        ? whatParagraphs.map(p => `<p>${p.trim()}</p>`).join('')
+                        : '<p>No content available.</p>';
+                    
+                    document.getElementById('hwc-why-title').textContent = hwc.why_title || 'Why the Henry Wilson Cup?';
+                    
+                    const whyPreview = hwc.why_content ? hwc.why_content.split('\n\n')[0] : '';
+                    document.getElementById('hwc-why-preview').textContent = whyPreview;
+                    document.getElementById('modal-why-title').textContent = hwc.why_title || 'Why the Henry Wilson Cup?';
+                    
+                    const whyParagraphs = (hwc.why_content || '').split('\n\n').filter(p => p.trim());
+                    document.getElementById('modal-why-body').innerHTML = whyParagraphs.length > 0
+                        ? whyParagraphs.map(p => `<p>${p.trim()}</p>`).join('')
+                        : '<p>No content available.</p>';
+                    
+                    // HWC Events list
+                    const eventsList = hwc.qualifying_events ? hwc.qualifying_events.split(',').map(e => e.trim()) : [];
+                    const eventsListHtml = `
+                        <ul>
+                            ${eventsList.map(e => `<li>${e}</li>`).join('')}
+                        </ul>
+                        ${hwc.events_note ? `<div class="note">${hwc.events_note}</div>` : ''}
+                    `;
+                    document.getElementById('hwc-events-list').innerHTML = eventsListHtml;
                 }
                 
-                // Render calendar cards (mark next event)
-                const calendarHtml = sortedEvents.map(e => renderCalendarCard(e, e.id === nextEventId)).join('');
-                document.getElementById('calendar-grid').innerHTML = calendarHtml;
-
-                // Render event details
-                const detailsHtml = sortedEvents.map(e => renderEventDetail(e)).join('');
-                document.getElementById('event-details-container').innerHTML = detailsHtml;
-            } else {
-                // Load from Google Sheets
-                await loadFromSheets();
-            }
-        }
-        
-        // Load data from Google Sheets
-        async function loadFromSheets() {
-            try {
-                // Load Settings
-                const settingsResp = await fetch(SHEETS.settings);
-                const settingsText = await settingsResp.text();
-                const settings = parseFieldValueTab(settingsText);
+                // Load Events
+                const { data: eventsRaw } = await supabaseClient
+                    .from('events')
+                    .select('*')
+                    .eq('active', true)
+                    .order('sort_order');
                 
-                const year = settings.year || '2025';
-                document.getElementById('year-badge').textContent = year;
-                document.getElementById('year-events').textContent = year;
-                document.getElementById('footer-year').textContent = year;
-                
-                // Load Henry Wilson Cup
-                const hwcResp = await fetch(SHEETS.henryWilson);
-                const hwcText = await hwcResp.text();
-                const hwc = parseFieldValueTab(hwcText);
-                
-                document.getElementById('hwc-what-title').textContent = hwc.whatIsTitle || 'What is the Henry Wilson Cup?';
-                document.getElementById('hwc-what-preview').textContent = hwc.whatIsPreview || '';
-                document.getElementById('modal-what-title').textContent = hwc.whatIsTitle || 'What is the Henry Wilson Cup?';
-                
-                // Handle line breaks - the text from sheets has actual newlines
-                const whatFullText = hwc.whatIsFull || hwc.whatIsPreview || '';
-                const whatParagraphs = whatFullText.split(/\n\s*\n/).filter(p => p.trim());
-                document.getElementById('modal-what-body').innerHTML = whatParagraphs.length > 0 
-                    ? whatParagraphs.map(p => `<p>${p.trim()}</p>`).join('')
-                    : `<p>${hwc.whatIsPreview || 'No content available.'}</p>`;
-                
-                document.getElementById('hwc-why-title').textContent = hwc.whyTitle || 'Why the Henry Wilson Cup?';
-                document.getElementById('hwc-why-preview').textContent = hwc.whyPreview || '';
-                document.getElementById('modal-why-title').textContent = hwc.whyTitle || 'Why the Henry Wilson Cup?';
-                
-                const whyFullText = hwc.whyFull || hwc.whyPreview || '';
-                const whyParagraphs = whyFullText.split(/\n\s*\n/).filter(p => p.trim());
-                document.getElementById('modal-why-body').innerHTML = whyParagraphs.length > 0
-                    ? whyParagraphs.map(p => `<p>${p.trim()}</p>`).join('')
-                    : `<p>${hwc.whyPreview || 'No content available.'}</p>`;
-                
-                // HWC Events
-                const eventsList = hwc.events ? hwc.events.split(',').map(e => e.trim()) : [];
-                const eventsListHtml = `
-                    <ul>
-                        ${eventsList.map(e => `<li>${e}</li>`).join('')}
-                    </ul>
-                    ${hwc.eventsNote ? `<div class="note">${hwc.eventsNote}</div>` : ''}
-                `;
-                document.getElementById('hwc-events-list').innerHTML = eventsListHtml;
-                
-                // Load Event List
-                const eventsResp = await fetch(SHEETS.eventList);
-                const eventsText = await eventsResp.text();
-                const eventList = parseEventList(eventsText);
-                
-                // Fetch details for each event from its individual tab - IN PARALLEL
-                const eventPromises = eventList.map(async (evt) => {
-                    const eventGid = EVENT_GIDS[evt.id];
-                    if (eventGid) {
-                        try {
-                            const eventResp = await fetch(SHEET_BASE + '?gid=' + eventGid + '&single=true&output=csv');
-                            const eventText = await eventResp.text();
-                            const eventData = parseFieldValueTab(eventText);
-                            return {
-                                ...evt,
-                                signUpDeadline: eventData.signUpDeadline || eventData['sign-upDeadline'] || '',
-                                entryFee: eventData.entryFee || '',
-                                description: eventData.description || '',
-                                eligibility: eventData.eligibility || '',
-                                format: eventData.format || '',
-                                handicap: eventData.handicap || '',
-                                tees: eventData.tees || '',
-                                prizes: eventData.prizes || '',
-                                details: (eventData.details || eventData.additionalDetails || '').replace(/\\n/g, '\n')
-                            };
-                        } catch (e) {
-                            console.log('Could not load details for event:', evt.id);
-                            return evt;
-                        }
-                    } else {
-                        // No GID configured for this event, use basic info
-                        return evt;
-                    }
-                });
-                
-                const events = await Promise.all(eventPromises);
+                // Map database fields to expected format
+                const events = (eventsRaw || []).map(e => ({
+                    id: e.slug,
+                    name: e.name,
+                    startDate: e.start_date,
+                    endDate: e.end_date,
+                    signUpDeadline: e.signup_deadline,
+                    entryFee: e.entry_fee,
+                    description: e.description,
+                    eligibility: e.eligibility,
+                    format: e.format,
+                    handicap: e.handicap,
+                    tees: e.tees,
+                    prizes: e.prizes,
+                    details: e.details,
+                    henryWilson: e.henry_wilson
+                }));
                 
                 // Sort events by date
                 const sortedEvents = sortEvents(events);
@@ -1601,8 +1225,7 @@ There is a monument in his honor near the entrance to the upper parking area at 
                 document.getElementById('event-details-container').innerHTML = detailsHtml;
                 
             } catch (error) {
-                console.error('Error loading from Google Sheets:', error);
-                // Fall back to showing an error message
+                console.error('Error loading tournament data:', error);
                 document.getElementById('calendar-grid').innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--gray-600);">Unable to load tournament data. Please try again later.</p>';
             }
         }
