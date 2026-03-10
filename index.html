@@ -2745,16 +2745,20 @@
         // Parse iCal date format (YYYYMMDD or YYYYMMDDTHHMMSSZ)
         function parseICalDate(dateStr) {
             if (!dateStr) return null;
-            // Remove any TZID prefix
-            dateStr = dateStr.replace(/^.*:/, '');
+            // Remove any TZID prefix (e.g., "TZID=America/New_York:")
+            if (dateStr.includes(':')) {
+                dateStr = dateStr.substring(dateStr.lastIndexOf(':') + 1);
+            }
+            // Also handle VALUE=DATE: prefix
+            dateStr = dateStr.replace('VALUE=DATE:', '');
             
             if (dateStr.length === 8) {
                 // All-day event: YYYYMMDD
                 const year = parseInt(dateStr.substring(0, 4));
                 const month = parseInt(dateStr.substring(4, 6)) - 1;
                 const day = parseInt(dateStr.substring(6, 8));
-                return { date: new Date(year, month, day, 12, 0, 0), allDay: true };
-            } else {
+                return { date: new Date(year, month, day, 0, 0, 0), allDay: true };
+            } else if (dateStr.length >= 15) {
                 // Timed event: YYYYMMDDTHHMMSS or YYYYMMDDTHHMMSSZ
                 const year = parseInt(dateStr.substring(0, 4));
                 const month = parseInt(dateStr.substring(4, 6)) - 1;
@@ -2770,6 +2774,63 @@
                     return { date: new Date(year, month, day, hour, minute), allDay: false };
                 }
             }
+            return null;
+        }
+        
+        // Expand recurring events based on RRULE
+        function expandRecurringEvent(event, untilDate) {
+            const expanded = [];
+            if (!event.rrule || !event.dtstart) return [event];
+            
+            const rrule = event.rrule;
+            const startDate = new Date(event.dtstart);
+            
+            // Parse RRULE components
+            const freqMatch = rrule.match(/FREQ=(\w+)/);
+            const intervalMatch = rrule.match(/INTERVAL=(\d+)/);
+            const countMatch = rrule.match(/COUNT=(\d+)/);
+            const untilMatch = rrule.match(/UNTIL=(\d{8})/);
+            const bydayMatch = rrule.match(/BYDAY=([^;]+)/);
+            
+            const freq = freqMatch ? freqMatch[1] : 'DAILY';
+            const interval = intervalMatch ? parseInt(intervalMatch[1]) : 1;
+            const count = countMatch ? parseInt(countMatch[1]) : 52; // Default max 1 year of weekly
+            const rruleUntil = untilMatch ? parseICalDate(untilMatch[1])?.date : null;
+            
+            const effectiveUntil = rruleUntil && rruleUntil < untilDate ? rruleUntil : untilDate;
+            
+            let currentDate = new Date(startDate);
+            let occurrences = 0;
+            
+            while (currentDate <= effectiveUntil && occurrences < count && occurrences < 100) {
+                // Create occurrence
+                expanded.push({
+                    ...event,
+                    dtstart: new Date(currentDate),
+                    isRecurrence: true
+                });
+                occurrences++;
+                
+                // Move to next occurrence
+                switch (freq) {
+                    case 'DAILY':
+                        currentDate.setDate(currentDate.getDate() + interval);
+                        break;
+                    case 'WEEKLY':
+                        currentDate.setDate(currentDate.getDate() + (7 * interval));
+                        break;
+                    case 'MONTHLY':
+                        currentDate.setMonth(currentDate.getMonth() + interval);
+                        break;
+                    case 'YEARLY':
+                        currentDate.setFullYear(currentDate.getFullYear() + interval);
+                        break;
+                    default:
+                        currentDate.setDate(currentDate.getDate() + 1);
+                }
+            }
+            
+            return expanded;
         }
         
         // Parse iCal text content
@@ -2791,18 +2852,23 @@
                     currentEvent = null;
                 } else if (currentEvent) {
                     if (line.startsWith('DTSTART')) {
-                        const value = line.substring(line.indexOf(':') + 1);
+                        // Handle both DTSTART:value and DTSTART;params:value
+                        const colonIdx = line.indexOf(':');
+                        const value = line.substring(colonIdx + 1);
                         const parsed = parseICalDate(value);
                         if (parsed) {
                             currentEvent.dtstart = parsed.date;
                             currentEvent.allDay = parsed.allDay;
                         }
                     } else if (line.startsWith('DTEND')) {
-                        const value = line.substring(line.indexOf(':') + 1);
+                        const colonIdx = line.indexOf(':');
+                        const value = line.substring(colonIdx + 1);
                         const parsed = parseICalDate(value);
                         if (parsed) {
                             currentEvent.dtend = parsed.date;
                         }
+                    } else if (line.startsWith('RRULE:')) {
+                        currentEvent.rrule = line.substring(6);
                     } else if (line.startsWith('SUMMARY:')) {
                         currentEvent.summary = line.substring(8).replace(/\\,/g, ',').replace(/\\n/g, '\n').replace(/\\;/g, ';');
                     } else if (line.startsWith('DESCRIPTION:')) {
@@ -2813,7 +2879,28 @@
                 }
             }
             
-            return events;
+            // Expand recurring events for the next 6 months
+            const untilDate = new Date();
+            untilDate.setMonth(untilDate.getMonth() + 6);
+            
+            const expandedEvents = [];
+            let recurringCount = 0;
+            for (const event of events) {
+                if (event.rrule) {
+                    recurringCount++;
+                    if (recurringCount <= 3) {
+                        console.log('Recurring event:', event.summary, 'RRULE:', event.rrule, 'Start:', event.dtstart);
+                    }
+                    const expanded = expandRecurringEvent(event, untilDate);
+                    console.log('  Expanded to', expanded.length, 'occurrences');
+                    expandedEvents.push(...expanded);
+                } else {
+                    expandedEvents.push(event);
+                }
+            }
+            console.log('Total recurring events found:', recurringCount);
+            
+            return expandedEvents;
         }
         
         async function loadGoogleCalendarEvents() {
@@ -2838,7 +2925,22 @@
                 
                 console.log('Valid calendar data found!');
                 const allEvents = parseICalEvents(icsText);
-                console.log('Total events parsed:', allEvents.length);
+                console.log('Total events parsed (including expanded recurrences):', allEvents.length);
+                
+                // Debug: Show events in March-April 2026
+                const marchEvents = allEvents.filter(e => {
+                    const d = e.dtstart;
+                    return d && d.getFullYear() === 2026 && (d.getMonth() === 2 || d.getMonth() === 3);
+                });
+                console.log('Events in March-April 2026:', marchEvents.length);
+                marchEvents.slice(0, 10).forEach(e => console.log('  -', e.summary, e.dtstart));
+                
+                // Debug: Find Clubhouse Opens and Board of Directors
+                const debugEvents = allEvents.filter(e => 
+                    e.summary && (e.summary.includes('Clubhouse') || e.summary.includes('Board'))
+                );
+                console.log('Debug - Clubhouse/Board events found:', debugEvents.length);
+                debugEvents.slice(0, 10).forEach(e => console.log('  ', e.summary, e.dtstart));
                 
                 // Filter to upcoming events and sort by date
                 const now = new Date();
