@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
             --green-dark: #1e3a2f;
@@ -863,6 +864,15 @@
                     <p class="section-description">Manage tournament information, Henry Wilson Cup content, and events.</p>
                     
                     <div id="alert-events" class="alert"></div>
+                    
+                    <div class="card" style="background: linear-gradient(135deg, var(--green-dark) 0%, var(--green-mid) 100%); color: white;">
+                        <h3 class="card-title" style="color: var(--gold);">📄 Generate Printable PDF</h3>
+                        <p style="margin-bottom: 1rem; opacity: 0.9;">Create a print-ready Tournament Bible PDF with Henry Wilson Cup info and all tournament details.</p>
+                        <button class="btn" style="background: var(--gold); color: var(--green-dark); font-weight: 600;" onclick="generateTournamentBiblePDF()">
+                            📄 Generate PDF
+                        </button>
+                        <div id="pdf-status" style="margin-top: 0.75rem; font-size: 0.85rem; opacity: 0.8;"></div>
+                    </div>
                     
                     <div class="card">
                         <h3 class="card-title">Tournament Bible Year</h3>
@@ -2099,6 +2109,290 @@
                 eventsData = eventsData.filter(e => e.id !== id);
                 renderEvents();
                 showAlert('events', 'Event deleted');
+            }
+        }
+
+        // =============================================
+        // PDF GENERATION
+        // =============================================
+        async function generateTournamentBiblePDF() {
+            const statusEl = document.getElementById('pdf-status');
+            statusEl.textContent = 'Loading data...';
+            
+            try {
+                // Fetch all data
+                const { data: yearData } = await supabaseClient.from('tournament_bible_settings').select('value').eq('key', 'year').single();
+                const year = yearData?.value || '2025';
+                
+                const { data: hwc } = await supabaseClient.from('henry_wilson_cup').select('*').limit(1).single();
+                
+                const { data: events } = await supabaseClient.from('events').select('*').eq('active', true).order('sort_order');
+                
+                statusEl.textContent = 'Generating PDF...';
+                
+                // Initialize jsPDF (letter size: 8.5" x 11")
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'pt',
+                    format: 'letter'
+                });
+                
+                // Constants
+                const pageWidth = 612;
+                const pageHeight = 792;
+                const margin = 36; // 0.5 inch
+                const contentWidth = pageWidth - (margin * 2);
+                const greenDark = [30, 58, 47];
+                const gold = [184, 149, 108];
+                const grayText = [80, 80, 80];
+                
+                let y = margin;
+                
+                // Helper: Add page header
+                function addPageHeader(title) {
+                    doc.setFillColor(...greenDark);
+                    doc.rect(0, 0, pageWidth, 60, 'F');
+                    doc.setTextColor(255, 255, 255);
+                    doc.setFontSize(18);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text(title, margin, 38);
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text(year + ' Season', pageWidth - margin, 38, { align: 'right' });
+                    return 80;
+                }
+                
+                // Helper: Add section title
+                function addSectionTitle(title, yPos) {
+                    doc.setTextColor(...greenDark);
+                    doc.setFontSize(14);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text(title, margin, yPos);
+                    doc.setDrawColor(...gold);
+                    doc.setLineWidth(2);
+                    doc.line(margin, yPos + 5, margin + 100, yPos + 5);
+                    return yPos + 25;
+                }
+                
+                // Helper: Add wrapped text
+                function addWrappedText(text, yPos, fontSize = 10, color = grayText) {
+                    doc.setTextColor(...color);
+                    doc.setFontSize(fontSize);
+                    doc.setFont('helvetica', 'normal');
+                    const lines = doc.splitTextToSize(text, contentWidth);
+                    doc.text(lines, margin, yPos);
+                    return yPos + (lines.length * fontSize * 1.4);
+                }
+                
+                // Helper: Format date
+                function formatDate(dateStr) {
+                    if (!dateStr) return 'TBD';
+                    const date = new Date(dateStr);
+                    return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+                }
+                
+                // ========== PAGE 1: Henry Wilson Cup ==========
+                y = addPageHeader('🏆 Tournament Bible');
+                
+                // What is the Henry Wilson Cup?
+                y = addSectionTitle('🏆 ' + (hwc?.what_title || 'What is the Henry Wilson Cup?'), y);
+                if (hwc?.what_content) {
+                    const whatParagraphs = hwc.what_content.split('\n\n');
+                    whatParagraphs.forEach(para => {
+                        y = addWrappedText(para.trim(), y);
+                        y += 8;
+                    });
+                }
+                y += 10;
+                
+                // Why the Henry Wilson Cup?
+                y = addSectionTitle('🏆 ' + (hwc?.why_title || 'Why the Henry Wilson Cup?'), y);
+                if (hwc?.why_content) {
+                    const whyParagraphs = hwc.why_content.split('\n\n');
+                    whyParagraphs.forEach(para => {
+                        y = addWrappedText(para.trim(), y);
+                        y += 8;
+                    });
+                }
+                y += 10;
+                
+                // HWC Events
+                y = addSectionTitle('📅 ' + year + ' HWC Qualifying Events', y);
+                if (hwc?.qualifying_events) {
+                    const eventsList = hwc.qualifying_events.split(',').map(e => e.trim());
+                    doc.setTextColor(...grayText);
+                    doc.setFontSize(10);
+                    eventsList.forEach(evt => {
+                        doc.text('• ' + evt, margin + 10, y);
+                        y += 14;
+                    });
+                }
+                if (hwc?.events_note) {
+                    y += 5;
+                    doc.setFontSize(9);
+                    doc.setTextColor(120, 120, 120);
+                    doc.text(hwc.events_note, margin, y);
+                    y += 20;
+                }
+                
+                // Table of Contents
+                y = addSectionTitle('📋 Tournament Directory', y);
+                doc.setFontSize(10);
+                (events || []).forEach((event, idx) => {
+                    if (y > pageHeight - 60) {
+                        doc.addPage();
+                        y = addPageHeader('🏆 Tournament Bible') + 20;
+                    }
+                    doc.setTextColor(...grayText);
+                    doc.text(event.name, margin + 10, y);
+                    doc.setTextColor(150, 150, 150);
+                    doc.text('Page ' + (idx + 2), pageWidth - margin, y, { align: 'right' });
+                    y += 16;
+                });
+                
+                // ========== PAGES 2+: Individual Events ==========
+                (events || []).forEach((event, idx) => {
+                    doc.addPage();
+                    y = addPageHeader(event.name);
+                    
+                    // Event title with HWC badge
+                    doc.setTextColor(...greenDark);
+                    doc.setFontSize(22);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text(event.name, margin, y);
+                    y += 10;
+                    
+                    if (event.henry_wilson) {
+                        doc.setFillColor(...gold);
+                        doc.roundedRect(margin, y, 180, 20, 3, 3, 'F');
+                        doc.setTextColor(...greenDark);
+                        doc.setFontSize(9);
+                        doc.setFont('helvetica', 'bold');
+                        doc.text('🏆 Counts Toward Henry Wilson Cup', margin + 8, y + 14);
+                        y += 30;
+                    }
+                    y += 15;
+                    
+                    // Gold divider
+                    doc.setDrawColor(...gold);
+                    doc.setLineWidth(3);
+                    doc.line(margin, y, margin + 80, y);
+                    y += 20;
+                    
+                    // Quick facts grid
+                    const quickFacts = [
+                        { icon: '🗓️', label: 'Date', value: formatDate(event.start_date) + (event.end_date ? ' - ' + formatDate(event.end_date) : '') },
+                        { icon: '📝', label: 'Signup Deadline', value: event.signup_deadline || 'TBD' },
+                        { icon: '💵', label: 'Entry Fee', value: event.entry_fee || 'Free' }
+                    ];
+                    
+                    doc.setFontSize(10);
+                    quickFacts.forEach(fact => {
+                        if (fact.value && fact.value !== 'TBD') {
+                            doc.setTextColor(...greenDark);
+                            doc.setFont('helvetica', 'bold');
+                            doc.text(fact.icon + ' ' + fact.label + ':', margin, y);
+                            doc.setTextColor(...grayText);
+                            doc.setFont('helvetica', 'normal');
+                            doc.text(fact.value, margin + 120, y);
+                            y += 18;
+                        }
+                    });
+                    y += 10;
+                    
+                    // Description
+                    if (event.description) {
+                        y = addSectionTitle('About This Event', y);
+                        y = addWrappedText(event.description, y);
+                        y += 15;
+                    }
+                    
+                    // Eligibility
+                    if (event.eligibility) {
+                        doc.setTextColor(...greenDark);
+                        doc.setFontSize(11);
+                        doc.setFont('helvetica', 'bold');
+                        doc.text('👥 Eligibility', margin, y);
+                        y += 15;
+                        y = addWrappedText(event.eligibility, y);
+                        y += 15;
+                    }
+                    
+                    // Format
+                    if (event.format) {
+                        doc.setTextColor(...greenDark);
+                        doc.setFontSize(11);
+                        doc.setFont('helvetica', 'bold');
+                        doc.text('🎯 Format', margin, y);
+                        y += 15;
+                        y = addWrappedText(event.format, y);
+                        y += 15;
+                    }
+                    
+                    // Handicap
+                    if (event.handicap) {
+                        doc.setTextColor(...greenDark);
+                        doc.setFontSize(11);
+                        doc.setFont('helvetica', 'bold');
+                        doc.text('📊 Handicap Rules', margin, y);
+                        y += 15;
+                        y = addWrappedText(event.handicap, y);
+                        y += 15;
+                    }
+                    
+                    // Tees
+                    if (event.tees) {
+                        doc.setTextColor(...greenDark);
+                        doc.setFontSize(11);
+                        doc.setFont('helvetica', 'bold');
+                        doc.text('⛳ Tee Rules', margin, y);
+                        y += 15;
+                        y = addWrappedText(event.tees, y);
+                        y += 15;
+                    }
+                    
+                    // Prizes
+                    if (event.prizes) {
+                        doc.setTextColor(...greenDark);
+                        doc.setFontSize(11);
+                        doc.setFont('helvetica', 'bold');
+                        doc.text('🏆 Prizes', margin, y);
+                        y += 15;
+                        y = addWrappedText(event.prizes, y);
+                        y += 15;
+                    }
+                    
+                    // Additional Details
+                    if (event.details) {
+                        doc.setTextColor(...greenDark);
+                        doc.setFontSize(11);
+                        doc.setFont('helvetica', 'bold');
+                        doc.text('📋 Additional Details', margin, y);
+                        y += 15;
+                        y = addWrappedText(event.details, y);
+                    }
+                    
+                    // Footer
+                    doc.setFontSize(8);
+                    doc.setTextColor(150, 150, 150);
+                    doc.text('Farmington Country Club • ' + year + ' Tournament Bible • Page ' + (idx + 2), pageWidth / 2, pageHeight - 25, { align: 'center' });
+                });
+                
+                // Add page number to first page
+                doc.setPage(1);
+                doc.setFontSize(8);
+                doc.setTextColor(150, 150, 150);
+                doc.text('Farmington Country Club • ' + year + ' Tournament Bible • Page 1', pageWidth / 2, pageHeight - 25, { align: 'center' });
+                
+                // Save the PDF
+                doc.save('TournamentBible-' + year + '.pdf');
+                statusEl.textContent = '✅ PDF downloaded successfully!';
+                setTimeout(() => { statusEl.textContent = ''; }, 3000);
+                
+            } catch (error) {
+                console.error('PDF generation error:', error);
+                statusEl.textContent = '❌ Error generating PDF. Check console for details.';
             }
         }
 
