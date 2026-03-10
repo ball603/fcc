@@ -2784,6 +2784,8 @@
             
             const rrule = event.rrule;
             const startDate = new Date(event.dtstart);
+            const now = new Date();
+            now.setHours(0, 0, 0, 0);
             
             // Parse RRULE components
             const freqMatch = rrule.match(/FREQ=(\w+)/);
@@ -2794,24 +2796,23 @@
             
             const freq = freqMatch ? freqMatch[1] : 'DAILY';
             const interval = intervalMatch ? parseInt(intervalMatch[1]) : 1;
-            const count = countMatch ? parseInt(countMatch[1]) : 52; // Default max 1 year of weekly
+            const maxCount = countMatch ? parseInt(countMatch[1]) : 500;
             const rruleUntil = untilMatch ? parseICalDate(untilMatch[1])?.date : null;
             
-            const effectiveUntil = rruleUntil && rruleUntil < untilDate ? rruleUntil : untilDate;
+            // If RRULE has an UNTIL that's in the past, stop there
+            // Otherwise expand up to our lookahead date
+            const effectiveUntil = rruleUntil || untilDate;
+            
+            // If the end date is before today, skip this event entirely
+            if (effectiveUntil < now) {
+                return []; // Don't include past recurring events
+            }
             
             let currentDate = new Date(startDate);
             let occurrences = 0;
             
-            while (currentDate <= effectiveUntil && occurrences < count && occurrences < 100) {
-                // Create occurrence
-                expanded.push({
-                    ...event,
-                    dtstart: new Date(currentDate),
-                    isRecurrence: true
-                });
-                occurrences++;
-                
-                // Move to next occurrence
+            // Helper to advance date based on frequency
+            function advanceDate() {
                 switch (freq) {
                     case 'DAILY':
                         currentDate.setDate(currentDate.getDate() + interval);
@@ -2828,6 +2829,24 @@
                     default:
                         currentDate.setDate(currentDate.getDate() + 1);
                 }
+            }
+            
+            // Skip past occurrences quickly - advance to near "now"
+            while (currentDate < now && occurrences < maxCount) {
+                advanceDate();
+                occurrences++;
+            }
+            
+            // Now generate future occurrences
+            occurrences = 0;
+            while (currentDate <= effectiveUntil && occurrences < 20) {
+                expanded.push({
+                    ...event,
+                    dtstart: new Date(currentDate),
+                    isRecurrence: true
+                });
+                occurrences++;
+                advanceDate();
             }
             
             return expanded;
@@ -2885,14 +2904,21 @@
             
             const expandedEvents = [];
             let recurringCount = 0;
+            
+            // Debug: find Board/Clubhouse events in 2026
+            const boardEvents2026 = events.filter(e => {
+                const name = (e.summary || '').toLowerCase();
+                const d = e.dtstart;
+                return (name.includes('board') || name.includes('clubhouse')) && 
+                       d && d.getFullYear() === 2026;
+            });
+            console.log('Board/Clubhouse events in 2026 (before expansion):', boardEvents2026.length);
+            boardEvents2026.forEach(e => console.log('  -', e.summary, e.dtstart, 'RRULE:', e.rrule || 'none'));
+            
             for (const event of events) {
                 if (event.rrule) {
                     recurringCount++;
-                    if (recurringCount <= 3) {
-                        console.log('Recurring event:', event.summary, 'RRULE:', event.rrule, 'Start:', event.dtstart);
-                    }
                     const expanded = expandRecurringEvent(event, untilDate);
-                    console.log('  Expanded to', expanded.length, 'occurrences');
                     expandedEvents.push(...expanded);
                 } else {
                     expandedEvents.push(event);
