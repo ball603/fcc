@@ -3360,12 +3360,14 @@
                         contactsHtml += `<a href="mailto:${league.contact2_email}">${league.contact2_name}</a>`;
                     }
                     
-                    // Build button HTML
+                    // Build button HTML - only if button_text is provided
                     let buttonHtml = '';
-                    if (league.button_link) {
-                        buttonHtml = `<a href="${league.button_link}" class="btn btn-${league.button_style || 'secondary'}">${league.button_text || 'Learn More'}</a>`;
-                    } else {
-                        buttonHtml = `<button class="btn btn-${league.button_style || 'secondary'}" onclick="openLeagueModal('${league.name.toLowerCase().replace(/[^a-z]/g, '')}')">${league.button_text || 'Learn More'}</button>`;
+                    if (league.button_text && league.button_text.trim()) {
+                        if (league.button_link) {
+                            buttonHtml = `<a href="${league.button_link}" class="btn btn-${league.button_style || 'secondary'}">${league.button_text}</a>`;
+                        } else {
+                            buttonHtml = `<button class="btn btn-${league.button_style || 'secondary'}" onclick="openLeagueModal('${league.name.toLowerCase().replace(/[^a-z]/g, '')}')">${league.button_text}</button>`;
+                        }
                     }
                     
                     html += `

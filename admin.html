@@ -1828,7 +1828,8 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label">Button Text</label>
-                            <input type="text" class="form-input league-btn-text" value="${league.button_text || ''}">
+                            <p class="form-hint">Leave blank to hide button</p>
+                            <input type="text" class="form-input league-btn-text" value="${league.button_text || ''}" placeholder="e.g. Learn More">
                         </div>
                         <div class="form-group">
                             <label class="form-label">Button Link (optional)</label>
@@ -1855,7 +1856,7 @@
                 contact1_email: '',
                 contact2_name: '',
                 contact2_email: '',
-                button_text: 'Learn More',
+                button_text: '',
                 button_link: '',
                 button_style: 'secondary',
                 sort_order: leaguesData.length,
