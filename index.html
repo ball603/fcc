@@ -3121,7 +3121,8 @@
                 const textEl = document.getElementById('announcement-text');
                 
                 if (data && data.message) {
-                    let displayText = data.message;
+                    // Convert newlines to <br> tags for proper paragraph display
+                    let displayText = data.message.replace(/\n/g, '<br>');
                     if (data.link_text && data.link_url) {
                         displayText += ` <a href="${data.link_url}" target="_blank">${data.link_text}</a>`;
                     }
