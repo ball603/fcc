@@ -2817,6 +2817,7 @@
         }
         
         async function loadGoogleCalendarEvents() {
+            console.log('Loading Google Calendar events...');
             try {
                 // Try multiple CORS proxies in case one fails
                 const corsProxies = [
@@ -2828,12 +2829,16 @@
                 
                 for (const proxy of corsProxies) {
                     try {
+                        console.log('Trying proxy:', proxy);
                         const proxyUrl = proxy + encodeURIComponent(GOOGLE_CALENDAR_ICAL);
                         const response = await fetch(proxyUrl);
+                        console.log('Response status:', response.status);
                         
                         if (response.ok) {
                             icsText = await response.text();
+                            console.log('Got ICS text, length:', icsText?.length);
                             if (icsText && icsText.includes('BEGIN:VCALENDAR')) {
+                                console.log('Valid calendar data found!');
                                 break; // Success!
                             }
                         }
@@ -2848,15 +2853,20 @@
                 }
                 
                 const allEvents = parseICalEvents(icsText);
+                console.log('Total events parsed:', allEvents.length);
                 
                 // Filter to upcoming events and sort by date
                 const now = new Date();
                 now.setHours(0, 0, 0, 0);
+                console.log('Filtering events after:', now);
                 
                 const upcomingEvents = allEvents
                     .filter(e => e.dtstart >= now)
                     .sort((a, b) => a.dtstart - b.dtstart)
                     .slice(0, 5); // Show max 5 events
+                
+                console.log('Upcoming events:', upcomingEvents.length);
+                upcomingEvents.forEach(e => console.log(' -', e.summary, e.dtstart));
                 
                 if (upcomingEvents.length === 0) {
                     document.getElementById('events-list').innerHTML = '<p style="color: var(--gray-600); padding: 1rem;">No upcoming events scheduled.</p>';
