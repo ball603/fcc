@@ -290,6 +290,13 @@
             font-size: 0.9rem;
         }
 
+        .form-hint {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+            margin: 0 0 0.5rem 0;
+            font-style: italic;
+        }
+
         .form-input, .form-textarea, .form-select {
             width: 100%;
             padding: 0.625rem 0.875rem;
@@ -658,12 +665,9 @@
                             <input type="text" class="form-input" id="about-heading" placeholder="e.g. Welcome to FCC">
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Paragraph 1</label>
-                            <textarea class="form-textarea" id="about-text-1"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Paragraph 2</label>
-                            <textarea class="form-textarea" id="about-text-2"></textarea>
+                            <label class="form-label">Content</label>
+                            <p class="form-hint">Use blank lines between paragraphs for spacing.</p>
+                            <textarea class="form-textarea" id="about-text" rows="6"></textarea>
                         </div>
                         <div class="form-row">
                             <div class="form-group">
@@ -953,12 +957,9 @@
                             <input type="text" class="form-input" id="tournaments-heading" placeholder="🏆 Tournaments at FCC">
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Paragraph 1</label>
-                            <textarea class="form-textarea" id="tournaments-text-1" placeholder="At FCC, we pride ourselves on offering our members many options to compete..."></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Paragraph 2</label>
-                            <textarea class="form-textarea" id="tournaments-text-2" placeholder="The Pro Shop runs tournaments on most weekends..."></textarea>
+                            <label class="form-label">Content</label>
+                            <p class="form-hint">Use blank lines between paragraphs for spacing.</p>
+                            <textarea class="form-textarea" id="tournaments-text" rows="6" placeholder="At FCC, we pride ourselves on offering our members many options to compete..."></textarea>
                         </div>
                     </div>
                     
@@ -993,12 +994,9 @@
                             <input type="text" class="form-input" id="proshop-heading">
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Paragraph 1</label>
-                            <textarea class="form-textarea" id="proshop-text-1"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Paragraph 2</label>
-                            <textarea class="form-textarea" id="proshop-text-2"></textarea>
+                            <label class="form-label">Content</label>
+                            <p class="form-hint">Use blank lines between paragraphs for spacing.</p>
+                            <textarea class="form-textarea" id="proshop-text" rows="6"></textarea>
                         </div>
                         <button class="btn btn-primary" onclick="saveProshopContent()">Save Content</button>
                     </div>
@@ -1179,8 +1177,9 @@
                 data.forEach(row => s[row.key] = row.value);
                 
                 document.getElementById('about-heading').value = s.about_heading || '';
-                document.getElementById('about-text-1').value = s.about_text_1 || '';
-                document.getElementById('about-text-2').value = s.about_text_2 || '';
+                // Support legacy separate fields or new combined field
+                document.getElementById('about-text').value = s.about_text || 
+                    [s.about_text_1, s.about_text_2].filter(Boolean).join('\n\n') || '';
                 document.getElementById('about-tagline').value = s.hero_tagline || '';
                 document.getElementById('stat-established').value = s.stat_established || '';
                 document.getElementById('stat-holes').value = s.stat_holes || '';
@@ -1197,8 +1196,7 @@
         async function saveAbout() {
             const updates = [
                 { key: 'about_heading', value: document.getElementById('about-heading').value },
-                { key: 'about_text_1', value: document.getElementById('about-text-1').value },
-                { key: 'about_text_2', value: document.getElementById('about-text-2').value },
+                { key: 'about_text', value: document.getElementById('about-text').value },
                 { key: 'hero_tagline', value: document.getElementById('about-tagline').value },
                 { key: 'stat_established', value: document.getElementById('stat-established').value },
                 { key: 'stat_holes', value: document.getElementById('stat-holes').value },
@@ -2738,8 +2736,9 @@
                 const s = {};
                 settings.forEach(row => s[row.key] = row.value);
                 document.getElementById('proshop-heading').value = s.proshop_heading || '';
-                document.getElementById('proshop-text-1').value = s.proshop_text_1 || '';
-                document.getElementById('proshop-text-2').value = s.proshop_text_2 || '';
+                // Support legacy separate fields or new combined field
+                document.getElementById('proshop-text').value = s.proshop_text || 
+                    [s.proshop_text_1, s.proshop_text_2].filter(Boolean).join('\n\n') || '';
             }
             
             // Load services
@@ -2776,8 +2775,7 @@
         async function saveProshopContent() {
             const updates = [
                 { key: 'proshop_heading', value: document.getElementById('proshop-heading').value },
-                { key: 'proshop_text_1', value: document.getElementById('proshop-text-1').value },
-                { key: 'proshop_text_2', value: document.getElementById('proshop-text-2').value }
+                { key: 'proshop_text', value: document.getElementById('proshop-text').value }
             ];
             
             for (const u of updates) {
@@ -2817,8 +2815,9 @@
                 document.getElementById('events-heading').value = s.events_heading || '';
                 document.getElementById('events-subheading').value = s.events_subheading || '';
                 document.getElementById('tournaments-heading').value = s.tournaments_heading || '';
-                document.getElementById('tournaments-text-1').value = s.tournaments_text_1 || '';
-                document.getElementById('tournaments-text-2').value = s.tournaments_text_2 || '';
+                // Support legacy separate fields or new combined field
+                document.getElementById('tournaments-text').value = s.tournaments_text || 
+                    [s.tournaments_text_1, s.tournaments_text_2].filter(Boolean).join('\n\n') || '';
                 document.getElementById('tournaments-link-text').value = s.tournaments_link_text || '';
                 document.getElementById('tournaments-link-url').value = s.tournaments_link_url || '';
             }
@@ -2829,8 +2828,7 @@
                 { key: 'events_heading', value: document.getElementById('events-heading').value },
                 { key: 'events_subheading', value: document.getElementById('events-subheading').value },
                 { key: 'tournaments_heading', value: document.getElementById('tournaments-heading').value },
-                { key: 'tournaments_text_1', value: document.getElementById('tournaments-text-1').value },
-                { key: 'tournaments_text_2', value: document.getElementById('tournaments-text-2').value },
+                { key: 'tournaments_text', value: document.getElementById('tournaments-text').value },
                 { key: 'tournaments_link_text', value: document.getElementById('tournaments-link-text').value },
                 { key: 'tournaments_link_url', value: document.getElementById('tournaments-link-url').value }
             ];

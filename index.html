@@ -1840,8 +1840,10 @@
             <div class="about-grid">
                 <div class="about-content">
                     <h3 id="about-heading">Welcome to FCC</h3>
-                    <p id="about-text-1">Founded in 1924, Farmington Country Club is a nine-hole par 36 golf course located on the bank of the Cocheco River. We pride ourselves on offering our members excellent playing conditions, a welcoming atmosphere, and competitive tournaments throughout the season.</p>
-                    <p id="about-text-2">Whether you're a seasoned golfer or just starting out, FCC offers something for everyone. Our course challenges players of all skill levels while remaining approachable and enjoyable.</p>
+                    <div id="about-text">
+                        <p>Founded in 1924, Farmington Country Club is a nine-hole par 36 golf course located on the bank of the Cocheco River. We pride ourselves on offering our members excellent playing conditions, a welcoming atmosphere, and competitive tournaments throughout the season.</p>
+                        <p>Whether you're a seasoned golfer or just starting out, FCC offers something for everyone. Our course challenges players of all skill levels while remaining approachable and enjoyable.</p>
+                    </div>
                     <div class="about-stats">
                         <div class="about-stat">
                             <div class="value" id="stat-established">1924</div>
@@ -2090,9 +2092,9 @@
                     <div class="events-info-header">
                         <h3 id="tournaments-heading">🏆 Tournaments at FCC</h3>
                     </div>
-                    <div class="events-info-content">
-                        <p id="tournaments-text-1">At FCC, we pride ourselves on offering our members many options to compete in tournaments throughout the season. From weekly Pro Shop events to major club championships, there's always something to play for.</p>
-                        <p id="tournaments-text-2">The Pro Shop runs tournaments on most weekends and holidays. Entry fees vary depending on the tournament, and all prize money is paid out in Pro Shop credit.</p>
+                    <div class="events-info-content" id="tournaments-text">
+                        <p>At FCC, we pride ourselves on offering our members many options to compete in tournaments throughout the season. From weekly Pro Shop events to major club championships, there's always something to play for.</p>
+                        <p>The Pro Shop runs tournaments on most weekends and holidays. Entry fees vary depending on the tournament, and all prize money is paid out in Pro Shop credit.</p>
                     </div>
                     <div class="events-info-footer">
                         <a href="tournament-bible.html" class="tournament-bible-btn" id="tournaments-link">View Tournament Bible →</a>
@@ -2125,8 +2127,10 @@
             <div class="proshop-content">
                 <div class="proshop-text">
                     <h3 id="proshop-heading">The Pro Shop</h3>
-                    <p id="proshop-text-1">Our fully stocked Pro Shop has everything you need for your round. We offer equipment, apparel, accessories, and professional services to keep your game sharp.</p>
-                    <p id="proshop-text-2">The shop opens no later than April 1st each season (earlier if weather permits). After November 15th, the course remains open for members only until winter conditions force closure.</p>
+                    <div id="proshop-text">
+                        <p>Our fully stocked Pro Shop has everything you need for your round. We offer equipment, apparel, accessories, and professional services to keep your game sharp.</p>
+                        <p>The shop opens no later than April 1st each season (earlier if weather permits). After November 15th, the course remains open for members only until winter conditions force closure.</p>
+                    </div>
                     <div class="proshop-services" id="proshop-services">
                         <div class="proshop-service">Club Re-Gripping</div>
                         <div class="proshop-service">Shoe Re-Spiking</div>
@@ -3404,6 +3408,15 @@
                 const settings = {};
                 data.forEach(row => settings[row.key] = row.value);
                 
+                // Helper function to convert text with line breaks to HTML paragraphs
+                function textToHtml(text) {
+                    if (!text) return '';
+                    // Split by double newlines for paragraphs, single newlines become <br>
+                    return text.split(/\n\n+/).map(para => 
+                        '<p>' + para.replace(/\n/g, '<br>') + '</p>'
+                    ).join('');
+                }
+                
                 // Hero section
                 const tagline = document.getElementById('hero-tagline');
                 if (tagline && settings.hero_tagline) tagline.textContent = settings.hero_tagline;
@@ -3412,11 +3425,13 @@
                 const aboutHeading = document.getElementById('about-heading');
                 if (aboutHeading && settings.about_heading) aboutHeading.textContent = settings.about_heading;
                 
-                const aboutText1 = document.getElementById('about-text-1');
-                if (aboutText1 && settings.about_text_1) aboutText1.textContent = settings.about_text_1;
-                
-                const aboutText2 = document.getElementById('about-text-2');
-                if (aboutText2 && settings.about_text_2) aboutText2.textContent = settings.about_text_2;
+                const aboutText = document.getElementById('about-text');
+                if (aboutText) {
+                    // Support legacy separate fields or new combined field
+                    const text = settings.about_text || 
+                        [settings.about_text_1, settings.about_text_2].filter(Boolean).join('\n\n');
+                    if (text) aboutText.innerHTML = textToHtml(text);
+                }
                 
                 // Stats
                 const statEstablished = document.getElementById('stat-established');
@@ -3456,11 +3471,13 @@
                 const proshopHeading = document.getElementById('proshop-heading');
                 if (proshopHeading && settings.proshop_heading) proshopHeading.textContent = settings.proshop_heading;
                 
-                const proshopText1 = document.getElementById('proshop-text-1');
-                if (proshopText1 && settings.proshop_text_1) proshopText1.textContent = settings.proshop_text_1;
-                
-                const proshopText2 = document.getElementById('proshop-text-2');
-                if (proshopText2 && settings.proshop_text_2) proshopText2.textContent = settings.proshop_text_2;
+                const proshopText = document.getElementById('proshop-text');
+                if (proshopText) {
+                    // Support legacy separate fields or new combined field
+                    const text = settings.proshop_text || 
+                        [settings.proshop_text_1, settings.proshop_text_2].filter(Boolean).join('\n\n');
+                    if (text) proshopText.innerHTML = textToHtml(text);
+                }
                 
                 // Events section
                 const eventsHeading = document.getElementById('events-heading');
@@ -3472,11 +3489,13 @@
                 const tournamentsHeading = document.getElementById('tournaments-heading');
                 if (tournamentsHeading && settings.tournaments_heading) tournamentsHeading.textContent = settings.tournaments_heading;
                 
-                const tournamentsText1 = document.getElementById('tournaments-text-1');
-                if (tournamentsText1 && settings.tournaments_text_1) tournamentsText1.textContent = settings.tournaments_text_1;
-                
-                const tournamentsText2 = document.getElementById('tournaments-text-2');
-                if (tournamentsText2 && settings.tournaments_text_2) tournamentsText2.textContent = settings.tournaments_text_2;
+                const tournamentsText = document.getElementById('tournaments-text');
+                if (tournamentsText) {
+                    // Support legacy separate fields or new combined field
+                    const text = settings.tournaments_text || 
+                        [settings.tournaments_text_1, settings.tournaments_text_2].filter(Boolean).join('\n\n');
+                    if (text) tournamentsText.innerHTML = textToHtml(text);
+                }
                 
                 const tournamentsLink = document.getElementById('tournaments-link');
                 if (tournamentsLink) {
