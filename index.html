@@ -2819,39 +2819,24 @@
         async function loadGoogleCalendarEvents() {
             console.log('Loading Google Calendar events...');
             try {
-                // Try multiple CORS proxies in case one fails
-                const corsProxies = [
-                    'https://api.allorigins.win/raw?url=',
-                    'https://corsproxy.io/?'
-                ];
+                // Use our own Netlify function to fetch the calendar (no CORS issues)
+                const response = await fetch('/.netlify/functions/calendar');
+                console.log('Response status:', response.status);
                 
-                let icsText = null;
-                
-                for (const proxy of corsProxies) {
-                    try {
-                        console.log('Trying proxy:', proxy);
-                        const proxyUrl = proxy + encodeURIComponent(GOOGLE_CALENDAR_ICAL);
-                        const response = await fetch(proxyUrl);
-                        console.log('Response status:', response.status);
-                        
-                        if (response.ok) {
-                            icsText = await response.text();
-                            console.log('Got ICS text, length:', icsText?.length);
-                            if (icsText && icsText.includes('BEGIN:VCALENDAR')) {
-                                console.log('Valid calendar data found!');
-                                break; // Success!
-                            }
-                        }
-                    } catch (e) {
-                        console.log('Proxy failed:', proxy);
-                    }
-                }
-                
-                if (!icsText || !icsText.includes('BEGIN:VCALENDAR')) {
-                    console.log('Failed to fetch calendar feed from all proxies');
+                if (!response.ok) {
+                    console.log('Failed to fetch calendar feed');
                     return;
                 }
                 
+                const icsText = await response.text();
+                console.log('Got ICS text, length:', icsText?.length);
+                
+                if (!icsText || !icsText.includes('BEGIN:VCALENDAR')) {
+                    console.log('Invalid calendar data');
+                    return;
+                }
+                
+                console.log('Valid calendar data found!');
                 const allEvents = parseICalEvents(icsText);
                 console.log('Total events parsed:', allEvents.length);
                 
