@@ -2818,16 +2818,35 @@
         
         async function loadGoogleCalendarEvents() {
             try {
-                // Use a CORS proxy since Google's iCal feed doesn't have CORS headers
-                const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(GOOGLE_CALENDAR_ICAL);
-                const response = await fetch(proxyUrl);
+                // Try multiple CORS proxies in case one fails
+                const corsProxies = [
+                    'https://api.allorigins.win/raw?url=',
+                    'https://corsproxy.io/?'
+                ];
                 
-                if (!response.ok) {
-                    console.log('Failed to fetch calendar feed');
+                let icsText = null;
+                
+                for (const proxy of corsProxies) {
+                    try {
+                        const proxyUrl = proxy + encodeURIComponent(GOOGLE_CALENDAR_ICAL);
+                        const response = await fetch(proxyUrl);
+                        
+                        if (response.ok) {
+                            icsText = await response.text();
+                            if (icsText && icsText.includes('BEGIN:VCALENDAR')) {
+                                break; // Success!
+                            }
+                        }
+                    } catch (e) {
+                        console.log('Proxy failed:', proxy);
+                    }
+                }
+                
+                if (!icsText || !icsText.includes('BEGIN:VCALENDAR')) {
+                    console.log('Failed to fetch calendar feed from all proxies');
                     return;
                 }
                 
-                const icsText = await response.text();
                 const allEvents = parseICalEvents(icsText);
                 
                 // Filter to upcoming events and sort by date
