@@ -2740,7 +2740,6 @@
         // =============================================
         // EVENTS - GOOGLE CALENDAR INTEGRATION (iCal Feed)
         // =============================================
-        const GOOGLE_CALENDAR_ICAL = 'https://calendar.google.com/calendar/ical/davemoshermemorial%40gmail.com/public/basic.ics';
         
         // Parse iCal date format (YYYYMMDD or YYYYMMDDTHHMMSSZ)
         function parseICalDate(dateStr) {
@@ -2903,83 +2902,44 @@
             untilDate.setMonth(untilDate.getMonth() + 6);
             
             const expandedEvents = [];
-            let recurringCount = 0;
-            
-            // Debug: find Board/Clubhouse events in 2026
-            const boardEvents2026 = events.filter(e => {
-                const name = (e.summary || '').toLowerCase();
-                const d = e.dtstart;
-                return (name.includes('board') || name.includes('clubhouse')) && 
-                       d && d.getFullYear() === 2026;
-            });
-            console.log('Board/Clubhouse events in 2026 (before expansion):', boardEvents2026.length);
-            boardEvents2026.forEach(e => console.log('  -', e.summary, e.dtstart, 'RRULE:', e.rrule || 'none'));
             
             for (const event of events) {
                 if (event.rrule) {
-                    recurringCount++;
                     const expanded = expandRecurringEvent(event, untilDate);
                     expandedEvents.push(...expanded);
                 } else {
                     expandedEvents.push(event);
                 }
             }
-            console.log('Total recurring events found:', recurringCount);
             
             return expandedEvents;
         }
         
         async function loadGoogleCalendarEvents() {
-            console.log('Loading Google Calendar events...');
             try {
                 // Use our own Netlify function to fetch the calendar (no CORS issues)
                 const response = await fetch('/.netlify/functions/calendar');
-                console.log('Response status:', response.status);
                 
                 if (!response.ok) {
-                    console.log('Failed to fetch calendar feed');
                     return;
                 }
                 
                 const icsText = await response.text();
-                console.log('Got ICS text, length:', icsText?.length);
                 
                 if (!icsText || !icsText.includes('BEGIN:VCALENDAR')) {
-                    console.log('Invalid calendar data');
                     return;
                 }
                 
-                console.log('Valid calendar data found!');
                 const allEvents = parseICalEvents(icsText);
-                console.log('Total events parsed (including expanded recurrences):', allEvents.length);
-                
-                // Debug: Show events in March-April 2026
-                const marchEvents = allEvents.filter(e => {
-                    const d = e.dtstart;
-                    return d && d.getFullYear() === 2026 && (d.getMonth() === 2 || d.getMonth() === 3);
-                });
-                console.log('Events in March-April 2026:', marchEvents.length);
-                marchEvents.slice(0, 10).forEach(e => console.log('  -', e.summary, e.dtstart));
-                
-                // Debug: Find Clubhouse Opens and Board of Directors
-                const debugEvents = allEvents.filter(e => 
-                    e.summary && (e.summary.includes('Clubhouse') || e.summary.includes('Board'))
-                );
-                console.log('Debug - Clubhouse/Board events found:', debugEvents.length);
-                debugEvents.slice(0, 10).forEach(e => console.log('  ', e.summary, e.dtstart));
                 
                 // Filter to upcoming events and sort by date
                 const now = new Date();
                 now.setHours(0, 0, 0, 0);
-                console.log('Filtering events after:', now);
                 
                 const upcomingEvents = allEvents
                     .filter(e => e.dtstart >= now)
                     .sort((a, b) => a.dtstart - b.dtstart)
                     .slice(0, 5); // Show max 5 events
-                
-                console.log('Upcoming events:', upcomingEvents.length);
-                upcomingEvents.forEach(e => console.log(' -', e.summary, e.dtstart));
                 
                 if (upcomingEvents.length === 0) {
                     document.getElementById('events-list').innerHTML = '<p style="color: var(--gray-600); padding: 1rem;">No upcoming events scheduled.</p>';
