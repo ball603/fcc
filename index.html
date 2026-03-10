@@ -2986,7 +2986,10 @@
                 if (error) throw error;
                 if (!data || data.length === 0) return;
                 
-                // Organize data for front 9 (we play it twice)
+                // Separate front 9 (holes 1-9) and back 9 (holes 10-18)
+                const front9 = data.filter(row => row.hole >= 1 && row.hole <= 9);
+                const back9 = data.filter(row => row.hole >= 10 && row.hole <= 18);
+                
                 const scorecardData = {
                     front: { 
                         par: [], whiteBlue: [], blackTops: [], backHcp: [],
@@ -2994,14 +2997,12 @@
                     },
                     back: { 
                         par: [], whiteBlue: [], blackTops: [], backHcp: [],
-                        greenTops: [], redGold: [], fwdHcp: [],
-                        parTotal: 0, whiteBlueTot: 0, blackTopsTot: 0,
-                        greenTopsTot: 0, redGoldTot: 0
+                        greenTops: [], redGold: [], fwdHcp: []
                     }
                 };
                 
-                // Fill both front and back with same data (9-hole course played twice)
-                data.forEach(row => {
+                // Fill front 9 data
+                front9.forEach(row => {
                     scorecardData.front.par.push(row.par);
                     scorecardData.front.whiteBlue.push(row.white_blue);
                     scorecardData.front.blackTops.push(row.black_tops);
@@ -3009,7 +3010,10 @@
                     scorecardData.front.greenTops.push(row.green_tops);
                     scorecardData.front.redGold.push(row.red_gold);
                     scorecardData.front.fwdHcp.push(row.fwd_hcp);
-                    
+                });
+                
+                // Fill back 9 data
+                back9.forEach(row => {
                     scorecardData.back.par.push(row.par);
                     scorecardData.back.whiteBlue.push(row.white_blue);
                     scorecardData.back.blackTops.push(row.black_tops);
@@ -3019,13 +3023,29 @@
                     scorecardData.back.fwdHcp.push(row.fwd_hcp);
                 });
                 
-                // Calculate totals (18 holes = front 9 × 2)
+                // Calculate totals
                 const sumArray = arr => arr.reduce((a, b) => a + (b || 0), 0);
-                scorecardData.back.parTotal = sumArray(scorecardData.front.par) * 2;
-                scorecardData.back.whiteBlueTot = sumArray(scorecardData.front.whiteBlue) * 2;
-                scorecardData.back.blackTopsTot = sumArray(scorecardData.front.blackTops) * 2;
-                scorecardData.back.greenTopsTot = sumArray(scorecardData.front.greenTops) * 2;
-                scorecardData.back.redGoldTot = sumArray(scorecardData.front.redGold) * 2;
+                
+                // Front 9 totals (OUT)
+                scorecardData.front.parOut = sumArray(scorecardData.front.par);
+                scorecardData.front.whiteBlueOut = sumArray(scorecardData.front.whiteBlue);
+                scorecardData.front.blackTopsOut = sumArray(scorecardData.front.blackTops);
+                scorecardData.front.greenTopsOut = sumArray(scorecardData.front.greenTops);
+                scorecardData.front.redGoldOut = sumArray(scorecardData.front.redGold);
+                
+                // Back 9 totals (IN)
+                scorecardData.back.parIn = sumArray(scorecardData.back.par);
+                scorecardData.back.whiteBlueIn = sumArray(scorecardData.back.whiteBlue);
+                scorecardData.back.blackTopsIn = sumArray(scorecardData.back.blackTops);
+                scorecardData.back.greenTopsIn = sumArray(scorecardData.back.greenTops);
+                scorecardData.back.redGoldIn = sumArray(scorecardData.back.redGold);
+                
+                // Grand totals (TOT = OUT + IN)
+                scorecardData.back.parTotal = scorecardData.front.parOut + scorecardData.back.parIn;
+                scorecardData.back.whiteBlueTot = scorecardData.front.whiteBlueOut + scorecardData.back.whiteBlueIn;
+                scorecardData.back.blackTopsTot = scorecardData.front.blackTopsOut + scorecardData.back.blackTopsIn;
+                scorecardData.back.greenTopsTot = scorecardData.front.greenTopsOut + scorecardData.back.greenTopsIn;
+                scorecardData.back.redGoldTot = scorecardData.front.redGoldOut + scorecardData.back.redGoldIn;
                 
                 // Populate scorecard tables
                 populateScorecardSection('front', scorecardData.front);
@@ -3045,12 +3065,12 @@
             
             // Row mapping: CSS row order to data keys
             const rowMapping = [
-                { data: 'whiteBlue', hasTotal: true },
-                { data: 'blackTops', hasTotal: true },
+                { data: 'whiteBlue', outKey: 'whiteBlueOut', inKey: 'whiteBlueIn', totKey: 'whiteBlueTot', hasTotal: true },
+                { data: 'blackTops', outKey: 'blackTopsOut', inKey: 'blackTopsIn', totKey: 'blackTopsTot', hasTotal: true },
                 { data: 'backHcp', hasTotal: false },
-                { data: 'par', hasTotal: true },
-                { data: 'greenTops', hasTotal: true },
-                { data: 'redGold', hasTotal: true },
+                { data: 'par', outKey: 'parOut', inKey: 'parIn', totKey: 'parTotal', hasTotal: true },
+                { data: 'greenTops', outKey: 'greenTopsOut', inKey: 'greenTopsIn', totKey: 'greenTopsTot', hasTotal: true },
+                { data: 'redGold', outKey: 'redGoldOut', inKey: 'redGoldIn', totKey: 'redGoldTot', hasTotal: true },
                 { data: 'fwdHcp', hasTotal: false }
             ];
             
@@ -3072,17 +3092,14 @@
                 
                 // Calculate and fill totals
                 if (mapping.hasTotal) {
-                    const sum = rowData.reduce((a, b) => a + (b || 0), 0);
-                    if (cells[9]) cells[9].textContent = sum;
-                    
-                    // For back 9, also fill the grand total
-                    if (section === 'back' && cells[10]) {
-                        const totKey = mapping.data + 'Tot';
-                        if (data[totKey]) {
-                            cells[10].textContent = data[totKey];
-                        } else if (mapping.data === 'par') {
-                            cells[10].textContent = data.parTotal || 72;
-                        }
+                    if (section === 'front') {
+                        // OUT column
+                        if (cells[9]) cells[9].textContent = data[mapping.outKey] || '';
+                    } else {
+                        // IN column
+                        if (cells[9]) cells[9].textContent = data[mapping.inKey] || '';
+                        // TOT column
+                        if (cells[10]) cells[10].textContent = data[mapping.totKey] || '';
                     }
                 }
             });
