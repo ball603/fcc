@@ -2128,8 +2128,6 @@
                 
                 const { data: events } = await supabaseClient.from('events').select('*').eq('active', true).order('sort_order');
                 
-                statusEl.textContent = 'Generating PDF...';
-                
                 // Initialize jsPDF (letter size: 8.5" x 11")
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF({
@@ -2201,19 +2199,34 @@
                     return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
                 }
                 
+                // Load the tree logo image
+                statusEl.textContent = 'Loading logo...';
+                let treeImageData = null;
+                try {
+                    const imgResponse = await fetch('FCC-tree-gold.png');
+                    const imgBlob = await imgResponse.blob();
+                    treeImageData = await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => resolve(reader.result);
+                        reader.readAsDataURL(imgBlob);
+                    });
+                } catch (imgErr) {
+                    console.log('Could not load tree image:', imgErr);
+                }
+                
+                statusEl.textContent = 'Generating PDF...';
+                
                 // ========== COVER PAGE ==========
                 // Green background header area
                 doc.setFillColor(...greenDark);
                 doc.rect(0, 0, pageWidth, 280, 'F');
                 
-                // Draw a simple tree shape (gold)
-                doc.setFillColor(...gold);
-                // Tree trunk
-                doc.rect(pageWidth/2 - 8, 180, 16, 50, 'F');
-                // Tree foliage (triangle layers)
-                doc.triangle(pageWidth/2, 60, pageWidth/2 - 60, 140, pageWidth/2 + 60, 140, 'F');
-                doc.triangle(pageWidth/2, 90, pageWidth/2 - 50, 160, pageWidth/2 + 50, 160, 'F');
-                doc.triangle(pageWidth/2, 115, pageWidth/2 - 45, 185, pageWidth/2 + 45, 185, 'F');
+                // Add tree logo image (centered)
+                if (treeImageData) {
+                    const imgWidth = 120;
+                    const imgHeight = 150;
+                    doc.addImage(treeImageData, 'PNG', (pageWidth - imgWidth) / 2, 50, imgWidth, imgHeight);
+                }
                 
                 // Club name
                 doc.setTextColor(255, 255, 255);
