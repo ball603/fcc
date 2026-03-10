@@ -2267,13 +2267,13 @@
                 
                 // Green header strip at top
                 doc.setFillColor(...greenDark);
-                doc.rect(0, 0, pageWidth, 160, 'F');
+                doc.rect(0, 0, pageWidth, 120, 'F');
                 
-                // Add tree logo image (centered, overlapping header)
+                // Add tree logo image (centered, below header)
                 if (treeImageData) {
                     const imgWidth = 90;
                     const imgHeight = 112;
-                    doc.addImage(treeImageData, 'PNG', (pageWidth - imgWidth) / 2, 100, imgWidth, imgHeight);
+                    doc.addImage(treeImageData, 'PNG', (pageWidth - imgWidth) / 2, 150, imgWidth, imgHeight);
                 }
                 
                 // "FARMINGTON, NH • ESTABLISHED 1924" pill badge
@@ -2282,32 +2282,32 @@
                 doc.setFont('helvetica', 'bold');
                 const badgeWidth = doc.getTextWidth(badgeText) + 30;
                 doc.setFillColor(200, 185, 160); // Light gold/tan
-                doc.roundedRect((pageWidth - badgeWidth) / 2, 230, badgeWidth, 22, 11, 11, 'F');
+                doc.roundedRect((pageWidth - badgeWidth) / 2, 280, badgeWidth, 22, 11, 11, 'F');
                 doc.setTextColor(...greenDark);
-                doc.text(badgeText, pageWidth / 2, 244, { align: 'center' });
+                doc.text(badgeText, pageWidth / 2, 294, { align: 'center' });
                 
                 // "Farmington Country Club" large text
                 doc.setTextColor(...greenDark);
                 doc.setFontSize(38);
                 doc.setFont('times', 'italic');
-                doc.text('Farmington Country Club', pageWidth / 2, 310, { align: 'center' });
+                doc.text('Farmington Country Club', pageWidth / 2, 360, { align: 'center' });
                 
                 // Gold decorative divider
                 doc.setDrawColor(...gold);
                 doc.setLineWidth(2);
-                doc.line(pageWidth/2 - 100, 335, pageWidth/2 + 100, 335);
+                doc.line(pageWidth/2 - 100, 385, pageWidth/2 + 100, 385);
                 
                 // Year + Tournament Bible
                 doc.setTextColor(...greenDark);
                 doc.setFontSize(32);
                 doc.setFont('helvetica', 'bold');
-                doc.text(year + ' Tournament Bible', pageWidth / 2, 400, { align: 'center' });
+                doc.text(year + ' Tournament Bible', pageWidth / 2, 450, { align: 'center' });
                 
                 // Tagline
                 doc.setFontSize(12);
                 doc.setFont('times', 'italic');
                 doc.setTextColor(100, 100, 100);
-                doc.text('Your complete guide to tournaments and events', pageWidth / 2, 440, { align: 'center' });
+                doc.text('Your complete guide to tournaments and events', pageWidth / 2, 490, { align: 'center' });
                 
                 // Bottom decorative element
                 doc.setDrawColor(...gold);
