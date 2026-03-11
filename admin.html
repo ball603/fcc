@@ -2109,6 +2109,12 @@
 
         function formatDate(dateStr) {
             if (!dateStr) return '';
+            // Parse YYYY-MM-DD format manually to avoid timezone issues
+            const parts = dateStr.split('-');
+            if (parts.length === 3) {
+                const date = new Date(parts[0], parts[1] - 1, parts[2]);
+                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            }
             const date = new Date(dateStr);
             return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
         }
@@ -2342,9 +2348,15 @@
                     return yPos + (lines.length * fontSize * lineHeight);
                 }
                 
-                // Helper: Format date
+                // Helper: Format date - handles timezone correctly
                 function formatDate(dateStr) {
                     if (!dateStr) return 'TBD';
+                    // Parse YYYY-MM-DD format manually to avoid timezone issues
+                    const parts = dateStr.split('-');
+                    if (parts.length === 3) {
+                        const date = new Date(parts[0], parts[1] - 1, parts[2]);
+                        return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+                    }
                     const date = new Date(dateStr);
                     return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
                 }
