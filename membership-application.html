@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --green-dark: #1e3a2f;
@@ -865,12 +866,14 @@
             document.getElementById('mobileMenu').classList.toggle('active');
         }
 
-        // Google Sheets URL for rates
-        const RATES_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQNHAWwxlmmPPPlcyVbOR2PAzQYXI6owEf8wQlgYnVo1gBH8ngkgNB_ogNRet8Qrw/pub?gid=538479920&single=true&output=csv';
+        // Supabase config (same as main site)
+        const SUPABASE_URL = 'https://bbwmbvspladuneiywqfx.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJid21idnNwbGFkdW5laXl3cWZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzMzI0MzUsImV4cCI6MjA4NjkwODQzNX0.glJqYpFvPvYM0avZNN0jp7E-uprZiILQpKdBSs0WKPU';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // Membership data
         let membershipRates = [];
-        let cartRentalPrice = 450;
+        let cartRentalPrice = 550;
         let selectedMembershipPrice = 0;
         let membershipYear = new Date().getFullYear();
         let userAgeOnApril1 = null;
@@ -908,89 +911,54 @@
             return true;
         }
 
-        // Load rates from Google Sheets
+        // Load rates from Supabase (same source as main site)
         async function loadRates() {
             try {
-                const response = await fetch(RATES_SHEET_URL);
-                const text = await response.text();
-                const lines = text.trim().split('\n');
+                // Get rates year from site_settings
+                const { data: settingsData } = await supabaseClient
+                    .from('site_settings')
+                    .select('value')
+                    .eq('key', 'rates_year')
+                    .single();
 
-                let year = '';
-                let inMembershipSection = false;
-                let inCartSection = false;
+                if (settingsData) {
+                    membershipYear = parseInt(settingsData.value) || new Date().getFullYear();
+                    document.getElementById('membership-year').textContent = settingsData.value;
+                    document.getElementById('april-year').textContent = settingsData.value;
+                    document.getElementById('footer-year').textContent = settingsData.value;
+                }
 
-                lines.forEach(line => {
-                    let cells = [];
-                    let current = '';
-                    let inQuotes = false;
-                    for (let char of line) {
-                        if (char === '"') inQuotes = !inQuotes;
-                        else if (char === ',' && !inQuotes) {
-                            cells.push(current.trim());
-                            current = '';
-                        } else {
-                            current += char;
-                        }
-                    }
-                    cells.push(current.trim());
+                // Get all rates
+                const { data, error } = await supabaseClient
+                    .from('rates')
+                    .select('*')
+                    .order('sort_order');
 
-                    const firstCell = cells[0] || '';
-                    const secondCell = cells[1] || '';
+                if (error) throw error;
+                if (!data) throw new Error('No rates data');
 
-                    // Get year
-                    if (firstCell === 'Year' && secondCell) {
-                        year = secondCell;
-                        membershipYear = parseInt(year) || new Date().getFullYear();
-                        document.getElementById('membership-year').textContent = year;
-                        document.getElementById('april-year').textContent = year;
-                        document.getElementById('footer-year').textContent = year;
-                        return;
-                    }
+                // Get membership rates
+                const memberships = data.filter(r => r.category === 'membership');
+                membershipRates = memberships.map(r => {
+                    // Extract age range if present in type field
+                    const ageMatch = r.type.match(/\(([^)]+)\)/);
+                    const ages = ageMatch ? ageMatch[1] : '';
+                    const name = r.type.replace(/\s*\([^)]+\)/, '').trim();
 
-                    // Track sections
-                    if (firstCell.includes('MEMBERSHIP RATES')) {
-                        inMembershipSection = true;
-                        inCartSection = false;
-                        return;
-                    }
-                    if (firstCell.includes('GREENS FEES')) {
-                        inMembershipSection = false;
-                        return;
-                    }
-                    if (firstCell.includes('CART FEES')) {
-                        inCartSection = true;
-                        inMembershipSection = false;
-                        return;
-                    }
-                    if (firstCell === 'Type') return;
-
-                    // Parse membership rates
-                    if (inMembershipSection && firstCell && secondCell) {
-                        const price = parseInt(secondCell.replace(/[^0-9]/g, ''));
-                        if (!isNaN(price) && price > 0) {
-                            // Extract age range if present
-                            const ageMatch = firstCell.match(/\(([^)]+)\)/);
-                            const ages = ageMatch ? ageMatch[1] : '';
-                            const name = firstCell.replace(/\s*\([^)]+\)/, '').trim();
-                            
-                            membershipRates.push({
-                                name: name,
-                                ages: ages,
-                                price: price,
-                                fullName: firstCell
-                            });
-                        }
-                    }
-
-                    // Get cart rental price
-                    if (inCartSection && firstCell.toLowerCase().includes('yearly') && secondCell) {
-                        const price = parseInt(secondCell.replace(/[^0-9]/g, ''));
-                        if (!isNaN(price)) {
-                            cartRentalPrice = price;
-                            document.getElementById('cart-price').textContent = '$' + price.toLocaleString();
-                        }
-                    }
+                    return {
+                        name: name,
+                        ages: ages,
+                        price: r.price,
+                        fullName: r.type
+                    };
                 });
+
+                // Get yearly cart rental price
+                const yearlyCart = data.find(r => r.category === 'cart' && r.type.toLowerCase().includes('yearly'));
+                if (yearlyCart) {
+                    cartRentalPrice = yearlyCart.price;
+                    document.getElementById('cart-price').textContent = '$' + yearlyCart.price.toLocaleString();
+                }
 
                 // Render membership options
                 renderMembershipOptions();
